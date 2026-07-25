@@ -3,7 +3,7 @@
  * Dynamic redirect handler for short URLs.
  */
 export async function onRequestGet(context) {
-  const { request, env, params } = context;
+  const { request, env, params, next } = context;
   const { code } = params;
 
   // If the code matches assets or static pages, we shouldn't handle it
