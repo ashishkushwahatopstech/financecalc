@@ -848,7 +848,7 @@ function updateNavbarUI(user) {
       { name: 'Invoice Generator', href: 'invoice-generator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>' },
       { name: 'ROI & Investment', href: 'roi-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>' },
       { name: 'URL Shortener', href: 'url-shortener.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>' },
-      { name: 'Site Updates & Blog', href: 'updates.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>' }
+      { name: 'Blog', href: 'updates.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>' }
     ];
 
     const utilityTools = [
@@ -1309,11 +1309,13 @@ if (document.readyState === 'loading') {
     renderNavbarSkeleton();
     renderGlobalAnnouncement();
     updateFooterComplianceLinks();
+    updateNavbarBlogLink();
   });
 } else {
   renderNavbarSkeleton();
   renderGlobalAnnouncement();
   updateFooterComplianceLinks();
+  updateNavbarBlogLink();
 }
 
 // Global Auth State Observer
@@ -1361,5 +1363,34 @@ function updateFooterComplianceLinks() {
       }
     }
   });
+}
+
+/**
+ * Dynamically injects and sanitizes the Blog link in desktop navigation headers
+ */
+function updateNavbarBlogLink() {
+  const desktopNav = document.querySelector('nav.hidden.lg\\:flex');
+  if (desktopNav) {
+    const hasBlogLink = Array.from(desktopNav.querySelectorAll('a')).some(a => a.getAttribute('href') === 'updates.html');
+    if (!hasBlogLink) {
+      const a = document.createElement('a');
+      a.href = 'updates.html';
+      a.className = 'hover:text-emerald-600 transition-colors';
+      a.textContent = 'Blog';
+      
+      // Insert before the utilities dropdown group if present, otherwise append
+      const dropdown = desktopNav.querySelector('.relative.group');
+      if (dropdown) {
+        desktopNav.insertBefore(a, dropdown);
+      } else {
+        desktopNav.appendChild(a);
+      }
+    } else {
+      const blogLink = Array.from(desktopNav.querySelectorAll('a')).find(a => a.getAttribute('href') === 'updates.html');
+      if (blogLink) {
+        blogLink.textContent = 'Blog';
+      }
+    }
+  }
 }
 
