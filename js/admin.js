@@ -80,6 +80,9 @@ function checkAndInitAdmin(user) {
   // Load URL Shortener global stats
   loadShortenerStats(user.uid);
 
+  // Auto-sync unsynced local content items (fallback) to Cloud Firestore
+  autoSyncLocalContent();
+
   // Set up refresh button event handler
   const btnRefreshShortener = document.getElementById('admin-btn-refresh-shortener');
   if (btnRefreshShortener) {
@@ -1136,17 +1139,23 @@ function setupContentManagerUI() {
         : 'Just now';
 
       const isPublished = item.published;
+      const isLocalOnly = item.id.startsWith('content_');
 
       return `
-        <div class="py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div class="py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 last:border-0">
           <div class="space-y-1">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
               <span class="px-2 py-0.5 rounded text-[10px] font-bold ${item.type === 'Announcement Banner' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-indigo-100 text-indigo-800 border border-indigo-200'}">
                 ${escapeHTML(item.type)}
               </span>
               <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isPublished ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-200 text-slate-700'}">
                 ${isPublished ? 'Published' : 'Draft'}
               </span>
+              ${isLocalOnly ? `
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200" title="This content is only saved locally in your browser. Tap 'Sync to Cloud' to make it public.">
+                  Local Cache Only
+                </span>
+              ` : ''}
               <span class="text-slate-400 text-[11px]">${dateStr}</span>
             </div>
             <h5 class="font-bold text-slate-900 text-sm tracking-tight">${escapeHTML(item.title)}</h5>
@@ -1154,6 +1163,11 @@ function setupContentManagerUI() {
           </div>
 
           <div class="flex items-center gap-2 shrink-0">
+            ${isLocalOnly ? `
+              <button data-sync-id="${item.id}" class="btn-sync-content px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg transition-colors cursor-pointer text-xs flex items-center gap-1">
+                Sync to Cloud
+              </button>
+            ` : ''}
             <button data-edit-id="${item.id}" class="btn-edit-content px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-lg transition-colors cursor-pointer text-xs">
               Edit
             </button>
@@ -1165,7 +1179,46 @@ function setupContentManagerUI() {
       `;
     }).join('');
 
-    // Attach Edit / Delete listeners
+    // Attach Edit / Delete / Sync listeners
+    container.querySelectorAll('.btn-sync-content').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-sync-id');
+        const item = items.find(i => i.id === id);
+        if (!item) return;
+
+        btn.disabled = true;
+        btn.textContent = 'Syncing...';
+
+        try {
+          const { setDoc, doc, db } = await import('./firebase-config.js');
+          const { deleteContentItem } = await import('./content-manager.js');
+
+          const newDoc = {
+            title: item.title,
+            body: item.body,
+            type: item.type,
+            published: item.published,
+            createdAt: new Date(),
+            createdBy: item.createdBy || 'ashishkushwaha88643@gmail.com'
+          };
+
+          // Write to Firestore preserving the exact same ID
+          await setDoc(doc(db, 'content', item.id), newDoc);
+          
+          // Delete from local cache
+          await deleteContentItem(item.id);
+
+          showToast("Article successfully synced to Cloud!", "success");
+          loadContentList();
+        } catch (err) {
+          console.error("Failed to sync content to cloud:", err);
+          showToast("Failed to sync: " + err.message, "error");
+          btn.disabled = false;
+          btn.textContent = 'Sync to Cloud';
+        }
+      });
+    });
+
     container.querySelectorAll('.btn-edit-content').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-edit-id');
@@ -1198,6 +1251,9 @@ function setupContentManagerUI() {
         }
       });
     });
+
+    // Save loader reference to DOM container for auto-sync callback triggers
+    container.__listLoader = loadContentList;
   };
 
   btnCancelEdit?.addEventListener('click', () => {
@@ -1321,6 +1377,50 @@ async function loadShortenerStats(uid) {
         </tr>
       `;
     }
+  }
+}
+
+/**
+ * Automatically uploads any locally-saved blog posts or announcement banners
+ * to Firestore. Ensures shared URLs matching local fallback IDs function properly.
+ */
+async function autoSyncLocalContent() {
+  try {
+    const { fetchAllContentItems, deleteContentItem } = await import('./content-manager.js');
+    const items = await fetchAllContentItems();
+    const localItems = items.filter(item => item.id.startsWith('content_'));
+    if (localItems.length === 0) return;
+
+    const { setDoc, doc, db } = await import('./firebase-config.js');
+    
+    console.log(`[AutoSync] Found ${localItems.length} unsynced local content items. Syncing to Firestore...`);
+    
+    for (const item of localItems) {
+      const newDoc = {
+        title: item.title,
+        body: item.body,
+        type: item.type,
+        published: item.published,
+        createdAt: new Date(),
+        createdBy: item.createdBy || 'ashishkushwaha88643@gmail.com'
+      };
+      
+      // Write to Firestore preserving the exact same ID so shared links work
+      await setDoc(doc(db, 'content', item.id), newDoc);
+      
+      // Delete from local cache
+      await deleteContentItem(item.id);
+    }
+    
+    console.log('[AutoSync] Cloud synchronization completed successfully!');
+    
+    // Reload the content list in the UI if present
+    const container = document.getElementById('admin-content-list-container');
+    if (container && typeof container.__listLoader === 'function') {
+      container.__listLoader();
+    }
+  } catch (err) {
+    console.warn('[AutoSync] Unsynced local content upload note:', err.message);
   }
 }
 
