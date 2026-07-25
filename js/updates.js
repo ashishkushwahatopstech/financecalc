@@ -51,6 +51,11 @@ async function initUpdatesPage() {
 
   trackDailyActivity();
 
+  const writePrompt = document.getElementById('blog-write-prompt');
+  if (writePrompt) {
+    writePrompt.classList.remove('hidden');
+  }
+
   const posts = await fetchPublishedBlogPosts();
 
   if (badge) {
