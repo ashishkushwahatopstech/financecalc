@@ -1503,6 +1503,11 @@ if (typeof window !== 'undefined') {
     }
     link.type = 'image/svg+xml';
     link.href = '/favicon.svg';
+
+    // Apply data-lenis-prevent dynamically to prevent Lenis smooth scroll from hijacking scrollable modals/logs
+    document.querySelectorAll('.overflow-y-auto, [class*="overflow-y-auto"]').forEach(el => {
+      el.setAttribute('data-lenis-prevent', 'true');
+    });
   });
 }
 
