@@ -154,22 +154,39 @@ function renderAnnouncementBanner(banner) {
  */
 export async function fetchPublishedBlogPosts() {
   let posts = [];
+  const postsMap = new Map();
 
+  // 1. Fetch from new blog_posts collection
   try {
-    const q = query(
+    const q1 = query(
       collection(db, 'blog_posts'),
       where('status', '==', 'public'),
       where('published', '==', true)
     );
-
-    const snapshot = await getDocs(q);
-    snapshot.forEach(docSnap => {
-      posts.push({ id: docSnap.id, ...docSnap.data() });
+    const snapshot1 = await getDocs(q1);
+    snapshot1.forEach(docSnap => {
+      postsMap.set(docSnap.id, { id: docSnap.id, ...docSnap.data(), type: 'Blog Post' });
     });
   } catch (err) {
-    console.warn('[ContentManager] Blog posts query note:', err.message);
+    console.warn('[ContentManager] New blog posts query note:', err.message);
   }
 
+  // 2. Fetch from legacy content collection
+  try {
+    const q2 = query(
+      collection(db, 'content'),
+      where('type', '==', 'Blog Post'),
+      where('published', '==', true)
+    );
+    const snapshot2 = await getDocs(q2);
+    snapshot2.forEach(docSnap => {
+      postsMap.set(docSnap.id, { id: docSnap.id, ...docSnap.data() });
+    });
+  } catch (err) {
+    console.warn('[ContentManager] Legacy blog posts query note:', err.message);
+  }
+
+  posts = Array.from(postsMap.values());
   posts.sort((a, b) => {
     const timeA = a.createdAt ? (a.createdAt.seconds || (typeof a.createdAt === 'number' ? a.createdAt : 0)) : 0;
     const timeB = b.createdAt ? (b.createdAt.seconds || (typeof b.createdAt === 'number' ? b.createdAt : 0)) : 0;

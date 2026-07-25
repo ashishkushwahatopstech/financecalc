@@ -1224,6 +1224,9 @@ function setupContentManagerUI() {
           const { setDoc, doc, db } = await import('./firebase-config.js');
           const { deleteContentItem } = await import('./content-manager.js');
 
+          const isBlog = item.type === 'Blog Post';
+          const targetCollection = isBlog ? 'blog_posts' : 'content';
+
           const newDoc = {
             title: item.title,
             body: item.body,
@@ -1233,8 +1236,12 @@ function setupContentManagerUI() {
             createdBy: item.createdBy || 'ashishkushwaha88643@gmail.com'
           };
 
+          if (isBlog) {
+            newDoc.status = 'public';
+          }
+
           // Write to Firestore preserving the exact same ID
-          await setDoc(doc(db, 'content', item.id), newDoc);
+          await setDoc(doc(db, targetCollection, item.id), newDoc);
           
           // Delete from local cache
           await deleteContentItem(item.id);
@@ -1427,6 +1434,9 @@ async function autoSyncLocalContent() {
     console.log(`[AutoSync] Found ${localItems.length} unsynced local content items. Syncing to Firestore...`);
     
     for (const item of localItems) {
+      const isBlog = item.type === 'Blog Post';
+      const targetCollection = isBlog ? 'blog_posts' : 'content';
+
       const newDoc = {
         title: item.title,
         body: item.body,
@@ -1435,9 +1445,13 @@ async function autoSyncLocalContent() {
         createdAt: new Date(),
         createdBy: item.createdBy || 'ashishkushwaha88643@gmail.com'
       };
+
+      if (isBlog) {
+        newDoc.status = 'public';
+      }
       
       // Write to Firestore preserving the exact same ID so shared links work
-      await setDoc(doc(db, 'content', item.id), newDoc);
+      await setDoc(doc(db, targetCollection, item.id), newDoc);
       
       // Delete from local cache
       await deleteContentItem(item.id);
