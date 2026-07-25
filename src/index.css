@@ -147,3 +147,21 @@ button[class*="bg-indigo-600"]:hover::after {
   background-image: radial-gradient(rgba(100, 116, 139, 0.08) 1px, transparent 1px);
   background-size: 24px 24px;
 }
+
+/* 6. QR Code Premium Border Framing */
+#qrcode-box canvas, #qrcode-box img {
+  border: 4px solid #f1f5f9;
+  outline: 1.5px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 12px;
+  background: #ffffff;
+  box-shadow: 0 6px 16px -4px rgba(15, 23, 42, 0.08);
+  max-width: 100%;
+  height: auto;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+#qrcode-box canvas:hover, #qrcode-box img:hover {
+  outline-color: #6366f1;
+  box-shadow: 0 12px 20px -6px rgba(99, 102, 241, 0.16);
+  transform: scale(1.02);
+}
