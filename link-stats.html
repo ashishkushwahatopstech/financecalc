@@ -130,7 +130,7 @@
             <div class="flex items-center gap-4 flex-col sm:flex-row overflow-hidden">
               <!-- QR Code Thumbnail Container -->
               <div class="w-20 h-20 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center shrink-0 overflow-hidden relative group">
-                <div id="stats-qrcode" class="p-1"></div>
+                <div id="stats-qrcode" class="flex items-center justify-center"></div>
                 <!-- Hover Download Overlay -->
                 <button id="btn-download-stats-qr" title="Download QR Code" class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity duration-200 cursor-pointer">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
@@ -451,8 +451,8 @@
           const qrTargetUrl = `${shortUrl}?src=qr`;
           new QRCode(qrBox, {
             text: qrTargetUrl,
-            width: 72,
-            height: 72,
+            width: 64,
+            height: 64,
             colorDark: '#0f172a',
             colorLight: '#ffffff',
             correctLevel: QRCode.CorrectLevel.M
