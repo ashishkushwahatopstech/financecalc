@@ -31,8 +31,8 @@ export async function onRequestGet(context) {
       }
 
       // Extract text content and strip HTML tags to form a clean preview snippet
-      const content = entry.summary?.$t || entry.content?.$t || '';
-      const cleanSnippet = content
+      const fullContent = entry.content?.$t || entry.summary?.$t || '';
+      const cleanSnippet = fullContent
         .replace(/<[^>]*>/g, '') // Strip HTML tags
         .replace(/\s+/g, ' ')   // Normalize spaces
         .trim()
@@ -42,7 +42,8 @@ export async function onRequestGet(context) {
         title,
         url,
         image,
-        snippet: cleanSnippet
+        snippet: cleanSnippet,
+        content: fullContent
       };
     }).slice(0, 6); // Serve top 6 posts
 

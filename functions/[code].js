@@ -194,7 +194,7 @@ function notFoundHtml() {
 // Interstitial Ad / Transition Page HTML template
 function mediatorHtml(originalUrl, shortCode) {
   // Convert URL to base64 to avoid crawlers or scrapers parsing it from source code
-  const base64Url = typeof btoa === 'function' ? btoa(originalUrl) : Buffer.from(originalUrl).toString('base64');
+  const base64Url = btoa(originalUrl);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -209,78 +209,103 @@ function mediatorHtml(originalUrl, shortCode) {
     body {
       font-family: 'Outfit', sans-serif;
     }
+    /* Dynamic Blogger feed image and article styling inside native container */
+    #ad-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 1.25rem;
+      margin: 1.75rem auto;
+      display: block;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+    #ad-content p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: #334155;
+      margin-bottom: 1.5rem;
+    }
+    #ad-content h2, #ad-content h3 {
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 2.25rem;
+      margin-bottom: 1rem;
+      line-height: 1.3;
+    }
+    #ad-content h2 { font-size: 1.625rem; }
+    #ad-content h3 { font-size: 1.375rem; }
+    #ad-content a {
+      color: #4f46e5;
+      font-weight: 700;
+      text-decoration: underline;
+    }
+    #ad-content ul, #ad-content ol {
+      padding-left: 1.75rem;
+      margin-bottom: 1.5rem;
+      color: #334155;
+    }
+    #ad-content li {
+      margin-bottom: 0.5rem;
+      list-style-type: disc;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col justify-between antialiased selection:bg-indigo-500/10 selection:text-indigo-600">
 
-  <!-- Sticky Top Countdown Bar -->
-  <div class="sticky top-0 z-50 bg-slate-900 text-white border-b border-slate-800 shadow-md">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
-      <div class="flex items-center gap-2.5">
-        <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></div>
-        <span class="text-xs font-semibold text-slate-300">Link Sponsored by FinCalc Tools</span>
+  <!-- Main Reading View Container -->
+  <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 py-12 pb-32">
+    <div id="ad-article" class="space-y-8 bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-10 shadow-xs">
+      
+      <!-- Header Section -->
+      <div class="space-y-4 border-b border-slate-100 pb-6">
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] font-extrabold uppercase tracking-wider bg-indigo-50 border border-indigo-100 text-indigo-600 px-3 py-1 rounded-full">Sponsored Article</span>
+          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">&bull; aktechstudio.com</span>
+        </div>
+        <h1 id="ad-title" class="text-3xl sm:text-4xl font-black text-slate-900 leading-tight">Loading sponsored article...</h1>
       </div>
-      <div class="flex items-center gap-3">
-        <span id="countdown-status" class="text-xs font-bold bg-slate-800 border border-slate-700 px-3 py-1.5 rounded-xl flex items-center gap-2">
-          <svg class="w-3.5 h-3.5 text-indigo-400 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-          </svg>
-          <span>Please wait <strong id="timer-sec" class="text-indigo-400 text-sm">5</strong>s...</span>
-        </span>
-        <span id="scroll-status" class="text-xs font-bold bg-amber-500/10 border border-amber-500/30 text-amber-500 px-3 py-1.5 rounded-xl flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-6l-7 7-7-7"></path></svg>
-          <span>Scroll to bottom</span>
-        </span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Content -->
-  <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 space-y-8">
-    <div class="text-center space-y-2.5 py-4">
-      <h1 class="text-3xl font-black tracking-tight text-slate-900">Your destination link is almost ready</h1>
-      <p class="text-sm text-slate-500 max-w-lg mx-auto">Explore sponsored articles and highlights from our community while the system secures your destination link redirection.</p>
-    </div>
-
-    <!-- Sponsored Native Advertisement (Single Random Post) -->
-    <div class="max-w-3xl mx-auto space-y-4">
-      <h3 class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-200 pb-1.5 text-center">Sponsored Advertisement</h3>
-      <div id="articles-container" class="bg-white rounded-3xl border border-slate-200/90 shadow-2xs overflow-hidden hover:shadow-xs transition-shadow duration-300">
-        <!-- Skeleton Loader for Single Ad -->
-        <div class="p-6 sm:p-8 space-y-6 animate-pulse">
-          <div class="w-full h-56 bg-slate-100 rounded-2xl"></div>
-          <div class="space-y-3">
-            <div class="h-6 bg-slate-100 rounded-md w-3/4 mx-auto"></div>
-            <div class="h-4 bg-slate-100 rounded-md w-5/6 mx-auto"></div>
-            <div class="h-4 bg-slate-100 rounded-md w-2/3 mx-auto"></div>
-          </div>
+      
+      <!-- Rich Content Container -->
+      <div id="ad-content" class="text-slate-700 leading-relaxed">
+        <!-- Skeleton Loader -->
+        <div class="space-y-4 animate-pulse">
+          <div class="h-6 bg-slate-100 rounded-md w-3/4"></div>
+          <div class="h-4 bg-slate-100 rounded-md w-5/6"></div>
+          <div class="h-4 bg-slate-100 rounded-md w-2/3"></div>
+          <div class="h-4 bg-slate-100 rounded-md w-4/5"></div>
+          <div class="h-32 bg-slate-100 rounded-2xl w-full"></div>
         </div>
       </div>
-    </div>
-
-    <!-- Redirection Action Card -->
-    <div class="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-md text-center max-w-xl mx-auto space-y-5">
-      <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-      </div>
-      <div class="space-y-1">
-        <h2 class="text-lg font-bold text-slate-800">Final Redirection Link</h2>
-        <p class="text-xs text-slate-400 leading-relaxed">Scroll to the bottom of the page to unlock the proceed button.</p>
-      </div>
-      <button id="btn-proceed" disabled class="w-full py-4 bg-slate-200 text-slate-400 border border-slate-300 font-bold text-sm rounded-2xl shadow-xs transition-all flex items-center justify-center gap-2 opacity-50 cursor-not-allowed">
-        <span>Skip & Proceed &rarr;</span>
-      </button>
+      
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-8 px-4 text-center">
-    <div class="max-w-7xl mx-auto space-y-2">
-      <p>&copy; ${new Date().getFullYear()} FinCalc Tools. All rights reserved. Powered by Firebase Auth & Firestore.</p>
-      <p class="text-[10px] text-slate-600 font-medium">You are seeing this page because this link is monetized by its owner.</p>
+  <!-- Sticky/Floating Skip Widget on Bottom Right (Desktop/Tablet) or Bottom Sticky (Mobile) -->
+  <div id="sticky-skip-widget" class="fixed bottom-6 right-6 z-50 bg-white/95 backdrop-blur-md border border-slate-200/90 p-5 rounded-2xl shadow-xl w-80 space-y-4 max-w-[calc(100vw-32px)]">
+    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+      <span class="text-xs font-extrabold text-slate-700">Link Redirection Status</span>
+      <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></div>
     </div>
-  </footer>
+    
+    <div class="space-y-2">
+      <div class="flex items-center justify-between text-xs">
+        <span class="text-slate-400 font-semibold">1. Reading Timer:</span>
+        <span id="countdown-status" class="font-extrabold text-indigo-600 flex items-center gap-1">
+          <span id="timer-sec">5</span>s remaining
+        </span>
+      </div>
+      <div class="flex items-center justify-between text-xs">
+        <span class="text-slate-400 font-semibold">2. Scroll Status:</span>
+        <span id="scroll-status" class="font-extrabold text-amber-500 flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-6l-7 7-7-7"></path></svg>
+          <span>Scroll down page</span>
+        </span>
+      </div>
+    </div>
+
+    <button id="btn-proceed" disabled class="w-full py-3.5 bg-slate-100 border border-slate-200 text-slate-400 font-bold text-xs rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 opacity-50 cursor-not-allowed">
+      <span>Skip & Proceed &rarr;</span>
+    </button>
+  </div>
 
   <script>
     let secondsLeft = 5;
@@ -297,11 +322,11 @@ function mediatorHtml(originalUrl, shortCode) {
       secondsLeft--;
       if (secondsLeft <= 0) {
         clearInterval(interval);
-        timerSec.textContent = '0';
+        timerSec.parentElement.innerHTML = 'Completed';
         timerFinished = true;
         
-        countdownStatus.className = 'text-xs font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 px-3 py-1.5 rounded-xl flex items-center gap-1.5';
-        countdownStatus.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Timer completed</span>';
+        countdownStatus.className = 'font-extrabold text-emerald-500 flex items-center gap-1';
+        countdownStatus.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Completed</span>';
         
         checkActivation();
       } else {
@@ -309,14 +334,14 @@ function mediatorHtml(originalUrl, shortCode) {
       }
     }, 1000);
 
-    // 2. Track Scroll to Bottom
+    // 2. Track Scroll to Bottom of parent page (the fully loaded native reading view)
     window.addEventListener('scroll', () => {
       // Check if user scrolled to bottom of the page
-      if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 60) {
+      if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 100) {
         if (!hasScrolledToBottom) {
           hasScrolledToBottom = true;
           
-          scrollStatus.className = 'text-xs font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 px-3 py-1.5 rounded-xl flex items-center gap-1.5';
+          scrollStatus.className = 'font-extrabold text-emerald-500 flex items-center gap-1.5';
           scrollStatus.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Scrolled to bottom</span>';
           
           checkActivation();
@@ -328,7 +353,7 @@ function mediatorHtml(originalUrl, shortCode) {
     function checkActivation() {
       if (timerFinished && hasScrolledToBottom) {
         btnProceed.disabled = false;
-        btnProceed.className = 'w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-2xl shadow-md shadow-emerald-600/10 hover:shadow-emerald-600/20 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2';
+        btnProceed.className = 'w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/10 hover:shadow-emerald-600/20 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2';
         btnProceed.innerHTML = '<span>Skip & Proceed &rarr;</span>';
       }
     }
@@ -342,7 +367,8 @@ function mediatorHtml(originalUrl, shortCode) {
 
     // 3. Fetch latest sponsored blog posts from our local API proxy (which pulls from aktechstudio.com feed)
     async function loadSponsoredArticles() {
-      const container = document.getElementById('articles-container');
+      const adTitle = document.getElementById('ad-title');
+      const adContent = document.getElementById('ad-content');
       const url = '/api/sponsored-posts';
       
       try {
@@ -352,42 +378,25 @@ function mediatorHtml(originalUrl, shortCode) {
           const posts = data.posts || [];
           
           if (posts.length === 0) {
-            container.innerHTML = '<p class="text-slate-400 py-8 text-center text-xs">No advertisement available at this time.</p>';
+            adTitle.textContent = 'No advertisement available';
+            adContent.innerHTML = '<p class="text-slate-400 py-8 text-center text-xs">No advertisement available at this time.</p>';
             return;
           }
 
           // Pick 1 random post
           const p = posts[Math.floor(Math.random() * posts.length)];
-          const hasImage = p.image && (p.image.startsWith('http://') || p.image.startsWith('https://'));
           
-          let itemHtml = '';
-          itemHtml += '<div class="flex flex-col md:flex-row items-center gap-6 p-6 sm:p-8">';
-          if (hasImage) {
-            itemHtml += '  <div class="w-full md:w-1/2 h-52 sm:h-60 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 shrink-0">';
-            itemHtml += '    <img src="' + p.image + '" alt="' + p.title + '" class="w-full h-full object-cover" onerror="this.parentElement.remove()" />';
-            itemHtml += '  </div>';
-          }
-          itemHtml += '  <div class="space-y-4 text-left flex-grow">';
-          itemHtml += '    <span class="text-[10px] font-extrabold uppercase tracking-wider bg-indigo-50 border border-indigo-100 text-indigo-600 px-2.5 py-1 rounded-full">Recommended Read</span>';
-          itemHtml += '    <h4 class="font-extrabold text-slate-900 text-base sm:text-lg leading-snug hover:text-indigo-600 transition-colors">' + p.title + '</h4>';
-          itemHtml += '    <p class="text-xs text-slate-500 leading-relaxed">' + p.snippet + '</p>';
-          itemHtml += '    <div class="pt-2">';
-          itemHtml += '      <a href="' + p.url + '" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all hover:scale-[1.01] active:scale-[0.99]">';
-          itemHtml += '        <span>Read Full Article</span>';
-          itemHtml += '        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>';
-          itemHtml += '      </a>';
-          itemHtml += '    </div>';
-          itemHtml += '  </div>';
-          itemHtml += '</div>';
-
-          container.innerHTML = itemHtml;
+          // Populate title and full rich content HTML
+          adTitle.textContent = p.title;
+          adContent.innerHTML = p.content || p.snippet;
 
         } else {
           throw new Error('API return status: ' + res.status);
         }
       } catch (err) {
         console.warn('Failed to load articles:', err);
-        container.innerHTML = '<p class="text-slate-400 py-8 text-center text-xs">Failed to load sponsored updates.</p>';
+        adTitle.textContent = 'Failed to load sponsored content';
+        adContent.innerHTML = '<p class="text-slate-400 py-8 text-center text-xs">Failed to load sponsored updates.</p>';
       }
     }
 
