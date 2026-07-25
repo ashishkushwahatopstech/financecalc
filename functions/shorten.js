@@ -17,7 +17,10 @@ export async function onRequestPost(context) {
 
     // Basic URL validation
     try {
-      new URL(originalUrl);
+      const parsedUrl = new URL(originalUrl);
+      if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+        throw new Error('Only HTTP and HTTPS protocols are allowed.');
+      }
     } catch (e) {
       return new Response(JSON.stringify({ error: 'Invalid URL format. Make sure to include http:// or https://' }), {
         status: 400,

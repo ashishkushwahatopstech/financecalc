@@ -1285,13 +1285,17 @@ async function loadShortenerStats(uid) {
           ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-100">${expiryDate} (Expired)</span>`
           : `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-50 text-slate-600 border border-slate-100">${expiryDate}</span>`;
 
+        const safeOriginalUrl = (link.original_url.startsWith('http://') || link.original_url.startsWith('https://'))
+          ? link.original_url
+          : '#';
+
         return `
           <tr class="hover:bg-slate-50 transition-colors">
             <td class="py-3 px-4 font-bold text-slate-800">
               <a href="${shortUrl}" target="_blank" class="text-emerald-600 hover:underline">/${link.short_code}</a>
             </td>
             <td class="py-3 px-4 max-w-xs truncate text-slate-600" title="${escapeHTML(link.original_url)}">
-              <a href="${link.original_url}" target="_blank" class="hover:text-slate-800 hover:underline">${escapeHTML(link.original_url)}</a>
+              <a href="${safeOriginalUrl}" target="_blank" class="hover:text-slate-800 hover:underline">${escapeHTML(link.original_url)}</a>
             </td>
             <td class="py-3 px-4 font-black text-slate-800">${link.click_count.toLocaleString()}</td>
             <td class="py-3 px-4 text-slate-500">${createdDate}</td>

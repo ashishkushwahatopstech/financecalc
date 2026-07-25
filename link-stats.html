@@ -436,7 +436,12 @@
         }
 
         const shortUrl = `${window.location.origin}/${link.short_code}`;
-        elSelectedOriginalUrl.href = link.original_url;
+        
+        // Sanitize link target to prevent javascript: DOM XSS execution
+        const safeUrl = (link.original_url.startsWith('http://') || link.original_url.startsWith('https://')) 
+          ? link.original_url 
+          : '#';
+        elSelectedOriginalUrl.href = safeUrl;
         elSelectedOriginalUrl.textContent = link.original_url;
 
         // Generate QR code for this link (with ?src=qr appended)

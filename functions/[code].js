@@ -111,7 +111,22 @@ export async function onRequestGet(context) {
       console.error('Error logging click analytics to D1:', clickErr);
     }
 
-    // 5. Issue HTTP 302 redirect
+    // 5. Issue HTTP 302 redirect with protocol verification
+    try {
+      const parsedUrl = new URL(originalUrl);
+      if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+        return new Response(notFoundHtml(), {
+          status: 404,
+          headers: { 'Content-Type': 'text/html' }
+        });
+      }
+    } catch (e) {
+      return new Response(notFoundHtml(), {
+        status: 404,
+        headers: { 'Content-Type': 'text/html' }
+      });
+    }
+
     return Response.redirect(originalUrl, 302);
 
   } catch (err) {
