@@ -81,6 +81,9 @@ export async function onRequestGet(context) {
     return context.next();
   }
 
+  // Inject base href to resolve all relative navigation and asset links from the root directory
+  html = html.replace('<head>', '<head><base href="/">');
+
   // If a valid post ID was extracted, enrich it with database details
   if (postId) {
     const post = await fetchPostDetails(postId);
