@@ -1474,6 +1474,11 @@ async function loadShortenerStats(uid) {
             <td class="py-3 px-4 font-medium">${expiryHtml}</td>
             <td class="py-3 px-4 font-medium">${redirectionSelect}</td>
             <td class="py-3 px-4 font-medium">${monetizationSelect}</td>
+            <td class="py-3 px-4">
+              <button data-link-code="${link.short_code}" class="btn-view-link-stats px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold text-[10px] rounded-lg transition-colors cursor-pointer border border-indigo-100 flex items-center gap-1">
+                📊 Stats
+              </button>
+            </td>
           </tr>
         `;
       }).join('');
@@ -1529,13 +1534,21 @@ async function loadShortenerStats(uid) {
           }
         });
       });
+
+      // Attach View Stats button listener
+      tableBody.querySelectorAll('.btn-view-link-stats').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const shortCode = btn.dataset.linkCode;
+          openLinkStatsModal(shortCode, uid);
+        });
+      });
     }
   } catch (err) {
     console.error("Error loading URL Shortener admin statistics:", err);
     if (tableBody) {
       tableBody.innerHTML = `
         <tr>
-          <td colspan="7" class="py-8 text-center text-rose-600 font-medium">
+          <td colspan="8" class="py-8 text-center text-rose-600 font-medium">
             Failed to load admin stats: ${escapeHTML(err.message || 'Server error')}
             <div class="text-slate-400 text-[10px] mt-2 font-normal max-w-md mx-auto leading-relaxed">
               To authorize this request: 
@@ -1548,6 +1561,185 @@ async function loadShortenerStats(uid) {
       `;
     }
   }
+}
+
+/**
+ * Opens Link Geography & Click Analytics Modal for Admin
+ */
+async function openLinkStatsModal(code, uid) {
+  const modal = document.getElementById('admin-link-stats-modal');
+  const codeEl = document.getElementById('modal-stats-code');
+  const destEl = document.getElementById('modal-stats-dest');
+  const createdEl = document.getElementById('modal-stats-created');
+  const expiresEl = document.getElementById('modal-stats-expires');
+  const totalEl = document.getElementById('modal-stats-total');
+  
+  const countriesContainer = document.getElementById('modal-stats-countries-container');
+  const citiesContainer = document.getElementById('modal-stats-cities-container');
+  const devicesContainer = document.getElementById('modal-stats-devices-container');
+  const sourcesContainer = document.getElementById('modal-stats-sources-container');
+
+  if (!modal) return;
+
+  // Initialize display details with loaders
+  codeEl.textContent = code;
+  destEl.textContent = "Loading...";
+  destEl.href = "#";
+  createdEl.textContent = "Loading...";
+  expiresEl.textContent = "Loading...";
+  totalEl.textContent = "0";
+
+  countriesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">Loading geography...</p>';
+  citiesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">Loading geography...</p>';
+  devicesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">Loading devices...</p>';
+  sourcesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">Loading traffic sources...</p>';
+
+  // Show Modal
+  modal.classList.remove('hidden');
+
+  try {
+    const res = await fetch(`/api/stats/${encodeURIComponent(code)}?uid=${encodeURIComponent(uid)}`);
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Failed to fetch statistics.');
+
+    const link = data.link || {};
+    const analytics = data.analytics || {};
+
+    // 1. Details
+    destEl.textContent = link.original_url;
+    destEl.href = link.original_url;
+    createdEl.textContent = new Date(link.created_at).toLocaleDateString();
+    expiresEl.textContent = link.expires_at ? new Date(link.expires_at).toLocaleDateString() : 'Permanent';
+
+    // 2. Geography analysis counts
+    const geo = analytics.geography || [];
+    
+    // Group country stats
+    const countryMap = {};
+    const cityMap = {};
+    let totalClicks = 0;
+
+    geo.forEach(item => {
+      const cnt = item.count || 0;
+      totalClicks += cnt;
+
+      const country = item.country || 'Unknown';
+      countryMap[country] = (countryMap[country] || 0) + cnt;
+
+      const city = item.city || 'Unknown';
+      cityMap[city] = (cityMap[city] || 0) + cnt;
+    });
+
+    totalEl.textContent = totalClicks.toLocaleString();
+
+    // Render Countries with percentage bars
+    const countries = Object.entries(countryMap)
+      .map(([country, count]) => ({ country, count }))
+      .sort((a, b) => b.count - a.count);
+
+    if (countries.length === 0) {
+      countriesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">No location details recorded.</p>';
+    } else {
+      countriesContainer.innerHTML = countries.map(c => {
+        const pct = totalClicks > 0 ? (c.count / totalClicks) * 100 : 0;
+        return `
+          <div class="space-y-1">
+            <div class="flex items-center justify-between font-bold text-slate-700 text-[11px]">
+              <span>${escapeHTML(c.country)}</span>
+              <span>${c.count} (${pct.toFixed(0)}%)</span>
+            </div>
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-indigo-600 h-1.5 rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render Cities with percentage bars
+    const cities = Object.entries(cityMap)
+      .map(([city, count]) => ({ city, count }))
+      .sort((a, b) => b.count - a.count);
+
+    if (cities.length === 0) {
+      citiesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">No city details recorded.</p>';
+    } else {
+      citiesContainer.innerHTML = cities.map(c => {
+        const pct = totalClicks > 0 ? (c.count / totalClicks) * 100 : 0;
+        return `
+          <div class="space-y-1">
+            <div class="flex items-center justify-between font-bold text-slate-700 text-[11px]">
+              <span>${escapeHTML(c.city)}</span>
+              <span>${c.count} (${pct.toFixed(0)}%)</span>
+            </div>
+            <div class="w-full bg-slate-150 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-indigo-500 h-1.5 rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 3. Devices
+    const devices = analytics.devices || [];
+    if (devices.length === 0) {
+      devicesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">No device details recorded.</p>';
+    } else {
+      devicesContainer.innerHTML = devices.map(d => {
+        const pct = totalClicks > 0 ? (d.count / totalClicks) * 100 : 0;
+        return `
+          <div class="space-y-1">
+            <div class="flex items-center justify-between font-bold text-slate-700 text-[11px]">
+              <span class="capitalize">${escapeHTML(d.device_type)}</span>
+              <span>${d.count} (${pct.toFixed(0)}%)</span>
+            </div>
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-emerald-600 h-1.5 rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 4. Traffic Sources / Referrers
+    const referrers = analytics.referrers || [];
+    if (referrers.length === 0) {
+      sourcesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">No traffic source referrers recorded.</p>';
+    } else {
+      sourcesContainer.innerHTML = referrers.map(r => {
+        const pct = totalClicks > 0 ? (r.count / totalClicks) * 100 : 0;
+        const refLabel = r.referrer === 'direct' ? 'Direct / Bookmarks' : r.referrer;
+        return `
+          <div class="space-y-1">
+            <div class="flex items-center justify-between font-bold text-slate-700 text-[11px]">
+              <span class="truncate max-w-[150px]" title="${escapeHTML(refLabel)}">${escapeHTML(refLabel)}</span>
+              <span>${r.count} (${pct.toFixed(0)}%)</span>
+            </div>
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-amber-500 h-1.5 rounded-full" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+  } catch (err) {
+    console.error("Failed to load link statistics:", err);
+    countriesContainer.innerHTML = `<p class="text-rose-600 text-center py-4 font-semibold">${escapeHTML(err.message)}</p>`;
+  }
+}
+
+// Bind Modal Close Buttons globally
+if (typeof window !== 'undefined') {
+  window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('btn-close-stats-modal')?.addEventListener('click', () => {
+      document.getElementById('admin-link-stats-modal')?.classList.add('hidden');
+    });
+    document.getElementById('btn-close-stats-modal-bottom')?.addEventListener('click', () => {
+      document.getElementById('admin-link-stats-modal')?.classList.add('hidden');
+    });
+  });
 }
 
 /**

@@ -44,7 +44,10 @@ export async function onRequestGet(context) {
       });
     }
 
-    if (link.uid !== uid) {
+    const ADMIN_UID = 'RUYOUqQWQLOQar6B3iC0KxShiyq1';
+    const expectedAdminUid = env.ADMIN_UID || ADMIN_UID;
+
+    if (link.uid !== uid && uid !== expectedAdminUid) {
       return new Response(JSON.stringify({ error: 'Access denied: You do not own this link.' }), {
         status: 403,
         headers: { 'Content-Type': 'application/json' }
