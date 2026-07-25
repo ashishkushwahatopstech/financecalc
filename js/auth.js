@@ -1171,40 +1171,8 @@ function updateNavbarUI(user) {
     }
   });
 
-  // Inject "URL Shortener" into the desktop navigation bar dynamically
-  const desktopNav = document.querySelector('header nav.hidden.lg\\:flex');
-  if (desktopNav && !desktopNav.querySelector('a[href="url-shortener.html"]')) {
-    const link = document.createElement('a');
-    link.href = 'url-shortener.html';
-    
-    // Determine page-specific theme color (emerald for financial, indigo for utilities)
-    const hasIndigoActive = desktopNav.querySelector('.text-indigo-600, .bg-indigo-50, .border-indigo-200');
-    const isUtilityPage = window.location.pathname.includes('qr-generator') || 
-                          window.location.pathname.includes('password-generator') || 
-                          window.location.pathname.includes('word-counter') || 
-                          window.location.pathname.includes('unit-converter') || 
-                          window.location.pathname.includes('age-calculator');
-    
-    link.className = (hasIndigoActive || isUtilityPage) 
-      ? 'hover:text-indigo-600 transition-colors' 
-      : 'hover:text-emerald-600 transition-colors';
-      
-    if (window.location.pathname.includes('url-shortener.html')) {
-      link.className = (hasIndigoActive || isUtilityPage) 
-        ? 'text-indigo-600 font-bold' 
-        : 'text-emerald-600 font-bold';
-    }
-    
-    link.textContent = 'URL Shortener';
-    
-    // Insert before the Utilities dropdown button if present
-    const utilitiesBtn = desktopNav.querySelector('.relative.group');
-    if (utilitiesBtn) {
-      desktopNav.insertBefore(link, utilitiesBtn);
-    } else {
-      desktopNav.appendChild(link);
-    }
-  }
+  // Rebuild the desktop navigation links
+  rebuildDesktopNavbar(user);
 }
 
 /**
@@ -1309,13 +1277,13 @@ if (document.readyState === 'loading') {
     renderNavbarSkeleton();
     renderGlobalAnnouncement();
     updateFooterComplianceLinks();
-    updateNavbarBlogLink();
+    rebuildDesktopNavbar(currentUserData);
   });
 } else {
   renderNavbarSkeleton();
   renderGlobalAnnouncement();
   updateFooterComplianceLinks();
-  updateNavbarBlogLink();
+  rebuildDesktopNavbar(currentUserData);
 }
 
 // Global Auth State Observer
@@ -1366,31 +1334,97 @@ function updateFooterComplianceLinks() {
 }
 
 /**
- * Dynamically injects and sanitizes the Blog link in desktop navigation headers
+ * Dynamically rebuilds the desktop navigation bar to keep it identical across all pages.
  */
-function updateNavbarBlogLink() {
-  const desktopNav = document.querySelector('nav.hidden.lg\\:flex');
-  if (desktopNav) {
-    const hasBlogLink = Array.from(desktopNav.querySelectorAll('a')).some(a => a.getAttribute('href') === 'updates.html');
-    if (!hasBlogLink) {
-      const a = document.createElement('a');
-      a.href = 'updates.html';
-      a.className = 'hover:text-emerald-600 transition-colors';
-      a.textContent = 'Blog';
-      
-      // Insert before the utilities dropdown group if present, otherwise append
-      const dropdown = desktopNav.querySelector('.relative.group');
-      if (dropdown) {
-        desktopNav.insertBefore(a, dropdown);
-      } else {
-        desktopNav.appendChild(a);
-      }
-    } else {
-      const blogLink = Array.from(desktopNav.querySelectorAll('a')).find(a => a.getAttribute('href') === 'updates.html');
-      if (blogLink) {
-        blogLink.textContent = 'Blog';
-      }
-    }
-  }
+function rebuildDesktopNavbar(user) {
+  const desktopNav = document.querySelector('header nav.hidden.lg\\:flex');
+  if (!desktopNav) return;
+
+  const currentPath = window.location.pathname;
+  const currentPage = currentPath.split('/').pop() || 'index.html';
+  const isAdmin = user ? isAdminEmail(user.email) : false;
+
+  // Determine active page-specific theme color (emerald for financial, indigo for utilities)
+  const isUtilityPage = currentPage.includes('qr-generator') || 
+                        currentPage.includes('password-generator') || 
+                        currentPage.includes('word-counter') || 
+                        currentPage.includes('unit-converter') || 
+                        currentPage.includes('age-calculator') || 
+                        currentPage.includes('url-shortener') || 
+                        currentPage.includes('link-stats');
+
+  const activeClass = isUtilityPage
+    ? 'text-indigo-600 font-bold bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200'
+    : 'text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200';
+
+  const hoverClass = isUtilityPage
+    ? 'hover:text-indigo-600 transition-colors'
+    : 'hover:text-emerald-600 transition-colors';
+
+  // Navigation Links requested by user:
+  // Home, Loan, Currency, Tax, Salary, Invoice, ROI, Blog, URL Shortener
+  const NAV_LINKS = [
+    { text: 'Home', href: 'index.html' },
+    { text: 'Loan', href: 'loan-calculator.html' },
+    { text: 'Currency', href: 'currency-converter.html' },
+    { text: 'Tax', href: 'tax-calculator.html' },
+    { text: 'Salary', href: 'salary-calculator.html' },
+    { text: 'Invoice', href: 'invoice-generator.html' },
+    { text: 'ROI', href: 'roi-calculator.html' },
+    { text: 'Blog', href: 'updates.html' },
+    { text: 'URL Shortener', href: 'url-shortener.html' }
+  ];
+
+  const UTILITIES_LINKS = [
+    { text: 'QR Code Generator', href: 'qr-generator.html' },
+    { text: 'Password Generator', href: 'password-generator.html' },
+    { text: 'Word Counter', href: 'word-counter.html' },
+    { text: 'Unit Converter', href: 'unit-converter.html' },
+    { text: 'Age Calculator', href: 'age-calculator.html' }
+  ];
+
+  let navHtml = '';
+
+  // Render main links
+  NAV_LINKS.forEach(link => {
+    const isActive = currentPage === link.href || (link.href === 'updates.html' && (currentPage.includes('updates.html') || currentPath.includes('/blog/')));
+    const cls = isActive ? activeClass : hoverClass;
+    navHtml += `<a href="${link.href}" class="${cls}">${link.text}</a>\n`;
+  });
+
+  // Render Utilities Dropdown (hover to open)
+  const isAnyUtilityActive = UTILITIES_LINKS.some(link => currentPage === link.href);
+  const utilitiesBtnClass = isAnyUtilityActive
+    ? (isUtilityPage 
+        ? 'flex items-center gap-1 font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200 hover:bg-indigo-100 transition-colors'
+        : 'flex items-center gap-1 font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200 hover:bg-emerald-100 transition-colors')
+    : (isUtilityPage
+        ? 'flex items-center gap-1 font-semibold text-slate-600 hover:text-indigo-600 transition-colors'
+        : 'flex items-center gap-1 font-semibold text-slate-600 hover:text-emerald-600 transition-colors');
+
+  navHtml += `
+    <div class="relative group">
+      <button class="${utilitiesBtnClass}">
+        <span>Utilities</span>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </button>
+      <div class="absolute right-0 mt-1 w-52 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+        ${UTILITIES_LINKS.map(link => {
+          const isActive = currentPage === link.href;
+          const linkCls = isActive 
+            ? 'block px-4 py-2 text-xs font-bold text-indigo-600 bg-indigo-50' 
+            : 'block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600';
+          return `<a href="${link.href}" class="${linkCls}">${link.text}</a>`;
+        }).join('\n')}
+      </div>
+    </div>
+  `;
+
+  // Render Admin Link if user is admin
+  navHtml += `
+    <a id="nav-admin-link" href="admin.html" class="${isAdmin ? '' : 'hidden'} text-amber-700 hover:text-amber-800 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
+  `;
+
+  desktopNav.innerHTML = navHtml;
 }
 
