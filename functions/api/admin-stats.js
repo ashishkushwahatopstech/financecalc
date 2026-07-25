@@ -8,7 +8,7 @@ export async function onRequestGet(context) {
   const urlObj = new URL(request.url);
   const uid = urlObj.searchParams.get('uid');
 
-  const ADMIN_UID = 'usr_ashish_admin_001';
+  const ADMIN_UID = 'RUYOUqQWQLOQar6B3iC0KxShiyq1';
   const expectedAdminUid = env.ADMIN_UID || ADMIN_UID;
 
   if (!uid || uid !== expectedAdminUid) {
