@@ -135,6 +135,24 @@ async function initUpdatesPage() {
     modalDate.textContent = `Published on ${formattedDate} by ${post.createdBy || 'Member'}`;
     modalBody.textContent = post.body;
 
+    // Handle modal reference / inspiration link display
+    let existingRef = document.getElementById('modal-post-reference-container');
+    if (existingRef) existingRef.remove();
+
+    if (post.reference && (post.reference.startsWith('http://') || post.reference.startsWith('https://'))) {
+      const refDiv = document.createElement('div');
+      refDiv.id = 'modal-post-reference-container';
+      refDiv.className = 'mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-500';
+      refDiv.innerHTML = `
+        <span class="font-bold text-slate-400">Reference / Credits:</span>
+        <a href="${escapeHTML(post.reference)}" target="_blank" class="text-indigo-600 hover:underline font-bold flex items-center gap-1">
+          <span>${escapeHTML(post.reference)}</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        </a>
+      `;
+      modalBody.parentNode.insertBefore(refDiv, modalBody.nextSibling);
+    }
+
     // Handle modal featured image
     let existingImg = document.getElementById('modal-post-featured-image');
     if (existingImg) existingImg.remove();

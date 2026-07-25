@@ -1148,6 +1148,7 @@ function setupContentManagerUI() {
   const btnCancelEdit = document.getElementById('btn-cancel-edit-content');
   const btnSubmitLabel = document.getElementById('btn-save-content-label');
   const imageInput = document.getElementById('content-form-image');
+  const referenceInput = document.getElementById('content-form-reference');
 
   if (!form) return;
 
@@ -1172,10 +1173,21 @@ function setupContentManagerUI() {
 
       const isPublished = item.published;
       const isLocalOnly = item.id.startsWith('content_');
+      const isBlog = item.type === 'Blog Post';
+      const visibility = item.status || 'public';
+      
+      const visibilitySelect = isBlog
+        ? `
+          <select data-visibility-id="${item.id}" class="select-visibility px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50/50 text-indigo-800 border border-indigo-200 focus:outline-none cursor-pointer">
+            <option value="public" ${visibility === 'public' ? 'selected' : ''}>👁️ Public</option>
+            <option value="private" ${visibility === 'private' ? 'selected' : ''}>🔒 Private</option>
+          </select>
+        `
+        : '';
 
       return `
-        <div class="py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 last:border-0">
-          <div class="space-y-1">
+        <div class="py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 last:border-0 font-sans">
+          <div class="space-y-1 flex-grow">
             <div class="flex items-center gap-2 flex-wrap">
               <span class="px-2 py-0.5 rounded text-[10px] font-bold ${item.type === 'Announcement Banner' ? 'bg-amber-100 text-amber-800 border border-amber-200' : 'bg-indigo-100 text-indigo-800 border border-indigo-200'}">
                 ${escapeHTML(item.type)}
@@ -1183,15 +1195,22 @@ function setupContentManagerUI() {
               <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isPublished ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-200 text-slate-700'}">
                 ${isPublished ? 'Published' : 'Draft'}
               </span>
+              ${visibilitySelect}
               ${isLocalOnly ? `
                 <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200" title="This content is only saved locally in your browser. Tap 'Sync to Cloud' to make it public.">
                   Local Cache Only
                 </span>
               ` : ''}
               <span class="text-slate-400 text-[11px]">${dateStr}</span>
+              <span class="text-slate-400 text-[11px] font-semibold">by ${escapeHTML(item.authorName || item.createdBy || 'Member')}</span>
             </div>
             <h5 class="font-bold text-slate-900 text-sm tracking-tight">${escapeHTML(item.title)}</h5>
             <p class="text-slate-500 text-xs line-clamp-2 leading-relaxed">${escapeHTML(item.body)}</p>
+            ${item.reference ? `
+              <div class="text-[10px] text-slate-400 font-medium">
+                Reference: <a href="${escapeHTML(item.reference)}" target="_blank" class="text-indigo-500 hover:underline">${escapeHTML(item.reference)}</a>
+              </div>
+            ` : ''}
           </div>
 
           <div class="flex items-center gap-2 shrink-0">
@@ -1211,7 +1230,37 @@ function setupContentManagerUI() {
       `;
     }).join('');
 
-    // Attach Edit / Delete / Sync listeners
+    // Attach Edit / Delete / Sync / Visibility change listeners
+    container.querySelectorAll('.select-visibility').forEach(select => {
+      select.addEventListener('change', async (e) => {
+        const id = e.target.dataset.visibilityId;
+        const newStatus = e.target.value;
+        try {
+          const { db, doc, updateDoc } = await import('./firebase-config.js');
+          await updateDoc(doc(db, 'blog_posts', id), { status: newStatus });
+          showToast(`Visibility updated to ${newStatus}`, 'success');
+          
+          // Update local cache if cached
+          try {
+            const raw = localStorage.getItem('fincalc_local_content_cache');
+            if (raw) {
+              const cached = JSON.parse(raw);
+              const found = cached.find(i => i.id === id);
+              if (found) {
+                found.status = newStatus;
+                localStorage.setItem('fincalc_local_content_cache', JSON.stringify(cached));
+              }
+            }
+          } catch (e) {}
+
+          loadContentList();
+        } catch (err) {
+          console.error("Failed to update visibility:", err);
+          showToast("Failed to update visibility: " + err.message, 'error');
+        }
+      });
+    });
+
     container.querySelectorAll('.btn-sync-content').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-sync-id');
@@ -1233,12 +1282,16 @@ function setupContentManagerUI() {
             body: item.body,
             type: item.type,
             published: item.published,
+            featuredImage: item.featuredImage || '',
+            reference: item.reference || '',
             createdAt: new Date(),
-            createdBy: item.createdBy || 'ashishkushwaha88643@gmail.com'
+            createdBy: item.createdBy || 'ashishkushwaha88643@gmail.com',
+            authorUid: item.authorUid || 'usr_ashish_admin_001',
+            authorName: item.authorName || 'Ashish (Admin)'
           };
 
           if (isBlog) {
-            newDoc.status = 'public';
+            newDoc.status = item.status || 'public';
           }
 
           // Write to Firestore preserving the exact same ID
@@ -1269,6 +1322,7 @@ function setupContentManagerUI() {
           bodyInput.value = item.body;
           publishedCb.checked = item.published;
           if (imageInput) imageInput.value = item.featuredImage || '';
+          if (referenceInput) referenceInput.value = item.reference || '';
 
           btnSubmitLabel.textContent = "Update Content";
           btnCancelEdit?.classList.remove('hidden');
@@ -1300,6 +1354,7 @@ function setupContentManagerUI() {
     editIdInput.value = '';
     form.reset();
     if (imageInput) imageInput.value = '';
+    if (referenceInput) referenceInput.value = '';
     btnSubmitLabel.textContent = "Save & Publish Content";
     btnCancelEdit.classList.add('hidden');
   });
@@ -1319,6 +1374,7 @@ function setupContentManagerUI() {
     const type = typeSelect.value;
     const published = publishedCb.checked;
     const featuredImage = imageInput ? imageInput.value.trim() : '';
+    const reference = referenceInput ? referenceInput.value.trim() : '';
 
     if (!title || !body) {
       showToast("Please complete title and body fields.", "error");
@@ -1327,15 +1383,17 @@ function setupContentManagerUI() {
 
     try {
       if (editId) {
-        await updateContentItem(editId, { title, body, type, published, featuredImage });
+        await updateContentItem(editId, { title, body, type, published, featuredImage, reference });
         showToast("Content updated successfully!", "success");
       } else {
-        await createContentItem({ title, body, type, published, featuredImage });
+        await createContentItem({ title, body, type, published, featuredImage, reference });
         showToast("New content item published!", "success");
       }
 
       form.reset();
       editIdInput.value = '';
+      if (imageInput) imageInput.value = '';
+      if (referenceInput) referenceInput.value = '';
       btnSubmitLabel.textContent = "Save & Publish Content";
       btnCancelEdit?.classList.add('hidden');
       loadContentList();
@@ -1368,7 +1426,7 @@ async function loadShortenerStats(uid) {
       if (data.topLinks.length === 0) {
         tableBody.innerHTML = `
           <tr>
-            <td colspan="5" class="py-8 text-center text-slate-400">No short links have been created yet.</td>
+            <td colspan="7" class="py-8 text-center text-slate-400">No short links have been created yet.</td>
           </tr>
         `;
         return;
@@ -1387,27 +1445,97 @@ async function loadShortenerStats(uid) {
           ? link.original_url
           : '#';
 
+        const isActive = link.active !== 0;
+        const redirectionSelect = `
+          <select data-link-code="${link.short_code}" class="select-link-active px-2 py-0.5 rounded text-[10px] font-bold ${isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'} focus:outline-none cursor-pointer">
+            <option value="1" ${isActive ? 'selected' : ''}>Active</option>
+            <option value="0" ${!isActive ? 'selected' : ''}>Inactive</option>
+          </select>
+        `;
+
+        const isMonetized = link.monetized === 1;
+        const monetizationSelect = `
+          <select data-link-code="${link.short_code}" class="select-link-monetized px-2 py-0.5 rounded text-[10px] font-bold ${isMonetized ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-600 border border-slate-200'} focus:outline-none cursor-pointer">
+            <option value="1" ${isMonetized ? 'selected' : ''}>Monetized</option>
+            <option value="0" ${!isMonetized ? 'selected' : ''}>Demonetized</option>
+          </select>
+        `;
+
         return `
           <tr class="hover:bg-slate-50 transition-colors">
             <td class="py-3 px-4 font-bold text-slate-800">
-              <a href="${shortUrl}" target="_blank" class="text-emerald-600 hover:underline">/${link.short_code}</a>
+              <a href="${shortUrl}" target="_blank" class="text-emerald-600 hover:underline font-mono">/${link.short_code}</a>
             </td>
-            <td class="py-3 px-4 max-w-xs truncate text-slate-600" title="${escapeHTML(link.original_url)}">
+            <td class="py-3 px-4 max-w-xs truncate text-slate-600 font-medium" title="${escapeHTML(link.original_url)}">
               <a href="${safeOriginalUrl}" target="_blank" class="hover:text-slate-800 hover:underline">${escapeHTML(link.original_url)}</a>
             </td>
             <td class="py-3 px-4 font-black text-slate-800">${link.click_count.toLocaleString()}</td>
-            <td class="py-3 px-4 text-slate-500">${createdDate}</td>
-            <td class="py-3 px-4">${expiryHtml}</td>
+            <td class="py-3 px-4 text-slate-500 font-medium">${createdDate}</td>
+            <td class="py-3 px-4 font-medium">${expiryHtml}</td>
+            <td class="py-3 px-4 font-medium">${redirectionSelect}</td>
+            <td class="py-3 px-4 font-medium">${monetizationSelect}</td>
           </tr>
         `;
       }).join('');
+
+      // Attach Redirection Active toggle listener
+      tableBody.querySelectorAll('.select-link-active').forEach(select => {
+        select.addEventListener('change', async (e) => {
+          const shortCode = e.target.dataset.linkCode;
+          const active = parseInt(e.target.value);
+          
+          try {
+            const res = await fetch('/api/toggle-link', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ shortCode, active, uid })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to update link status.');
+            
+            showToast(`Redirection status updated successfully!`, 'success');
+            loadShortenerStats(uid);
+          } catch (err) {
+            console.error("Failed to toggle link active:", err);
+            showToast(err.message || 'Failed to toggle status.', 'error');
+            // Revert state
+            e.target.value = active === 1 ? '0' : '1';
+          }
+        });
+      });
+
+      // Attach Monetization toggle listener
+      tableBody.querySelectorAll('.select-link-monetized').forEach(select => {
+        select.addEventListener('change', async (e) => {
+          const shortCode = e.target.dataset.linkCode;
+          const monetized = parseInt(e.target.value);
+          
+          try {
+            const res = await fetch('/api/toggle-link', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ shortCode, monetized, uid })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to update monetization status.');
+            
+            showToast(`Monetization status updated successfully!`, 'success');
+            loadShortenerStats(uid);
+          } catch (err) {
+            console.error("Failed to toggle monetization:", err);
+            showToast(err.message || 'Failed to toggle monetization.', 'error');
+            // Revert state
+            e.target.value = monetized === 1 ? '0' : '1';
+          }
+        });
+      });
     }
   } catch (err) {
     console.error("Error loading URL Shortener admin statistics:", err);
     if (tableBody) {
       tableBody.innerHTML = `
         <tr>
-          <td colspan="5" class="py-8 text-center text-rose-600 font-medium">
+          <td colspan="7" class="py-8 text-center text-rose-600 font-medium">
             Failed to load admin stats: ${escapeHTML(err.message || 'Server error')}
             <div class="text-slate-400 text-[10px] mt-2 font-normal max-w-md mx-auto leading-relaxed">
               To authorize this request: 

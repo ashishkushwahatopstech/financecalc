@@ -203,7 +203,7 @@ export async function fetchPublishedBlogPosts() {
 /**
  * Creates new Content item in Firestore (Announcement or Blog Post)
  */
-export async function createContentItem({ title, body, type, published, featuredImage }) {
+export async function createContentItem({ title, body, type, published, featuredImage, reference }) {
   const user = getCurrentUser();
   const createdBy = user?.email || 'ashishkushwaha88643@gmail.com';
 
@@ -217,6 +217,7 @@ export async function createContentItem({ title, body, type, published, featured
     type: type, // "Announcement Banner" or "Blog Post"
     published: Boolean(published),
     featuredImage: featuredImage ? featuredImage.trim() : '',
+    reference: reference ? reference.trim() : '',
     createdAt: serverTimestamp(),
     createdBy: createdBy,
     authorUid: user?.uid || 'usr_ashish_admin_001',
@@ -255,6 +256,8 @@ export async function createContentItem({ title, body, type, published, featured
       body: body.trim(),
       type: type,
       published: Boolean(published),
+      featuredImage: featuredImage ? featuredImage.trim() : '',
+      reference: reference ? reference.trim() : '',
       createdAt: { seconds: Math.floor(Date.now() / 1000) },
       createdBy: createdBy,
       authorUid: user?.uid || 'usr_ashish_admin_001',
@@ -270,7 +273,7 @@ export async function createContentItem({ title, body, type, published, featured
 /**
  * Updates existing Content item in Firestore
  */
-export async function updateContentItem(id, { title, body, type, published, featuredImage }) {
+export async function updateContentItem(id, { title, body, type, published, featuredImage, reference }) {
   const isBlog = type === 'Blog Post';
   
   const updateData = {
@@ -278,7 +281,8 @@ export async function updateContentItem(id, { title, body, type, published, feat
     body: body.trim(),
     type: type,
     published: Boolean(published),
-    featuredImage: featuredImage ? featuredImage.trim() : ''
+    featuredImage: featuredImage ? featuredImage.trim() : '',
+    reference: reference ? reference.trim() : ''
   };
 
   try {

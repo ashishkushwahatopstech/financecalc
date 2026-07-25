@@ -38,14 +38,25 @@ export async function onRequestGet(context) {
     let originalUrl = await kv.get(code);
     let linkRecord = null;
 
-    // 2. Query D1 to fetch expiry, ownership, and monetization details
-    linkRecord = await d1.prepare('SELECT original_url, expires_at, monetized FROM links WHERE short_code = ?').bind(code).first();
+    // Ensure active column exists in SQLite table schema
+    await d1.prepare('ALTER TABLE links ADD COLUMN active INTEGER DEFAULT 1').run().catch(e => {});
+
+    // 2. Query D1 to fetch expiry, ownership, monetization, and active details
+    linkRecord = await d1.prepare('SELECT original_url, expires_at, monetized, active FROM links WHERE short_code = ?').bind(code).first();
 
     if (!linkRecord) {
       // If D1 doesn't have it, show Link Not Found page
       return new Response(notFoundHtml(), {
         status: 404,
         headers: { 'Content-Type': 'text/html' }
+      });
+    }
+
+    // Check if the link has been deactivated by the administrator/owner
+    if (linkRecord.active === 0) {
+      return new Response(deactivatedHtml(), {
+        status: 403,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' }
       });
     }
 
@@ -186,6 +197,30 @@ function notFoundHtml() {
     <h1 class="text-2xl font-black text-slate-900 tracking-tight mb-2">Short Link Not Found</h1>
     <p class="text-xs text-slate-500 mb-6 leading-relaxed">The link you are trying to reach does not exist or has been deleted by its owner.</p>
     <a href="/" class="inline-flex items-center justify-center px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition-all active:scale-95 cursor-pointer">Go to FinCalc Tools</a>
+  </div>
+</body>
+</html>`;
+}
+
+// Friendly "This link has been deactivated" HTML template
+function deactivatedHtml() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Deactivated – FinCalc Tools</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col justify-center items-center p-4">
+  <div class="max-w-md w-full bg-white rounded-2xl border border-slate-200 p-8 shadow-xl text-center">
+    <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-slate-200">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+    </div>
+    <h1 class="text-2xl font-black text-slate-900 tracking-tight mb-2">Link Deactivated</h1>
+    <p class="text-xs text-slate-500 mb-6 leading-relaxed">This short link has been deactivated by the administrator or the owner and is no longer reachable.</p>
+    <a href="/" class="inline-flex items-center justify-center px-5 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition-all active:scale-95 cursor-pointer">Go to FinCalc Tools</a>
   </div>
 </body>
 </html>`;
