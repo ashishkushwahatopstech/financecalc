@@ -6,8 +6,22 @@ export async function onRequestGet(context) {
   const { request, env, params, next } = context;
   const { code } = params;
 
-  // If the code matches assets or static pages, we shouldn't handle it
-  if (!code || code === 'favicon.ico' || code.includes('.') || code === 'functions') {
+  const staticPages = [
+    'url-shortener', 'link-stats', 'admin', 'profile', 'index',
+    'age-calculator', 'currency-converter', 'invoice-generator',
+    'loan-calculator', 'password-generator', 'qr-generator',
+    'roi-calculator', 'salary-calculator', 'tax-calculator',
+    'unit-converter', 'updates', 'word-counter'
+  ];
+
+  // If the code matches assets, static pages, or sub-folders, pass it to next handler
+  if (
+    !code || 
+    code === 'favicon.ico' || 
+    code.includes('.') || 
+    code === 'functions' || 
+    staticPages.includes(code.toLowerCase())
+  ) {
     return next();
   }
 
