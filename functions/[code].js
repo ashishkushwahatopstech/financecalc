@@ -208,76 +208,16 @@ function mediatorHtml(originalUrl, shortCode) {
     @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
     body {
       font-family: 'Outfit', sans-serif;
-    }
-    /* Dynamic Blogger feed image and article styling inside native container */
-    #ad-content img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 1.25rem;
-      margin: 1.75rem auto;
-      display: block;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-    }
-    #ad-content p {
-      font-size: 1rem;
-      line-height: 1.8;
-      color: #334155;
-      margin-bottom: 1.5rem;
-    }
-    #ad-content h2, #ad-content h3 {
-      font-weight: 800;
-      color: #0f172a;
-      margin-top: 2.25rem;
-      margin-bottom: 1rem;
-      line-height: 1.3;
-    }
-    #ad-content h2 { font-size: 1.625rem; }
-    #ad-content h3 { font-size: 1.375rem; }
-    #ad-content a {
-      color: #4f46e5;
-      font-weight: 700;
-      text-decoration: underline;
-    }
-    #ad-content ul, #ad-content ol {
-      padding-left: 1.75rem;
-      margin-bottom: 1.5rem;
-      color: #334155;
-    }
-    #ad-content li {
-      margin-bottom: 0.5rem;
-      list-style-type: disc;
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* Hide main body scrollbars as we use iframe scroll */
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col justify-between antialiased selection:bg-indigo-500/10 selection:text-indigo-600">
+<body class="bg-slate-50 text-slate-900 min-h-screen antialiased selection:bg-indigo-500/10 selection:text-indigo-600">
 
-  <!-- Main Reading View Container -->
-  <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 py-12 pb-32">
-    <div id="ad-article" class="space-y-8 bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-10 shadow-xs">
-      
-      <!-- Header Section -->
-      <div class="space-y-4 border-b border-slate-100 pb-6">
-        <div class="flex items-center gap-2">
-          <span class="text-[10px] font-extrabold uppercase tracking-wider bg-indigo-50 border border-indigo-100 text-indigo-600 px-3 py-1 rounded-full">Sponsored Article</span>
-          <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">&bull; aktechstudio.com</span>
-        </div>
-        <h1 id="ad-title" class="text-3xl sm:text-4xl font-black text-slate-900 leading-tight">Loading sponsored article...</h1>
-      </div>
-      
-      <!-- Rich Content Container -->
-      <div id="ad-content" class="text-slate-700 leading-relaxed">
-        <!-- Skeleton Loader -->
-        <div class="space-y-4 animate-pulse">
-          <div class="h-6 bg-slate-100 rounded-md w-3/4"></div>
-          <div class="h-4 bg-slate-100 rounded-md w-5/6"></div>
-          <div class="h-4 bg-slate-100 rounded-md w-2/3"></div>
-          <div class="h-4 bg-slate-100 rounded-md w-4/5"></div>
-          <div class="h-32 bg-slate-100 rounded-2xl w-full"></div>
-        </div>
-      </div>
-      
-    </div>
-  </main>
+  <!-- The full screen iframe loading the original post via our header-stripping proxy -->
+  <iframe id="ad-frame" src="" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; border: none; z-index: 10;"></iframe>
 
   <!-- Sticky/Floating Skip Widget on Bottom Right (Desktop/Tablet) or Bottom Sticky (Mobile) -->
   <div id="sticky-skip-widget" class="fixed bottom-6 right-6 z-50 bg-white/95 backdrop-blur-md border border-slate-200/90 p-5 rounded-2xl shadow-xl w-80 space-y-4 max-w-[calc(100vw-32px)]">
@@ -297,7 +237,7 @@ function mediatorHtml(originalUrl, shortCode) {
         <span class="text-slate-400 font-semibold">2. Scroll Status:</span>
         <span id="scroll-status" class="font-extrabold text-amber-500 flex items-center gap-1.5">
           <svg class="w-3.5 h-3.5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 13l-7 7-7-7m14-6l-7 7-7-7"></path></svg>
-          <span>Scroll down page</span>
+          <span>Scroll down article</span>
         </span>
       </div>
     </div>
@@ -316,6 +256,7 @@ function mediatorHtml(originalUrl, shortCode) {
     const countdownStatus = document.getElementById('countdown-status');
     const scrollStatus = document.getElementById('scroll-status');
     const btnProceed = document.getElementById('btn-proceed');
+    const adFrame = document.getElementById('ad-frame');
 
     // 1. Start countdown
     const interval = setInterval(() => {
@@ -334,18 +275,44 @@ function mediatorHtml(originalUrl, shortCode) {
       }
     }, 1000);
 
-    // 2. Track Scroll to Bottom of parent page (the fully loaded native reading view)
-    window.addEventListener('scroll', () => {
-      // Check if user scrolled to bottom of the page
-      if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 100) {
-        if (!hasScrolledToBottom) {
-          hasScrolledToBottom = true;
-          
-          scrollStatus.className = 'font-extrabold text-emerald-500 flex items-center gap-1.5';
-          scrollStatus.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Scrolled to bottom</span>';
-          
-          checkActivation();
-        }
+    // 2. Attach Scroll Listener Inside Same-Origin Iframe
+    adFrame.addEventListener('load', () => {
+      try {
+        const frameDoc = adFrame.contentDocument || adFrame.contentWindow.document;
+        const frameWin = adFrame.contentWindow;
+
+        // Track scroll events inside the iframe
+        const onScroll = () => {
+          const scrollTop = frameDoc.documentElement.scrollTop || frameDoc.body.scrollTop;
+          const scrollHeight = frameDoc.documentElement.scrollHeight || frameDoc.body.scrollHeight;
+          const clientHeight = frameDoc.documentElement.clientHeight || frameDoc.body.clientHeight;
+
+          if (scrollTop + clientHeight >= scrollHeight - 120) {
+            if (!hasScrolledToBottom) {
+              hasScrolledToBottom = true;
+              
+              scrollStatus.className = 'font-extrabold text-emerald-500 flex items-center gap-1.5';
+              scrollStatus.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Scrolled</span>';
+              
+              checkActivation();
+            }
+          }
+        };
+
+        frameWin.addEventListener('scroll', onScroll);
+        frameDoc.addEventListener('scroll', onScroll);
+        
+      } catch (err) {
+        console.warn("Could not bind scroll directly (same-origin fallback enabled):", err);
+        // Fallback for custom browsers: trigger scroll automatically after 3 seconds of load
+        setTimeout(() => {
+          if (!hasScrolledToBottom) {
+            hasScrolledToBottom = true;
+            scrollStatus.className = 'font-extrabold text-emerald-500 flex items-center gap-1.5';
+            scrollStatus.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Scrolled</span>';
+            checkActivation();
+          }
+        }, 3000);
       }
     });
 
@@ -360,15 +327,12 @@ function mediatorHtml(originalUrl, shortCode) {
 
     // Redirect handler
     btnProceed.addEventListener('click', () => {
-      // Decode destination URL from base64 to prevent scraper indexing
       const dest = atob("${base64Url}");
       window.location.href = dest;
     });
 
-    // 3. Fetch latest sponsored blog posts from our local API proxy (which pulls from aktechstudio.com feed)
-    async function loadSponsoredArticles() {
-      const adTitle = document.getElementById('ad-title');
-      const adContent = document.getElementById('ad-content');
+    // 3. Fetch latest sponsored blog posts from our local API proxy, pick 1 randomly, and load in iframe
+    async function loadSponsoredArticle() {
       const url = '/api/sponsored-posts';
       
       try {
@@ -378,29 +342,26 @@ function mediatorHtml(originalUrl, shortCode) {
           const posts = data.posts || [];
           
           if (posts.length === 0) {
-            adTitle.textContent = 'No advertisement available';
-            adContent.innerHTML = '<p class="text-slate-400 py-8 text-center text-xs">No advertisement available at this time.</p>';
+            adFrame.src = 'https://www.aktechstudio.com/';
             return;
           }
 
           // Pick 1 random post
           const p = posts[Math.floor(Math.random() * posts.length)];
           
-          // Populate title and full rich content HTML
-          adTitle.textContent = p.title;
-          adContent.innerHTML = p.content || p.snippet;
+          // Load the original post page inside the frame through our header-stripping proxy
+          adFrame.src = '/api/proxy?url=' + encodeURIComponent(p.url);
 
         } else {
           throw new Error('API return status: ' + res.status);
         }
       } catch (err) {
-        console.warn('Failed to load articles:', err);
-        adTitle.textContent = 'Failed to load sponsored content';
-        adContent.innerHTML = '<p class="text-slate-400 py-8 text-center text-xs">Failed to load sponsored updates.</p>';
+        console.warn('Failed to load sponsored article url:', err);
+        adFrame.src = 'https://www.aktechstudio.com/';
       }
     }
 
-    loadSponsoredArticles();
+    loadSponsoredArticle();
   </script>
 </body>
 </html>`;
