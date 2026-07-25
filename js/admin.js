@@ -1147,6 +1147,7 @@ function setupContentManagerUI() {
   const editIdInput = document.getElementById('content-edit-id');
   const btnCancelEdit = document.getElementById('btn-cancel-edit-content');
   const btnSubmitLabel = document.getElementById('btn-save-content-label');
+  const imageInput = document.getElementById('content-form-image');
 
   if (!form) return;
 
@@ -1267,6 +1268,7 @@ function setupContentManagerUI() {
           typeSelect.value = item.type;
           bodyInput.value = item.body;
           publishedCb.checked = item.published;
+          if (imageInput) imageInput.value = item.featuredImage || '';
 
           btnSubmitLabel.textContent = "Update Content";
           btnCancelEdit?.classList.remove('hidden');
@@ -1297,6 +1299,7 @@ function setupContentManagerUI() {
   btnCancelEdit?.addEventListener('click', () => {
     editIdInput.value = '';
     form.reset();
+    if (imageInput) imageInput.value = '';
     btnSubmitLabel.textContent = "Save & Publish Content";
     btnCancelEdit.classList.add('hidden');
   });
@@ -1315,6 +1318,7 @@ function setupContentManagerUI() {
     const body = bodyInput.value.trim();
     const type = typeSelect.value;
     const published = publishedCb.checked;
+    const featuredImage = imageInput ? imageInput.value.trim() : '';
 
     if (!title || !body) {
       showToast("Please complete title and body fields.", "error");
@@ -1323,10 +1327,10 @@ function setupContentManagerUI() {
 
     try {
       if (editId) {
-        await updateContentItem(editId, { title, body, type, published });
+        await updateContentItem(editId, { title, body, type, published, featuredImage });
         showToast("Content updated successfully!", "success");
       } else {
-        await createContentItem({ title, body, type, published });
+        await createContentItem({ title, body, type, published, featuredImage });
         showToast("New content item published!", "success");
       }
 

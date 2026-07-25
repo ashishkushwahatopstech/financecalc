@@ -203,7 +203,7 @@ export async function fetchPublishedBlogPosts() {
 /**
  * Creates new Content item in Firestore (Announcement or Blog Post)
  */
-export async function createContentItem({ title, body, type, published }) {
+export async function createContentItem({ title, body, type, published, featuredImage }) {
   const user = getCurrentUser();
   const createdBy = user?.email || 'ashishkushwaha88643@gmail.com';
 
@@ -216,6 +216,7 @@ export async function createContentItem({ title, body, type, published }) {
     body: body.trim(),
     type: type, // "Announcement Banner" or "Blog Post"
     published: Boolean(published),
+    featuredImage: featuredImage ? featuredImage.trim() : '',
     createdAt: serverTimestamp(),
     createdBy: createdBy,
     authorUid: user?.uid || 'usr_ashish_admin_001',
@@ -269,14 +270,15 @@ export async function createContentItem({ title, body, type, published }) {
 /**
  * Updates existing Content item in Firestore
  */
-export async function updateContentItem(id, { title, body, type, published }) {
+export async function updateContentItem(id, { title, body, type, published, featuredImage }) {
   const isBlog = type === 'Blog Post';
   
   const updateData = {
     title: title.trim(),
     body: body.trim(),
     type: type,
-    published: Boolean(published)
+    published: Boolean(published),
+    featuredImage: featuredImage ? featuredImage.trim() : ''
   };
 
   try {
