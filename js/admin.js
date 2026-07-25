@@ -1306,7 +1306,13 @@ async function loadShortenerStats(uid) {
       tableBody.innerHTML = `
         <tr>
           <td colspan="5" class="py-8 text-center text-rose-600 font-medium">
-            Failed to load admin stats: ${err.message || 'Server error'}
+            Failed to load admin stats: ${escapeHTML(err.message || 'Server error')}
+            <div class="text-slate-400 text-[10px] mt-2 font-normal max-w-md mx-auto leading-relaxed">
+              To authorize this request: 
+              <br>1. Set the environment variable <strong>ADMIN_UID</strong> to <code class="bg-slate-100 px-1 py-0.5 rounded font-mono text-[9px] text-slate-700 select-all">${escapeHTML(uid)}</code> in your Cloudflare Pages Dashboard (Settings &rarr; Functions &rarr; Environment variables), then redeploy.
+              <br><strong>OR</strong>
+              <br>2. Replace <code class="bg-slate-100 px-1 py-0.5 rounded font-mono text-[9px] text-slate-700">usr_ashish_admin_001</code> on line 11 of <code class="bg-slate-100 px-1 py-0.5 rounded font-mono text-[9px] text-slate-700">functions/api/admin-stats.js</code> with your UID shown above, then push to GitHub.
+            </div>
           </td>
         </tr>
       `;
