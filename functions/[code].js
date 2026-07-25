@@ -350,33 +350,16 @@ function mediatorHtml(originalUrl, shortCode) {
       window.location.href = dest;
     });
 
-    // 3. Fetch public blog posts dynamically from Firestore REST API (aktechstudio.com posts)
+    // 3. Fetch latest sponsored blog posts from our local API proxy (which pulls from aktechstudio.com feed)
     async function loadSponsoredArticles() {
       const container = document.getElementById('articles-container');
-      const url = 'https://firestore.googleapis.com/v1/projects/finance-calc-by-ak/databases/(default)/documents/blog_posts';
+      const url = '/api/sponsored-posts';
       
       try {
         const res = await fetch(url);
         if (res.status === 200) {
           const data = await res.json();
-          const docs = data.documents || [];
-          
-          // Filter public published posts
-          const posts = docs
-            .map(d => {
-              const fields = d.fields || {};
-              const id = d.name.split('/').pop();
-              return {
-                id,
-                title: fields.title?.stringValue || '',
-                body: fields.body?.stringValue || '',
-                featuredImage: fields.featuredImage?.stringValue || '',
-                published: fields.published?.booleanValue || false,
-                status: fields.status?.stringValue || ''
-              };
-            })
-            .filter(p => p.published && p.status === 'public')
-            .slice(0, 6); // Take top 6
+          const posts = data.posts || [];
           
           if (posts.length === 0) {
             container.innerHTML = '<p class="col-span-full text-slate-400 py-6 text-center text-xs">No articles available at this time.</p>';
@@ -384,24 +367,21 @@ function mediatorHtml(originalUrl, shortCode) {
           }
 
           container.innerHTML = posts.map(p => {
-            const hasImage = p.featuredImage && (p.featuredImage.startsWith('http://') || p.featuredImage.startsWith('https://'));
-            const desc = p.body.substring(0, 100).trim() + '...';
-            const slugTitle = p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-            const postUrl = '/blog/' + p.id + '-' + slugTitle;
-
+            const hasImage = p.image && (p.image.startsWith('http://') || p.image.startsWith('https://'));
+            
             let itemHtml = '';
             itemHtml += '<div class="bg-white rounded-3xl p-5 border border-slate-200/90 shadow-2xs flex flex-col justify-between hover:shadow-xs transition-shadow">';
             itemHtml += '  <div class="space-y-4">';
             if (hasImage) {
               itemHtml += '    <div class="w-full h-36 rounded-2xl overflow-hidden bg-slate-50 border border-slate-100">';
-              itemHtml += '      <img src="' + p.featuredImage + '" alt="' + p.title + '" class="w-full h-full object-cover" onerror="this.parentElement.remove()" />';
+              itemHtml += '      <img src="' + p.image + '" alt="' + p.title + '" class="w-full h-full object-cover" onerror="this.parentElement.remove()" />';
               itemHtml += '    </div>';
             }
             itemHtml += '    <h4 class="font-bold text-slate-900 text-sm leading-snug">' + p.title + '</h4>';
-            itemHtml += '    <p class="text-[11px] text-slate-400 leading-relaxed">' + desc + '</p>';
+            itemHtml += '    <p class="text-[11px] text-slate-400 leading-relaxed">' + p.snippet + '</p>';
             itemHtml += '  </div>';
             itemHtml += '  <div class="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between text-[11px] font-bold text-indigo-600">';
-            itemHtml += '    <a href="' + postUrl + '" target="_blank" class="hover:underline flex items-center gap-1">';
+            itemHtml += '    <a href="' + p.url + '" target="_blank" class="hover:underline flex items-center gap-1">';
             itemHtml += '      <span>Read Article</span>';
             itemHtml += '      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>';
             itemHtml += '    </a>';
