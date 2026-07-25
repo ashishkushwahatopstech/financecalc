@@ -7,6 +7,7 @@
   <meta name="description" content="Manage your shortened URLs and view detailed real-time click analytics, visitor geography, device types, and traffic referrers." />
   
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="stylesheet" href="/src/index.css" />
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
@@ -125,18 +126,29 @@
         <div id="stats-panel" class="hidden space-y-6 animate-fade-in">
           
           <!-- Detailed Header -->
-          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="space-y-1 overflow-hidden">
-              <div class="flex items-center gap-2 flex-wrap">
-                <span id="selected-short-code" class="text-lg font-bold text-slate-900"></span>
-                <span id="selected-expiry-badge" class="px-2 py-0.5 text-[9px] font-black rounded border"></span>
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="flex items-center gap-4 flex-col sm:flex-row overflow-hidden">
+              <!-- QR Code Thumbnail Container -->
+              <div class="w-20 h-20 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center shrink-0 overflow-hidden relative group">
+                <div id="stats-qrcode" class="p-1"></div>
+                <!-- Hover Download Overlay -->
+                <button id="btn-download-stats-qr" title="Download QR Code" class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity duration-200 cursor-pointer">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                </button>
               </div>
-              <p class="text-xs text-slate-500 truncate">
-                Redirects to: <a id="selected-original-url" href="#" target="_blank" class="text-emerald-600 hover:underline font-medium"></a>
-              </p>
+
+              <div class="space-y-1 overflow-hidden text-center sm:text-left">
+                <div class="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+                  <span id="selected-short-code" class="text-lg font-bold text-slate-900"></span>
+                  <span id="selected-expiry-badge" class="px-2 py-0.5 text-[9px] font-black rounded border"></span>
+                </div>
+                <p class="text-xs text-slate-500 truncate">
+                  Redirects to: <a id="selected-original-url" href="#" target="_blank" class="text-emerald-600 hover:underline font-medium"></a>
+                </p>
+              </div>
             </div>
 
-            <div class="flex items-center gap-2 shrink-0">
+            <div class="flex items-center justify-center md:justify-end gap-2 shrink-0">
               <button id="btn-copy-selected" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
                 Copy Link
@@ -426,6 +438,48 @@
         const shortUrl = `${window.location.origin}/${link.short_code}`;
         elSelectedOriginalUrl.href = link.original_url;
         elSelectedOriginalUrl.textContent = link.original_url;
+
+        // Generate QR code for this link (with ?src=qr appended)
+        const qrBox = document.getElementById('stats-qrcode');
+        if (qrBox) {
+          qrBox.innerHTML = '';
+          const qrTargetUrl = `${shortUrl}?src=qr`;
+          new QRCode(qrBox, {
+            text: qrTargetUrl,
+            width: 72,
+            height: 72,
+            colorDark: '#0f172a',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+          });
+
+          // Add download logic to the download overlay button
+          const btnDownloadStatsQr = document.getElementById('btn-download-stats-qr');
+          if (btnDownloadStatsQr) {
+            btnDownloadStatsQr.onclick = () => {
+              const img = qrBox.querySelector('img');
+              const canvas = qrBox.querySelector('canvas');
+              let dataUrl = null;
+              if (canvas) {
+                dataUrl = canvas.toDataURL('image/png');
+              } else if (img && img.src) {
+                dataUrl = img.src;
+              }
+
+              if (dataUrl) {
+                const a = document.createElement('a');
+                a.href = dataUrl;
+                a.download = `fincalc_qr_${link.short_code}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                showToast('QR Code downloaded successfully!', 'success');
+              } else {
+                showToast('Failed to download QR code.', 'error');
+              }
+            };
+          }
+        }
 
         // Clipboard Copy Action
         btnCopySelected.onclick = () => {
