@@ -111,6 +111,15 @@
           <p class="text-[10px] text-slate-400">The short link will stop working automatically after this date.</p>
         </div>
 
+        <!-- Monetization Checkbox -->
+        <div class="flex items-start gap-2.5 bg-slate-50 p-4 rounded-2xl border border-slate-200/90 shadow-2xs">
+          <input type="checkbox" id="monetize-link" name="monetize-link" class="w-4.5 h-4.5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 mt-0.5 cursor-pointer" />
+          <div class="text-xs space-y-0.5">
+            <label for="monetize-link" class="font-bold text-slate-700 cursor-pointer">Monetize Link (Show Ads)</label>
+            <p class="text-[10px] text-slate-400">Force visitors to view a 5-second transition page with sponsored blog posts from aktechstudio.com before redirecting.</p>
+          </div>
+        </div>
+
         <!-- Submit Button -->
         <button type="submit" id="btn-submit" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-2xl shadow-md shadow-emerald-600/10 hover:shadow-emerald-600/20 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2">
           <span>Shorten URL</span>
@@ -271,6 +280,8 @@
         const originalUrl = document.getElementById('long-url').value.trim();
         const customCode = document.getElementById('custom-code').value.trim();
         const expiresAt = document.getElementById('expiry-date').value;
+        const monetizeCheck = document.getElementById('monetize-link');
+        const monetized = monetizeCheck ? monetizeCheck.checked : false;
 
         if (!originalUrl) {
           showToast('Please enter a valid URL.', 'error');
@@ -292,7 +303,8 @@
             originalUrl,
             customCode: activeUser ? customCode : null,
             expiresAt: expiresAt ? expiresAt : null,
-            uid: activeUser ? activeUser.uid : null
+            uid: activeUser ? activeUser.uid : null,
+            monetized: monetized ? 1 : 0
           };
 
           const response = await fetch('/shorten', {

@@ -6,7 +6,7 @@ export async function onRequestPost(context) {
   const { request, env } = context;
   
   try {
-    const { originalUrl, customCode, expiresAt, uid } = await request.json();
+    const { originalUrl, customCode, expiresAt, uid, monetized } = await request.json();
 
     if (!originalUrl) {
       return new Response(JSON.stringify({ error: 'Original URL is required.' }), {
@@ -96,11 +96,16 @@ export async function onRequestPost(context) {
     const createdAt = Date.now();
     const expiresVal = expiresAt ? new Date(expiresAt).getTime() : null;
 
+    // Ensure 'monetized' column exists in D1 SQLite schema
+    await d1.prepare('ALTER TABLE links ADD COLUMN monetized INTEGER DEFAULT 0').run().catch(e => {
+      // Ignore error if column already exists
+    });
+
     // Insert new row into D1 "links" table
-    // Table fields: id, short_code, original_url, uid, created_at, expires_at, is_custom_code
+    // Table fields: id, short_code, original_url, uid, created_at, expires_at, is_custom_code, monetized
     await d1.prepare(
-      'INSERT INTO links (short_code, original_url, uid, created_at, expires_at, is_custom_code) VALUES (?, ?, ?, ?, ?, ?)'
-    ).bind(shortCode, originalUrl, uid || null, createdAt, expiresVal, isCustomCode).run();
+      'INSERT INTO links (short_code, original_url, uid, created_at, expires_at, is_custom_code, monetized) VALUES (?, ?, ?, ?, ?, ?, ?)'
+    ).bind(shortCode, originalUrl, uid || null, createdAt, expiresVal, isCustomCode, monetized ? 1 : 0).run();
 
     // Write shortCode -> originalUrl into KV namespace (URL_REDIRECTS)
     if (expiresVal) {
