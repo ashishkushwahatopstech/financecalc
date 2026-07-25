@@ -295,7 +295,7 @@
             uid: activeUser ? activeUser.uid : null
           };
 
-          const response = await fetch('/functions/shorten', {
+          const response = await fetch('/shorten', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bodyData)

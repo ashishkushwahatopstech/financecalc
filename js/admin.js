@@ -1258,7 +1258,7 @@ async function loadShortenerStats(uid) {
   const tableBody = document.getElementById('admin-shortener-table-body');
 
   try {
-    const res = await fetch(`/functions/api/admin-stats?uid=${encodeURIComponent(uid)}`);
+    const res = await fetch(`/api/admin-stats?uid=${encodeURIComponent(uid)}`);
     const data = await res.json();
 
     if (!res.ok) throw new Error(data.error || 'Failed to fetch admin statistics.');
