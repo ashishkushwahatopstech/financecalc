@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Link Analytics Dashboard – FinCalc Tools</title>
+  <meta name="description" content="Manage your shortened URLs and view detailed real-time click analytics, visitor geography, device types, and traffic referrers." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- ================= Shared Header / Navigation ================= -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-800 p-0.5 shadow-md shadow-emerald-600/20 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent"></div>
+              <svg class="w-5 h-5 text-emerald-400 group-hover:text-emerald-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-emerald-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">SUITE</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Smart Financial Tools</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <!-- Will be populated dynamically by /js/auth.js -->
+      </nav>
+
+      <!-- User Auth Dropdown -->
+      <div id="navbar-auth-container" class="flex items-center gap-2">
+        <div class="w-24 h-8 bg-slate-100 animate-pulse rounded-lg"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Skeleton Loader (Until Auth is Loaded) -->
+  <div id="dashboard-skeleton" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full animate-pulse space-y-6">
+    <div class="h-8 w-64 bg-slate-200 rounded-xl"></div>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div class="lg:col-span-4 h-96 bg-white border border-slate-200 rounded-2xl"></div>
+      <div class="lg:col-span-8 h-96 bg-white border border-slate-200 rounded-2xl"></div>
+    </div>
+  </div>
+
+  <!-- Authorized Dashboard Content Container -->
+  <main id="dashboard-content" class="hidden flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
+    
+    <!-- Top Header Navigation Info -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+      <div>
+        <div class="flex items-center gap-2 text-xs text-slate-500 mb-1">
+          <a href="index.html" class="hover:text-emerald-600">Home</a> &rsaquo;
+          <a href="url-shortener.html" class="hover:text-emerald-600">URL Shortener</a> &rsaquo;
+          <span>Analytics Dashboard</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          My Links <span class="text-emerald-600">Analytics</span>
+        </h1>
+        <p class="text-xs text-slate-500 mt-1">Monitor, manage, and inspect real-time click statistics for all your short URLs.</p>
+      </div>
+
+      <a href="url-shortener.html" class="self-start sm:self-auto px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Shorten New URL
+      </a>
+    </div>
+
+    <!-- Main Two-Column Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- ================= Left Column: Links List ================= -->
+      <section class="lg:col-span-4 bg-white border border-slate-200 shadow-sm rounded-2xl flex flex-col overflow-hidden max-h-[700px]">
+        
+        <!-- Search and Filter Bar -->
+        <div class="p-4 border-b border-slate-100 bg-slate-50/50 space-y-3 shrink-0">
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </span>
+            <input type="text" id="search-input" placeholder="Search short codes or URLs..." class="w-full pl-9 pr-3 py-2 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-emerald-500 text-slate-800" />
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button id="filter-all" class="flex-1 py-1 px-2.5 text-[10px] font-bold rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 cursor-pointer">All</button>
+            <button id="filter-active" class="flex-1 py-1 px-2.5 text-[10px] font-bold rounded-md bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 cursor-pointer">Active</button>
+            <button id="filter-expired" class="flex-1 py-1 px-2.5 text-[10px] font-bold rounded-md bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 cursor-pointer">Expired</button>
+          </div>
+        </div>
+
+        <!-- Links Scroll Area -->
+        <div id="links-container" class="overflow-y-auto divide-y divide-slate-100 flex-grow">
+          <!-- Populated dynamically via JS -->
+          <div class="p-8 text-center text-slate-400 text-xs">Loading your short links...</div>
+        </div>
+      </section>
+
+      <!-- ================= Right Column: Stats Details ================= -->
+      <section class="lg:col-span-8 space-y-6">
+        
+        <!-- Empty State (Shown when no link is selected) -->
+        <div id="empty-state" class="bg-white border border-slate-200 rounded-2xl p-12 text-center shadow-sm">
+          <div class="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-emerald-100">
+            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 00-2 2h-2a2 2 0 00-2-2z"></path></svg>
+          </div>
+          <h2 class="text-lg font-black text-slate-900 mb-2">No Short Link Selected</h2>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto mb-4 leading-relaxed">Select one of your shortened URLs from the sidebar to inspect its detailed traffic, device logs, and regional analytics.</p>
+        </div>
+
+        <!-- Stats View Container (Hidden until a link is clicked) -->
+        <div id="stats-panel" class="hidden space-y-6 animate-fade-in">
+          
+          <!-- Detailed Header -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-1 overflow-hidden">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span id="selected-short-code" class="text-lg font-bold text-slate-900"></span>
+                <span id="selected-expiry-badge" class="px-2 py-0.5 text-[9px] font-black rounded border"></span>
+              </div>
+              <p class="text-xs text-slate-500 truncate">
+                Redirects to: <a id="selected-original-url" href="#" target="_blank" class="text-emerald-600 hover:underline font-medium"></a>
+              </p>
+            </div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <button id="btn-copy-selected" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                Copy Link
+              </button>
+              <button id="btn-delete-selected" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                Delete Link
+              </button>
+            </div>
+          </div>
+
+          <!-- Total Click Counters -->
+          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs relative overflow-hidden">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Traffic Trend Over Time</h3>
+            <canvas id="clicks-chart" class="w-full h-[240px]"></canvas>
+          </div>
+
+          <!-- Breakdown Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Sources Breakdown -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 pb-2 border-b border-slate-100">Traffic Source Type</h3>
+              <div id="sources-breakdown" class="space-y-3">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- Device Breakdown -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 pb-2 border-b border-slate-100">Device Types</h3>
+              <div id="devices-breakdown" class="space-y-3">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- Geography Breakdown -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4 md:col-span-2">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 pb-2 border-b border-slate-100">Top Locations (Country & City)</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left text-slate-500">
+                  <thead class="text-[10px] text-slate-400 uppercase bg-slate-50 rounded-lg">
+                    <tr>
+                      <th class="py-2 px-3">Country</th>
+                      <th class="py-2 px-3">City</th>
+                      <th class="py-2 px-3 text-right">Click Count</th>
+                    </tr>
+                  </thead>
+                  <tbody id="geo-breakdown-body" class="divide-y divide-slate-100">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Referrers Breakdown -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4 md:col-span-2">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 pb-2 border-b border-slate-100">Top Referring Domains</h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-xs text-left text-slate-500">
+                  <thead class="text-[10px] text-slate-400 uppercase bg-slate-50 rounded-lg">
+                    <tr>
+                      <th class="py-2 px-3">Referrer URL / Domain</th>
+                      <th class="py-2 px-3 text-right">Click Count</th>
+                    </tr>
+                  </thead>
+                  <tbody id="referrers-breakdown-body" class="divide-y divide-slate-100">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+  <!-- ================= Shared Footer ================= -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto text-center text-slate-500 text-[11px] leading-relaxed">
+      <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+      <p>These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice.</p>
+      <p class="mt-4 text-slate-600">© <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/blog-promo.js"></script>
+
+  <!-- Stats Dashboard Controller -->
+  <script type="module">
+    import { getCurrentUser, showToast } from '/js/auth.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      let activeUser = null;
+      let allLinks = [];
+      let selectedCode = null;
+      let activeFilter = 'all'; // all, active, expired
+
+      const dashboardSkeleton = document.getElementById('dashboard-skeleton');
+      const dashboardContent = document.getElementById('dashboard-content');
+      
+      const searchInput = document.getElementById('search-input');
+      const linksContainer = document.getElementById('links-container');
+      
+      const filterAll = document.getElementById('filter-all');
+      const filterActive = document.getElementById('filter-active');
+      const filterExpired = document.getElementById('filter-expired');
+
+      const emptyState = document.getElementById('empty-state');
+      const statsPanel = document.getElementById('stats-panel');
+
+      // Selected Link UI Elements
+      const elSelectedCode = document.getElementById('selected-short-code');
+      const elSelectedExpiry = document.getElementById('selected-expiry-badge');
+      const elSelectedOriginalUrl = document.getElementById('selected-original-url');
+      const btnCopySelected = document.getElementById('btn-copy-selected');
+      const btnDeleteSelected = document.getElementById('btn-delete-selected');
+
+      // Listen for auth state
+      window.addEventListener('auth-state-changed', (e) => {
+        activeUser = e.detail?.user;
+        if (!activeUser) {
+          showToast('Authentication required. Redirecting to home...', 'error');
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 1500);
+        } else {
+          dashboardSkeleton.classList.add('hidden');
+          dashboardContent.classList.remove('hidden');
+          loadUserLinks();
+        }
+      });
+
+      // Fallback check
+      activeUser = getCurrentUser();
+      if (activeUser) {
+        dashboardSkeleton.classList.add('hidden');
+        dashboardContent.classList.remove('hidden');
+        loadUserLinks();
+      }
+
+      // Fetch links list
+      async function loadUserLinks() {
+        if (!activeUser) return;
+        try {
+          const res = await fetch(`/functions/api/my-links?uid=${encodeURIComponent(activeUser.uid)}`);
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed to load links');
+          
+          allLinks = data.links || [];
+          renderLinksList();
+        } catch (err) {
+          console.error("Error loading links:", err);
+          showToast('Failed to retrieve shortened links.', 'error');
+        }
+      }
+
+      // Filter trigger listeners
+      filterAll.addEventListener('click', () => setFilter('all', filterAll));
+      filterActive.addEventListener('click', () => setFilter('active', filterActive));
+      filterExpired.addEventListener('click', () => setFilter('expired', filterExpired));
+      searchInput.addEventListener('input', () => renderLinksList());
+
+      function setFilter(filterType, buttonEl) {
+        activeFilter = filterType;
+        [filterAll, filterActive, filterExpired].forEach(b => {
+          b.classList.remove('bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+          b.classList.add('bg-white', 'text-slate-600', 'border-slate-200', 'hover:bg-slate-50');
+        });
+        buttonEl.classList.remove('bg-white', 'text-slate-600', 'border-slate-200', 'hover:bg-slate-50');
+        buttonEl.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+        renderLinksList();
+      }
+
+      // Render links list sidebar
+      function renderLinksList() {
+        const query = searchInput.value.toLowerCase().trim();
+        
+        const filtered = allLinks.filter(link => {
+          const matchesSearch = link.short_code.toLowerCase().includes(query) || 
+                                link.original_url.toLowerCase().includes(query);
+          
+          const isExpired = link.expires_at && link.expires_at < Date.now();
+          
+          if (activeFilter === 'active') {
+            return matchesSearch && !isExpired;
+          } else if (activeFilter === 'expired') {
+            return matchesSearch && isExpired;
+          }
+          return matchesSearch;
+        });
+
+        if (filtered.length === 0) {
+          linksContainer.innerHTML = `
+            <div class="p-8 text-center text-slate-400 text-xs">
+              No links found matching criteria.
+            </div>
+          `;
+          return;
+        }
+
+        linksContainer.innerHTML = filtered.map(link => {
+          const isExpired = link.expires_at && link.expires_at < Date.now();
+          const activeClass = selectedCode === link.short_code ? 'bg-emerald-50/70 border-l-4 border-l-emerald-600' : 'hover:bg-slate-50';
+          const badgeHtml = isExpired 
+            ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-100">Expired</span>`
+            : `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">Active</span>`;
+          
+          const dateStr = new Date(link.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+
+          return `
+            <div class="p-3.5 cursor-pointer transition-all border-l-4 border-l-transparent ${activeClass}" data-code="${link.short_code}">
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <span class="font-bold text-xs text-slate-800">/${link.short_code}</span>
+                ${badgeHtml}
+              </div>
+              <p class="text-[10px] text-slate-400 truncate mb-2">${link.original_url}</p>
+              <div class="flex items-center justify-between text-[9px] text-slate-500">
+                <span>Created ${dateStr}</span>
+                <span class="font-bold flex items-center gap-1">
+                  <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                  ${link.total_clicks} clicks
+                </span>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Add event listeners to list items
+        linksContainer.querySelectorAll('[data-code]').forEach(el => {
+          el.addEventListener('click', () => {
+            const code = el.getAttribute('data-code');
+            selectLink(code);
+          });
+        });
+      }
+
+      // Handle selecting a link to display stats
+      async function selectLink(code) {
+        selectedCode = code;
+        renderLinksList(); // update active state in UI list
+        
+        emptyState.classList.add('hidden');
+        statsPanel.classList.add('hidden');
+
+        try {
+          const res = await fetch(`/functions/api/stats/${code}?uid=${encodeURIComponent(activeUser.uid)}`);
+          const data = await res.json();
+
+          if (!res.ok) throw new Error(data.error || 'Failed to fetch statistics');
+
+          renderLinkStatsView(data);
+        } catch (err) {
+          console.error("Stats fetching failed:", err);
+          showToast(err.message || 'Error loading stats.', 'error');
+        }
+      }
+
+      // Render all stats to panels
+      function renderLinkStatsView(data) {
+        const link = data.link;
+        const analytics = data.analytics;
+
+        statsPanel.classList.remove('hidden');
+
+        // Header info
+        elSelectedCode.textContent = `/${link.short_code}`;
+        
+        const isExpired = link.expires_at && link.expires_at < Date.now();
+        if (isExpired) {
+          elSelectedExpiry.textContent = 'Expired';
+          elSelectedExpiry.className = 'px-2 py-0.5 text-[9px] font-black rounded border bg-rose-50 text-rose-700 border-rose-200';
+        } else {
+          elSelectedExpiry.textContent = link.expires_at 
+            ? `Expires ${new Date(link.expires_at).toLocaleDateString()}`
+            : 'Permanent Link';
+          elSelectedExpiry.className = 'px-2 py-0.5 text-[9px] font-black rounded border bg-emerald-50 text-emerald-700 border-emerald-200';
+        }
+
+        const shortUrl = `${window.location.origin}/${link.short_code}`;
+        elSelectedOriginalUrl.href = link.original_url;
+        elSelectedOriginalUrl.textContent = link.original_url;
+
+        // Clipboard Copy Action
+        btnCopySelected.onclick = () => {
+          navigator.clipboard.writeText(shortUrl).then(() => {
+            showToast('Short URL copied to clipboard!', 'success');
+          });
+        };
+
+        // Delete Action
+        btnDeleteSelected.onclick = async () => {
+          const confirmed = confirm(`Are you sure you want to delete /${link.short_code}?\nThis action cannot be undone and will delete all associated click analytics.`);
+          if (!confirmed) return;
+
+          try {
+            const res = await fetch('/functions/api/delete-link', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ shortCode: link.short_code, uid: activeUser.uid })
+            });
+            const delData = await res.json();
+            if (!res.ok) throw new Error(delData.error || 'Failed to delete link');
+
+            showToast('Link deleted successfully!', 'success');
+            selectedCode = null;
+            emptyState.classList.remove('hidden');
+            statsPanel.classList.add('hidden');
+            loadUserLinks();
+          } catch (err) {
+            console.error("Deletion failed:", err);
+            showToast(err.message || 'Failed to delete link.', 'error');
+          }
+        };
+
+        // Draw Line Chart
+        drawLineChart('clicks-chart', analytics.clicksOverTime);
+
+        // Sources Type Progress Bars
+        renderSourceBreakdown(analytics.sources);
+
+        // Device Breakdown Progress Bars
+        renderDeviceBreakdown(analytics.devices);
+
+        // Geo Table
+        renderGeoTable(analytics.geography);
+
+        // Referrers Table
+        renderReferrersTable(analytics.referrers);
+      }
+
+      function renderSourceBreakdown(sources) {
+        const container = document.getElementById('sources-breakdown');
+        container.innerHTML = '';
+
+        const sourceLabels = {
+          direct: 'Direct Traffic (no referrer)',
+          qr: 'QR Code Scans (?src=qr)',
+          internal: 'Internal Navigation',
+          external: 'External Referral'
+        };
+        const sourceColors = {
+          direct: 'bg-slate-500',
+          qr: 'bg-indigo-600',
+          internal: 'bg-emerald-600',
+          external: 'bg-amber-500'
+        };
+
+        const total = sources.reduce((sum, item) => sum + item.count, 0) || 1;
+
+        const allTypes = ['direct', 'qr', 'internal', 'external'];
+        allTypes.forEach(type => {
+          const match = sources.find(s => s.source_type === type);
+          const count = match ? match.count : 0;
+          const percentage = Math.round((count / total) * 100);
+
+          container.innerHTML += `
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs font-semibold text-slate-700">
+                <span>${sourceLabels[type]}</span>
+                <span>${count} clicks (${percentage}%)</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-2">
+                <div class="${sourceColors[type]} h-2 rounded-full transition-all" style="width: ${percentage}%"></div>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      function renderDeviceBreakdown(devices) {
+        const container = document.getElementById('devices-breakdown');
+        container.innerHTML = '';
+
+        const deviceLabels = {
+          desktop: 'Desktop Users',
+          mobile: 'Mobile Devices',
+          tablet: 'Tablet Devices'
+        };
+        const deviceColors = {
+          desktop: 'bg-blue-600',
+          mobile: 'bg-emerald-500',
+          tablet: 'bg-purple-500'
+        };
+
+        const total = devices.reduce((sum, item) => sum + item.count, 0) || 1;
+
+        const allDevices = ['desktop', 'mobile', 'tablet'];
+        allDevices.forEach(device => {
+          const match = devices.find(d => d.device_type === device);
+          const count = match ? match.count : 0;
+          const percentage = Math.round((count / total) * 100);
+
+          container.innerHTML += `
+            <div class="space-y-1">
+              <div class="flex items-center justify-between text-xs font-semibold text-slate-700">
+                <span>${deviceLabels[device]}</span>
+                <span>${count} (${percentage}%)</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-2">
+                <div class="${deviceColors[device]} h-2 rounded-full transition-all" style="width: ${percentage}%"></div>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      function renderGeoTable(geoData) {
+        const body = document.getElementById('geo-breakdown-body');
+        if (geoData.length === 0) {
+          body.innerHTML = `
+            <tr>
+              <td colspan="3" class="py-4 text-center text-slate-400">No regional data logged yet.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        body.innerHTML = geoData.map(item => {
+          return `
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="py-2.5 px-3 font-semibold text-slate-800">${item.country}</td>
+              <td class="py-2.5 px-3 text-slate-600">${item.city}</td>
+              <td class="py-2.5 px-3 font-bold text-slate-800 text-right">${item.count}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      function renderReferrersTable(referrerData) {
+        const body = document.getElementById('referrers-breakdown-body');
+        if (referrerData.length === 0) {
+          body.innerHTML = `
+            <tr>
+              <td colspan="2" class="py-4 text-center text-slate-400">No referrer details logged.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        body.innerHTML = referrerData.map(item => {
+          let displayRef = item.referrer;
+          if (displayRef === 'direct') displayRef = 'Direct traffic / Unknown';
+          
+          return `
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="py-2.5 px-3 font-semibold text-slate-800 truncate max-w-xs md:max-w-md">${displayRef}</td>
+              <td class="py-2.5 px-3 font-bold text-slate-800 text-right">${item.count}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Draw HTML5 Canvas Line Chart
+      function drawLineChart(canvasId, data) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        
+        const parentWidth = canvas.parentElement.clientWidth - 48; // padding check
+        canvas.width = parentWidth * dpr;
+        canvas.height = 200 * dpr;
+        canvas.style.width = `${parentWidth}px`;
+        canvas.style.height = `200px`;
+        ctx.scale(dpr, dpr);
+
+        const width = parentWidth;
+        const height = 200;
+
+        ctx.clearRect(0, 0, width, height);
+
+        if (!data || data.length === 0) {
+          ctx.font = '12px sans-serif';
+          ctx.fillStyle = '#94a3b8';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('No clicks recorded in this period.', width / 2, height / 2);
+          return;
+        }
+
+        const maxVal = Math.max(...data.map(d => d.count), 5);
+        
+        const paddingLeft = 35;
+        const paddingRight = 15;
+        const paddingTop = 20;
+        const paddingBottom = 25;
+        const chartWidth = width - paddingLeft - paddingRight;
+        const chartHeight = height - paddingTop - paddingBottom;
+
+        // Draw Y grid lines
+        ctx.strokeStyle = '#f1f5f9';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 4; i++) {
+          const y = paddingTop + chartHeight - (i / 4) * chartHeight;
+          ctx.beginPath();
+          ctx.moveTo(paddingLeft, y);
+          ctx.lineTo(width - paddingRight, y);
+          ctx.stroke();
+
+          // Y Axis Labels
+          ctx.font = '10px font-sans';
+          ctx.fillStyle = '#94a3b8';
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(Math.round((i / 4) * maxVal).toString(), paddingLeft - 8, y);
+        }
+
+        // Draw line and points
+        const points = [];
+        data.forEach((d, idx) => {
+          const x = paddingLeft + (idx / (data.length - 1 || 1)) * chartWidth;
+          const y = paddingTop + chartHeight - (d.count / maxVal) * chartHeight;
+          points.push({ x, y, label: d.day, count: d.count });
+        });
+
+        // 1. Draw gradient area under line
+        if (points.length > 0) {
+          const grad = ctx.createLinearGradient(0, paddingTop, 0, paddingTop + chartHeight);
+          grad.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+          grad.addColorStop(1, 'rgba(16, 185, 129, 0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.moveTo(points[0].x, paddingTop + chartHeight);
+          points.forEach(p => ctx.lineTo(p.x, p.y));
+          ctx.lineTo(points[points.length - 1].x, paddingTop + chartHeight);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // 2. Draw line
+        ctx.strokeStyle = '#10b981'; // Emerald 500
+        ctx.lineWidth = 2.5;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        points.forEach((p, idx) => {
+          if (idx === 0) ctx.moveTo(p.x, p.y);
+          else ctx.lineTo(p.x, p.y);
+        });
+        ctx.stroke();
+
+        // 3. Draw dots and labels
+        points.forEach((p, idx) => {
+          ctx.fillStyle = '#ffffff';
+          ctx.strokeStyle = '#059669'; // Emerald 600
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
+          ctx.fill();
+          ctx.stroke();
+
+          // X Labeling spacing check
+          const spacingCheck = Math.max(1, Math.round(data.length / 5));
+          if (idx % spacingCheck === 0 || idx === data.length - 1) {
+            ctx.font = '9px sans-serif';
+            ctx.fillStyle = '#64748b';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            const dateParts = p.label.split('-');
+            const formattedDate = dateParts.length === 3 ? `${getMonthName(dateParts[1])} ${dateParts[2]}` : p.label;
+            ctx.fillText(formattedDate, p.x, paddingTop + chartHeight + 6);
+          }
+        });
+      }
+
+      function getMonthName(monthStr) {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const idx = parseInt(monthStr, 10) - 1;
+        return months[idx] || '';
+      }
+    });
+  </script>
+</body>
+</html>

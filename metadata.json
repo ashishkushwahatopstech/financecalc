@@ -1,0 +1,6 @@
+{
+  "name": "FinCalc Tools",
+  "description": "A comprehensive finance and business calculator toolkit featuring Loan/Mortgage, Currency Converter, Tax, Paycheck, Invoice Generator, ROI tools, Google Authentication, User Profile preferences, and Admin Panel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

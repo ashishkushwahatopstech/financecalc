@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Word & Character Counter Online – Live Text Statistics | FinCalc Tools</title>
+  <meta name="description" content="Free online word counter and character counter tool. Get real-time word count, character count with and without spaces, sentence count, paragraph count, and estimated reading time." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Shared Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-indigo-800 p-0.5 shadow-md shadow-indigo-600/20 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <svg class="w-5 h-5 text-indigo-400 group-hover:text-indigo-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-indigo-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/80">UTILITY</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Free Quick Utilities</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-indigo-600 transition-colors">Home</a>
+        <a href="loan-calculator.html" class="hover:text-indigo-600 transition-colors">Loan</a>
+        <a href="currency-converter.html" class="hover:text-indigo-600 transition-colors">Currency</a>
+        <a href="tax-calculator.html" class="hover:text-indigo-600 transition-colors">Tax</a>
+        <a href="salary-calculator.html" class="hover:text-indigo-600 transition-colors">Salary</a>
+        <a href="invoice-generator.html" class="hover:text-indigo-600 transition-colors">Invoice</a>
+        <a href="roi-calculator.html" class="hover:text-indigo-600 transition-colors">ROI</a>
+
+        <div class="relative group">
+          <button class="flex items-center gap-1 font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200">
+            <span>Utilities</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+            <a href="qr-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">QR Code Generator</a>
+            <a href="password-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Password Generator</a>
+            <a href="word-counter.html" class="block px-4 py-2 text-xs font-bold text-indigo-600 bg-indigo-50/50">Word Counter</a>
+            <a href="unit-converter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Unit Converter</a>
+            <a href="age-calculator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Age Calculator</a>
+          </div>
+        </div>
+
+        <a id="nav-admin-link" href="admin.html" class="hidden text-amber-700 hover:text-amber-800 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
+      </nav>
+
+      <div id="navbar-auth-container" class="flex items-center gap-2">
+        <div class="w-24 h-8 bg-slate-100 animate-pulse rounded-lg"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow">
+    <!-- Header Hero -->
+    <section class="bg-gradient-to-b from-white via-indigo-50/30 to-slate-50 py-10 px-4 sm:px-6 lg:px-8 border-b border-slate-200/80">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-semibold mb-3">
+          <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Live Real-time Analysis • 100% Client-Side
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+          Word & Character <span class="text-indigo-600">Counter</span>
+        </h1>
+        <p class="mt-2 text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto">
+          Type or paste text below to get instant counts of words, characters (with & without spaces), sentences, paragraphs, and estimated reading time.
+        </p>
+      </div>
+    </section>
+
+    <!-- Interactive Counter Section -->
+    <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      
+      <!-- Key Stats Overview Cards Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs text-center">
+          <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Words</span>
+          <span id="stat-words" class="text-2xl font-black text-indigo-600 mt-1 block">0</span>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs text-center">
+          <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Characters</span>
+          <span id="stat-chars-with" class="text-2xl font-black text-slate-900 mt-1 block">0</span>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs text-center">
+          <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">No Spaces</span>
+          <span id="stat-chars-no" class="text-2xl font-black text-slate-900 mt-1 block">0</span>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs text-center">
+          <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Sentences</span>
+          <span id="stat-sentences" class="text-2xl font-black text-slate-900 mt-1 block">0</span>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs text-center">
+          <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Paragraphs</span>
+          <span id="stat-paragraphs" class="text-2xl font-black text-slate-900 mt-1 block">0</span>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs text-center">
+          <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Read Time</span>
+          <span id="stat-reading" class="text-2xl font-black text-teal-600 mt-1 block">0s</span>
+        </div>
+      </div>
+
+      <!-- Main Input Box with Action Bar -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        
+        <!-- Textarea Header Toolbar -->
+        <div class="bg-slate-50 border-b border-slate-200 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+          <div class="text-xs font-bold text-slate-700 flex items-center gap-2">
+            <span>Type or paste your content:</span>
+            <span id="stat-speaking-badge" class="text-[11px] font-normal text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200">
+              Speaking time: ~0s
+            </span>
+          </div>
+
+          <!-- Formatting Actions -->
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button type="button" id="btn-uppercase" class="px-2.5 py-1 text-[11px] font-bold text-slate-600 hover:text-indigo-600 bg-white hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors cursor-pointer">
+              UPPERCASE
+            </button>
+            <button type="button" id="btn-lowercase" class="px-2.5 py-1 text-[11px] font-bold text-slate-600 hover:text-indigo-600 bg-white hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors cursor-pointer">
+              lowercase
+            </button>
+            <button type="button" id="btn-titlecase" class="px-2.5 py-1 text-[11px] font-bold text-slate-600 hover:text-indigo-600 bg-white hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors cursor-pointer">
+              Title Case
+            </button>
+            <button type="button" id="btn-copy-text" class="px-2.5 py-1 text-[11px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 transition-colors cursor-pointer">
+              Copy
+            </button>
+            <button type="button" id="btn-clear" class="px-2.5 py-1 text-[11px] font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 transition-colors cursor-pointer">
+              Clear
+            </button>
+          </div>
+        </div>
+
+        <textarea id="input-text" rows="12" placeholder="Start typing or paste your article, essay, social media post, or document here to calculate statistics live..." class="w-full p-4 text-xs sm:text-sm font-sans text-slate-800 placeholder-slate-400 focus:outline-none resize-y min-h-[250px]"></textarea>
+      </div>
+
+      <!-- SEO Article -->
+      <article class="mt-12 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
+        <h2 class="text-lg font-extrabold text-slate-900">Online Word Counter & Text Analysis Tool</h2>
+        <p>
+          Whether you are writing a college essay with strict word limits, crafting social media posts for Twitter (X) and LinkedIn, optimizing meta descriptions for SEO, or reviewing article length, our <strong>free word counter online</strong> provides instantaneous text metrics.
+        </p>
+        <p>
+          Beyond simple word and character counts, this tool calculates paragraph density, sentence frequency, estimated reading duration, and oral speaking length. All calculations occur locally in real time inside your web browser without sending your private drafts or confidential documents to external servers.
+        </p>
+      </article>
+
+    </section>
+
+    <!-- Self-promotional blog links container - NOT Google AdSense units -->
+    <div id="promo-ads" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10"></div>
+  </main>
+
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-indigo-500 flex items-center justify-center text-white font-extrabold">F</div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online financial calculators and client-side developer utilities.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-indigo-400 transition-colors">Loan / Mortgage</a></li>
+            <li><a href="currency-converter.html" class="hover:text-indigo-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-indigo-400 transition-colors">Tax Calculator</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Quick Utilities</h4>
+          <ul class="space-y-2">
+            <li><a href="qr-generator.html" class="hover:text-indigo-400 transition-colors">QR Code Generator</a></li>
+            <li><a href="password-generator.html" class="hover:text-indigo-400 transition-colors">Password Generator</a></li>
+            <li><a href="word-counter.html" class="hover:text-indigo-400 transition-colors">Word Counter</a></li>
+            <li><a href="unit-converter.html" class="hover:text-indigo-400 transition-colors">Unit Converter</a></li>
+            <li><a href="age-calculator.html" class="hover:text-indigo-400 transition-colors">Age Calculator</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-indigo-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-indigo-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px]">
+        © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/blog-promo.js"></script>
+
+  <script type="module">
+    import { trackToolUsage } from '/js/analytics.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const inputText = document.getElementById('input-text');
+      const statWords = document.getElementById('stat-words');
+      const statCharsWith = document.getElementById('stat-chars-with');
+      const statCharsNo = document.getElementById('stat-chars-no');
+      const statSentences = document.getElementById('stat-sentences');
+      const statParagraphs = document.getElementById('stat-paragraphs');
+      const statReading = document.getElementById('stat-reading');
+      const statSpeakingBadge = document.getElementById('stat-speaking-badge');
+
+      const btnUpper = document.getElementById('btn-uppercase');
+      const btnLower = document.getElementById('btn-lowercase');
+      const btnTitle = document.getElementById('btn-titlecase');
+      const btnCopy = document.getElementById('btn-copy-text');
+      const btnClear = document.getElementById('btn-clear');
+
+      function updateStats() {
+        trackToolUsage('Word Counter');
+        const text = inputText.value || '';
+        
+        // Characters with spaces
+        const charCount = text.length;
+        statCharsWith.textContent = charCount.toLocaleString();
+
+        // Characters without spaces
+        const charNoSpaces = text.replace(/\s/g, '').length;
+        statCharsNo.textContent = charNoSpaces.toLocaleString();
+
+        // Words count
+        const trimmed = text.trim();
+        const wordsArr = trimmed ? trimmed.split(/\s+/) : [];
+        const wordCount = wordsArr.length;
+        statWords.textContent = wordCount.toLocaleString();
+
+        // Sentences count
+        const sentenceArr = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+        statSentences.textContent = sentenceArr.length.toLocaleString();
+
+        // Paragraphs count
+        const paraArr = text.split(/\n+/).filter(p => p.trim().length > 0);
+        statParagraphs.textContent = paraArr.length.toLocaleString();
+
+        // Reading time (200 words / min)
+        const readMinutes = wordCount / 200;
+        if (readMinutes < 1) {
+          const sec = Math.round(readMinutes * 60);
+          statReading.textContent = `${sec}s`;
+        } else {
+          const mins = Math.floor(readMinutes);
+          const sec = Math.round((readMinutes - mins) * 60);
+          statReading.textContent = sec > 0 ? `${mins}m ${sec}s` : `${mins}m`;
+        }
+
+        // Speaking time (130 words / min)
+        const speakMinutes = wordCount / 130;
+        if (speakMinutes < 1) {
+          const sec = Math.round(speakMinutes * 60);
+          statSpeakingBadge.textContent = `Speaking time: ~${sec}s`;
+        } else {
+          const mins = Math.floor(speakMinutes);
+          const sec = Math.round((speakMinutes - mins) * 60);
+          statSpeakingBadge.textContent = `Speaking time: ~${mins}m ${sec}s`;
+        }
+      }
+
+      inputText.addEventListener('input', updateStats);
+
+      btnUpper.addEventListener('click', () => {
+        inputText.value = inputText.value.toUpperCase();
+        updateStats();
+      });
+
+      btnLower.addEventListener('click', () => {
+        inputText.value = inputText.value.toLowerCase();
+        updateStats();
+      });
+
+      btnTitle.addEventListener('click', () => {
+        inputText.value = inputText.value.replace(/\w\S*/g, (txt) => {
+          return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+        updateStats();
+      });
+
+      btnCopy.addEventListener('click', () => {
+        if (!inputText.value) return;
+        navigator.clipboard.writeText(inputText.value).then(() => {
+          const orig = btnCopy.textContent;
+          btnCopy.textContent = 'Copied!';
+          setTimeout(() => { btnCopy.textContent = orig; }, 2000);
+        });
+      });
+
+      btnClear.addEventListener('click', () => {
+        inputText.value = '';
+        updateStats();
+      });
+
+      updateStats();
+    });
+  </script>
+</body>
+</html>

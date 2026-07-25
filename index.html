@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinCalc Tools – Free Online Financial & Business Calculators</title>
+  <meta name="description" content="Free suite of financial and business calculators including Loan & Mortgage, Currency Converter, US/Canada Tax Calculator, Salary/Paycheck, Invoice Generator, and ROI Calculator." />
+  
+  <!-- Tailwind CSS CDN for instant styling -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- ================= Shared Header / Navigation ================= -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-800 p-0.5 shadow-md shadow-emerald-600/20 group-hover:shadow-emerald-600/30 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent"></div>
+              <svg class="w-5 h-5 text-emerald-400 group-hover:text-emerald-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+          <span class="absolute -top-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white"></span>
+          </span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-emerald-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">SUITE</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Smart Financial Tools</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="loan-calculator.html" class="hover:text-emerald-600 transition-colors">Loan / Mortgage</a>
+        <a href="currency-converter.html" class="hover:text-emerald-600 transition-colors">Currency</a>
+        <a href="tax-calculator.html" class="hover:text-emerald-600 transition-colors">Tax Calculator</a>
+        <a href="salary-calculator.html" class="hover:text-emerald-600 transition-colors">Salary / Paycheck</a>
+        <a href="invoice-generator.html" class="hover:text-emerald-600 transition-colors">Invoice Generator</a>
+        <a href="roi-calculator.html" class="hover:text-emerald-600 transition-colors">ROI / Investment</a>
+
+        <!-- Utilities Dropdown Menu -->
+        <div class="relative group">
+          <button class="flex items-center gap-1 font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200 hover:bg-indigo-100 transition-colors">
+            <span>Utilities</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1 w-52 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+            <a href="qr-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">QR Code Generator</a>
+            <a href="password-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Password Generator</a>
+            <a href="word-counter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Word Counter</a>
+            <a href="unit-converter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Unit Converter</a>
+            <a href="age-calculator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600">Age Calculator</a>
+          </div>
+        </div>
+
+        <!-- Admin Link (visible only to admin ashishkushwaha88643@gmail.com) -->
+        <a id="nav-admin-link" href="admin.html" class="hidden text-amber-700 hover:text-amber-800 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
+      </nav>
+
+      <!-- User Auth Profile Dropdown / Google Sign In -->
+      <div id="navbar-auth-container" class="flex items-center gap-2">
+        <!-- Injected dynamically by js/auth.js -->
+        <div class="w-24 h-8 bg-slate-100 animate-pulse rounded-lg"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= Main Content ================= -->
+  <main class="flex-grow">
+    
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200/60">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium mb-4">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          100% Free & Unlimited • No Registration Required
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
+          Smart Financial & Business <span class="text-slate-900">Calculator Suite</span>
+        </h1>
+        <p class="mt-4 text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          Fast, precise financial decision tools for entrepreneurs, homeowners, freelancers, and investors. Calculate loan amortizations, live currency rates, income tax brackets, paychecks, invoices, and compound ROI in seconds.
+        </p>
+      </div>
+    </section>
+
+    <!-- 6 Calculator Tools Grid -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <!-- Mobile View Google Sign-In Banner (before tool lists) -->
+      <div id="mobile-homepage-auth-container" class="md:hidden mb-8"></div>
+
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Financial Tools & Calculators</h2>
+          <p class="text-xs text-slate-500 mt-1">Select a tool below to begin calculations immediately</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Tool 1: Loan & Mortgage Calculator -->
+        <a href="loan-calculator.html" class="group bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Loan / Mortgage Calculator</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Calculate monthly mortgage & loan payments, view detailed amortization schedules, and analyze principal vs interest charts.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-600">
+            <span>Calculate Payment & Schedule</span>
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </div>
+        </a>
+
+        <!-- Tool 2: Currency Converter -->
+        <a href="currency-converter.html" class="group bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 group-hover:text-teal-600 transition-colors">Currency Converter</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Live international exchange rates powered by central bank data for USD, EUR, GBP, CAD, AUD, JPY, INR, and more.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-teal-600">
+            <span>Convert Live Rates</span>
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </div>
+        </a>
+
+        <!-- Tool 3: Tax Calculator US/Canada -->
+        <a href="tax-calculator.html" class="group bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l2-2 4 4m0-6l-4 4-2-2m-2 4h.01M17 16h.01M9 10h.01M12 10h.01M15 10h.01M9 16h.01M12 16h.01M12 6h.01M9 6h.01M15 6h.01M17 6h.01M17 10h.01"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Tax Calculator (US & Canada)</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Estimate income taxes for 2025/2026 across US Federal/State brackets and Canadian Federal/Provincial progressive rates.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-blue-600">
+            <span>Estimate Tax Brackets</span>
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </div>
+        </a>
+
+        <!-- Tool 4: Salary & Paycheck Calculator -->
+        <a href="salary-calculator.html" class="group bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Salary / Paycheck Calculator</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Convert hourly wage or gross annual salary into net take-home pay per weekly, bi-weekly, or monthly paycheck.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-indigo-600">
+            <span>Calculate Take-Home Pay</span>
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </div>
+        </a>
+
+        <!-- Tool 5: Invoice Generator -->
+        <a href="invoice-generator.html" class="group bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 group-hover:text-purple-600 transition-colors">Invoice Generator</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Create clean, professional itemized business invoices with subtotal, tax rates, discounts, and instant PDF download/print.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-purple-600">
+            <span>Create & Print Invoice</span>
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </div>
+        </a>
+
+        <!-- Tool 6: ROI & Investment Calculator -->
+        <a href="roi-calculator.html" class="group bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">ROI / Investment Calculator</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Project compound investment returns with recurring monthly contributions and visualize growth charts over time.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-700">
+            <span>Project Investment ROI</span>
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Quick Utilities Section -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-slate-100/60 border-y border-slate-200/80 my-8">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-extrabold uppercase tracking-wider mb-1">
+            ⚡ Serverless & Free
+          </div>
+          <h2 class="text-xl font-bold text-slate-900">Quick Utilities & Developer Tools</h2>
+          <p class="text-xs text-slate-500 mt-1">Lightweight tools running 100% inside your web browser — no login or backend required</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Utility 1: QR Code Generator -->
+        <a href="qr-generator.html" class="group bg-white rounded-2xl p-6 border border-indigo-100 shadow-xs hover:shadow-md hover:border-indigo-400 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">QR Code Generator</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Create custom QR codes for plain text, URLs, WiFi networks, and vCard contact cards. Live preview and high-res PNG download.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-indigo-600">
+            <span>Generate QR Code</span>
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </div>
+        </a>
+
+        <!-- Utility 2: Password Generator -->
+        <a href="password-generator.html" class="group bg-white rounded-2xl p-6 border border-indigo-100 shadow-xs hover:shadow-md hover:border-indigo-400 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 group-hover:text-purple-600 transition-colors">Password Generator</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Generate strong, cryptographically secure random passwords using `crypto.getRandomValues()` with length & strength controls.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-purple-600">
+            <span>Generate Password</span>
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </div>
+        </a>
+
+        <!-- Utility 3: Word & Character Counter -->
+        <a href="word-counter.html" class="group bg-white rounded-2xl p-6 border border-indigo-100 shadow-xs hover:shadow-md hover:border-indigo-400 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 group-hover:text-teal-600 transition-colors">Word & Character Counter</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Live text statistics for word count, character count (with/without spaces), sentence count, and estimated reading time.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-teal-600">
+            <span>Count Text Live</span>
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </div>
+        </a>
+
+        <!-- Utility 4: Unit Converter -->
+        <a href="unit-converter.html" class="group bg-white rounded-2xl p-6 border border-indigo-100 shadow-xs hover:shadow-md hover:border-indigo-400 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Unit Converter</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Convert length, weight, temperature, and volume units instantly between metric and imperial systems as you type.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-blue-600">
+            <span>Convert Units</span>
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </div>
+        </a>
+
+        <!-- Utility 5: Age Calculator -->
+        <a href="age-calculator.html" class="group bg-white rounded-2xl p-6 border border-indigo-100 shadow-xs hover:shadow-md hover:border-indigo-400 transition-all duration-200 flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
+            <h3 class="text-base font-bold text-slate-900 group-hover:text-amber-600 transition-colors">Age Calculator</h3>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+              Calculate exact age in years, months, and days from date of birth. View total days lived, zodiac sign, and birthday countdown.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-amber-600">
+            <span>Calculate Age</span>
+            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- Self-promotional blog links container - NOT Google AdSense units -->
+    <div id="promo-ads" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10"></div>
+
+  </main>
+
+  <!-- ================= Shared Footer ================= -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-900">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online finance and business calculators for everyday decisions.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-emerald-400 transition-colors">Loan / Mortgage</a></li>
+            <li><a href="currency-converter.html" class="hover:text-emerald-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-emerald-400 transition-colors">Tax Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Business Tools</h4>
+          <ul class="space-y-2">
+            <li><a href="salary-calculator.html" class="hover:text-emerald-400 transition-colors">Salary & Paycheck</a></li>
+            <li><a href="invoice-generator.html" class="hover:text-emerald-400 transition-colors">Invoice Generator</a></li>
+            <li><a href="roi-calculator.html" class="hover:text-emerald-400 transition-colors">ROI Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Quick Utilities</h4>
+          <ul class="space-y-2">
+            <li><a href="qr-generator.html" class="hover:text-indigo-400 transition-colors">QR Code Generator</a></li>
+            <li><a href="password-generator.html" class="hover:text-indigo-400 transition-colors">Password Generator</a></li>
+            <li><a href="word-counter.html" class="hover:text-indigo-400 transition-colors">Word Counter</a></li>
+            <li><a href="unit-converter.html" class="hover:text-indigo-400 transition-colors">Unit Converter</a></li>
+            <li><a href="age-calculator.html" class="hover:text-indigo-400 transition-colors">Age Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Financial Disclaimer Notice -->
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px] leading-relaxed max-w-4xl mx-auto">
+        <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+        <p>
+          These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice. Always consult a certified accountant or financial advisor for official tax filings and lending calculations.
+        </p>
+        <p class="mt-4 text-slate-600">
+          © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved. Powered by Firebase Auth & Firestore.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase & Global Auth Module -->
+  <script type="module" src="/js/auth.js"></script>
+  <!-- Self-promotional Blog Promo Module (aktechstudio.com) -->
+  <script type="module" src="/js/blog-promo.js"></script>
+
+</body>
+</html>

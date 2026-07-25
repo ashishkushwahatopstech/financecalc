@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard – FinCalc Tools</title>
+  <meta name="description" content="Admin Dashboard for FinCalc Tools user analytics and registered profile management." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 via-orange-600 to-amber-800 p-0.5 shadow-md shadow-amber-600/20 group-hover:shadow-amber-600/30 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-tr from-amber-500/10 to-transparent"></div>
+              <svg class="w-5 h-5 text-amber-400 group-hover:text-amber-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+              </svg>
+            </div>
+          </div>
+          <span class="absolute -top-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500 border-2 border-white"></span>
+          </span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-amber-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200/80">ADMIN</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Control Panel</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-amber-600 transition-colors">Main Site</a>
+        <a href="profile.html" class="hover:text-amber-600 transition-colors">My Profile</a>
+
+        <div class="relative group">
+          <button class="flex items-center gap-1 font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200">
+            <span>Utilities</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+            <a href="qr-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">QR Code Generator</a>
+            <a href="password-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Password Generator</a>
+            <a href="word-counter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Word Counter</a>
+            <a href="unit-converter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Unit Converter</a>
+            <a href="age-calculator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Age Calculator</a>
+          </div>
+        </div>
+
+        <span class="text-amber-700 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin Panel</span>
+      </nav>
+
+      <div id="navbar-auth-container" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+
+  <!-- Skeleton Loading Screen until Admin Auth Verification Completes -->
+  <div id="admin-loading-spinner" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full animate-pulse">
+    <!-- Header Skeleton -->
+    <div class="mb-8 pb-6 border-b border-slate-200 space-y-2">
+      <div class="h-3 w-32 bg-slate-200 rounded"></div>
+      <div class="h-8 w-72 bg-slate-200 rounded"></div>
+      <div class="h-3 w-96 bg-slate-100 rounded"></div>
+    </div>
+
+    <!-- Cards Skeleton -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+      <div class="h-24 bg-white rounded-2xl border border-slate-200 p-6 flex items-center gap-4">
+        <div class="w-12 h-12 bg-slate-200 rounded-xl"></div>
+        <div class="space-y-2 flex-grow">
+          <div class="h-3 w-24 bg-slate-200 rounded"></div>
+          <div class="h-6 w-16 bg-slate-200 rounded"></div>
+        </div>
+      </div>
+      <div class="h-24 bg-white rounded-2xl border border-slate-200 p-6 flex items-center gap-4">
+        <div class="w-12 h-12 bg-slate-200 rounded-xl"></div>
+        <div class="space-y-2 flex-grow">
+          <div class="h-3 w-28 bg-slate-200 rounded"></div>
+          <div class="h-5 w-28 bg-slate-200 rounded"></div>
+        </div>
+      </div>
+      <div class="h-24 bg-white rounded-2xl border border-slate-200 p-6 flex items-center gap-4">
+        <div class="w-12 h-12 bg-slate-200 rounded-xl"></div>
+        <div class="space-y-2 flex-grow">
+          <div class="h-3 w-28 bg-slate-200 rounded"></div>
+          <div class="h-5 w-28 bg-slate-200 rounded"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Skeleton -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+      <div class="h-5 w-48 bg-slate-200 rounded"></div>
+      <div class="h-40 bg-slate-100/80 rounded-xl"></div>
+    </div>
+  </div>
+
+  <!-- Authorized Admin Dashboard Container -->
+  <main id="admin-authorized-container" class="hidden flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+    
+    <!-- Admin Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+      <div>
+        <div class="flex items-center gap-2 text-xs text-slate-500 mb-1">
+          <a href="index.html" class="hover:text-emerald-600">Home</a> &rsaquo;
+          <span>Admin Dashboard</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+          <span>Admin Control Center</span>
+          <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">v2.4 Live</span>
+        </h1>
+        <p class="text-xs text-slate-500 mt-1">Real-time user management, calculator analytics, global configuration, and audit logs.</p>
+      </div>
+
+      <!-- Admin Badge & Action Buttons -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="admin-btn-health-check" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          System Health Check
+        </button>
+        <button id="admin-btn-export-report" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer">
+          <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          Export Data Report
+        </button>
+        <div class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold">
+          <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+          <span id="admin-active-email-display">Admin: ashishkushwaha88643@gmail.com</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Top Key Metrics Overview Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500 mb-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Registered Users</span>
+          <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          </div>
+        </div>
+        <div>
+          <div id="stat-total-users" class="text-2xl font-black text-slate-900">--</div>
+          <p class="text-[10px] font-semibold text-amber-700 mt-0.5 flex items-center gap-1">
+            <span class="inline-block w-1.5 h-1.5 rounded-full bg-amber-500"></span> Real Firestore Records
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Active Users On Site Metric Card -->
+      <div class="bg-gradient-to-br from-slate-900 to-slate-950 text-white p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-md flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute -right-3 -top-3 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl pointer-events-none"></div>
+        <div class="flex items-center justify-between text-slate-300 mb-2 relative z-10">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            Live Users On Site
+          </span>
+          <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold border border-emerald-500/30">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+          </div>
+        </div>
+        <div class="relative z-10">
+          <div id="stat-live-users" class="text-2xl font-black text-emerald-400 flex items-baseline gap-2">
+            <span>1</span>
+            <span class="text-xs font-normal text-slate-400">active now</span>
+          </div>
+          <p id="stat-live-breakdown" class="text-[10px] text-slate-300 mt-0.5 font-medium truncate">
+            1 Admin online
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500 mb-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Calculations</span>
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+          </div>
+        </div>
+        <div>
+          <div id="stat-total-calculations" class="text-2xl font-black text-slate-900">1,482</div>
+          <p class="text-[10px] text-slate-500 mt-0.5">+128 processed today</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500 mb-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Saved Invoices</span>
+          <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          </div>
+        </div>
+        <div>
+          <div id="stat-total-invoices" class="text-2xl font-black text-slate-900">34</div>
+          <p class="text-[10px] text-slate-500 mt-0.5">Stored in user profiles</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500 mb-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Processed Volume</span>
+          <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </div>
+        </div>
+        <div>
+          <div id="stat-processed-volume" class="text-2xl font-black text-slate-900">$2.45M</div>
+          <p class="text-[10px] text-slate-500 mt-0.5">Estimated calculations total</p>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+        <div class="flex items-center justify-between text-slate-500 mb-2">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">System Status</span>
+          <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+          </div>
+        </div>
+        <div>
+          <div class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span> Operational
+          </div>
+          <p id="stat-firestore-latency" class="text-[10px] text-slate-500 mt-0.5">Latency: ~24ms</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="border-b border-slate-200">
+      <nav class="flex gap-4 sm:gap-8 overflow-x-auto text-xs font-bold" aria-label="Admin Tabs">
+        <button id="admin-tab-btn-users" class="admin-tab-btn px-1 py-3 text-amber-600 border-b-2 border-amber-600 transition-all flex items-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          Registered Users (<span id="tab-users-count">0</span>)
+        </button>
+
+        <button id="admin-tab-btn-analytics" class="admin-tab-btn px-1 py-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition-all flex items-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          Usage Analytics & Distributions
+        </button>
+
+        <button id="admin-tab-btn-controls" class="admin-tab-btn px-1 py-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition-all flex items-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          System Controls & Banner
+        </button>
+
+        <button id="admin-tab-btn-logs" class="admin-tab-btn px-1 py-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition-all flex items-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          Live Activity & Audit Logs
+        </button>
+
+        <button id="admin-tab-btn-shortener" class="admin-tab-btn px-1 py-3 text-slate-500 hover:text-slate-900 border-b-2 border-transparent transition-all flex items-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+          URL Shortener Stats
+        </button>
+      </nav>
+    </div>
+
+    <!-- TAB 1: REGISTERED USERS MANAGEMENT -->
+    <div id="admin-tab-content-users" class="admin-tab-panel space-y-6">
+
+      <!-- Live Active Visitors & Sessions Widget -->
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white rounded-2xl p-5 border border-slate-700 shadow-md">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+          <div class="flex items-center gap-2.5">
+            <span class="relative flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            </span>
+            <h3 class="text-sm font-bold tracking-tight text-white flex items-center gap-2">
+              <span>Live Visitor Presence Tracker</span>
+              <span id="live-session-count-badge" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 text-[11px] font-mono border border-emerald-500/30">1 Active Session</span>
+            </h3>
+          </div>
+          <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            Auto-Syncing via Firestore
+          </span>
+        </div>
+
+        <div id="live-active-sessions-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+          <div class="bg-slate-800/80 border border-slate-700/80 rounded-xl p-3 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2.5">
+              <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></div>
+              <div class="overflow-hidden">
+                <p class="font-bold text-slate-200 truncate">Ashish (Admin)</p>
+                <p class="text-[10px] text-slate-400 truncate">Page: admin.html</p>
+              </div>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-950 text-emerald-300 border border-emerald-800">LIVE NOW</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        
+        <div class="p-4 sm:p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Firestore User Collection</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Manage user permissions, inspect saved preferences, and filter active profiles.</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Search Input -->
+            <div class="relative w-full sm:w-60">
+              <input type="text" id="admin-search-users" placeholder="Search name, email, or UID..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-amber-500" />
+              <svg class="w-4 h-4 text-slate-400 absolute left-2.5 top-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+
+            <!-- Role Filter Dropdown -->
+            <select id="admin-filter-role" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-medium focus:outline-none focus:border-amber-500">
+              <option value="ALL">All Roles</option>
+              <option value="ADMIN">Admins Only</option>
+              <option value="USER">Standard Users</option>
+            </select>
+
+            <!-- Export Users CSV -->
+            <button id="btn-export-users-csv" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl transition-colors flex items-center gap-1 cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+              CSV
+            </button>
+
+            <!-- Add New User Directly -->
+            <button id="btn-admin-add-user" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              Register User
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+              <tr>
+                <th class="px-4 sm:px-6 py-3 w-12">#</th>
+                <th class="px-4 sm:px-6 py-3">User Profile</th>
+                <th class="px-4 sm:px-6 py-3">Email Address</th>
+                <th class="px-4 sm:px-6 py-3">First Login Date</th>
+                <th class="px-4 sm:px-6 py-3">Preferences</th>
+                <th class="px-4 sm:px-6 py-3">Role & Status</th>
+                <th class="px-4 sm:px-6 py-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-table-body" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="7" class="px-6 py-8 text-center text-slate-400 text-xs">
+                  Fetching users from Firestore...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB 2: USAGE ANALYTICS & DISTRIBUTIONS -->
+    <div id="admin-tab-content-analytics" class="admin-tab-panel hidden space-y-6">
+      
+      <!-- Real-time Firestore Telemetry Stat Summary -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+          <div>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Tool Calculations</p>
+            <h4 id="stat-analytics-total-runs" class="text-2xl font-black text-slate-900 mt-1">0</h4>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+          <div>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">7-Day Active Users (DAU)</p>
+            <h4 id="stat-analytics-7day-dau" class="text-2xl font-black text-slate-900 mt-1">0</h4>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex items-center justify-between">
+          <div>
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">7-Day Anonymous Views</p>
+            <h4 id="stat-analytics-7day-pvs" class="text-2xl font-black text-slate-900 mt-1">0</h4>
+          </div>
+          <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Live Firestore Tool Popularity Ranking Table -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Live Tool Usage Analytics</h3>
+              <p class="text-xs text-slate-500">Firestore increments per tool run</p>
+            </div>
+            <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">Live Firestore Data</span>
+          </div>
+
+          <div id="admin-analytics-tools-list" class="space-y-3 text-xs divide-y divide-slate-100">
+            <p class="text-slate-400 py-4 text-center">Loading live tool usage telemetry...</p>
+          </div>
+        </div>
+
+        <!-- 7-Day DAU & Page Views Canvas Chart -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">7-Day Active Traffic Trend</h3>
+              <p class="text-xs text-slate-500">Daily Active Users & Page Views (Canvas rendered)</p>
+            </div>
+            <span class="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-200">Canvas Telemetry</span>
+          </div>
+
+          <div class="bg-slate-950 p-4 rounded-2xl shadow-inner border border-slate-800">
+            <canvas id="dau-analytics-chart" class="w-full h-60 block"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB 3: SYSTEM CONTROLS & CONTENT MANAGER -->
+    <div id="admin-tab-content-controls" class="admin-tab-panel hidden space-y-6">
+      
+      <!-- Content Management System (Blog Posts & Announcements) -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+              Content Management System (Firestore)
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Create, publish, edit, or remove announcements and blog posts.</p>
+          </div>
+          <span class="text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-200">Admin Privileged</span>
+        </div>
+
+        <!-- Form for Creating / Editing Posts -->
+        <form id="admin-content-form" class="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+          <input type="hidden" id="content-edit-id" value="" />
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div class="sm:col-span-2">
+              <label class="block font-bold text-slate-700 mb-1">Title *</label>
+              <input type="text" id="content-form-title" required placeholder="e.g., Tax Year 2026 Calculator Updates or New Quick Utilities Added" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl font-medium text-slate-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600" />
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Content Type *</label>
+              <select id="content-form-type" class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl font-semibold text-slate-900 focus:outline-none focus:border-indigo-600">
+                <option value="Blog Post">Blog Post (shows on /updates.html)</option>
+                <option value="Announcement Banner">Announcement Banner (sticky top site-wide)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="text-xs space-y-1">
+            <label class="block font-bold text-slate-700">Body Content *</label>
+            <textarea id="content-form-body" rows="4" required placeholder="Write article content, feature overview, or announcement body text here..." class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl font-medium text-slate-900 focus:outline-none focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 leading-relaxed"></textarea>
+          </div>
+
+          <div class="flex items-center justify-between pt-2">
+            <label class="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-slate-700">
+              <input type="checkbox" id="content-form-published" checked class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+              <span>Publish Immediately (Publicly Visible)</span>
+            </label>
+
+            <div class="flex items-center gap-2">
+              <button type="button" id="btn-cancel-edit-content" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-xl transition-colors hidden cursor-pointer">
+                Cancel Edit
+              </button>
+              <button type="submit" id="btn-save-content" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition-all shadow-xs cursor-pointer flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                <span id="btn-save-content-label">Save & Publish Content</span>
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Managed Content List -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+            <span>Existing Articles & Announcements</span>
+            <span id="admin-content-count-badge" class="text-indigo-600 font-extrabold">0 Items</span>
+          </h4>
+
+          <div id="admin-content-list-container" class="space-y-3 divide-y divide-slate-100 text-xs">
+            <p class="text-slate-400 py-4 text-center">Loading content records from Firestore...</p>
+          </div>
+        </div>
+
+      </div>
+      
+      <!-- Site-wide Broadcast Announcement Banner Control -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+              Site-Wide Broadcast Announcement
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Display a top banner across every page for tax year updates, maintenance notices, or announcements.</p>
+          </div>
+
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="ctrl-announcement-enable" class="sr-only peer" checked />
+            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+            <span class="ml-2 text-xs font-bold text-slate-700">Banner Enabled</span>
+          </label>
+        </div>
+
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Announcement Message Text:</label>
+            <input type="text" id="ctrl-announcement-text" value="📢 Tax Year 2025/2026 progressive tax brackets and inflation adjustments are now updated!" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-amber-500" />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Banner Style Theme:</label>
+              <select id="ctrl-announcement-theme" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-amber-500">
+                <option value="emerald">Emerald Success (Green)</option>
+                <option value="amber" selected>Amber Information (Gold)</option>
+                <option value="indigo">Indigo Corporate (Blue)</option>
+                <option value="rose">Rose Alert (Red)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Optional Action Link URL:</label>
+              <input type="text" id="ctrl-announcement-link" value="tax-calculator.html" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-800 focus:outline-none focus:border-amber-500" placeholder="e.g. tax-calculator.html" />
+            </div>
+          </div>
+
+          <div class="pt-2 flex items-center justify-between">
+            <span id="announcement-saved-toast" class="text-xs text-emerald-600 font-bold hidden">✓ Banner saved site-wide!</span>
+            <button id="btn-save-announcement" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl transition-all shadow-xs cursor-pointer ml-auto flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              Save Announcement Settings
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blog Promotion Settings Control -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>
+              Blog Promotion Settings
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Control self-promotional blog posts from aktechstudio.com across FinCalc pages.</p>
+          </div>
+          <span class="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-[11px] font-bold rounded-full border border-indigo-200">AK Tech Studio Feed</span>
+        </div>
+
+        <div class="space-y-4 text-xs">
+          <!-- Number Input -->
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Number of blog ads to display:</label>
+            <div class="flex items-center gap-3">
+              <input type="number" id="ctrl-blog-promo-count" value="3" min="1" max="10" class="w-32 px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-indigo-500" />
+              <span class="text-slate-500 text-[11px]">Choose between 1 and 10 promotional cards per page.</span>
+            </div>
+          </div>
+
+          <!-- Page Toggles Checklist -->
+          <div>
+            <label class="block font-bold text-slate-700 mb-2">Display Blog Promo Section On These Pages:</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              
+              <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 cursor-pointer transition-colors">
+                <input type="checkbox" name="blog-promo-page" value="homepage" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" checked />
+                <div>
+                  <div class="font-bold text-slate-800">Homepage</div>
+                  <div class="text-[10px] text-slate-500">index.html</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 cursor-pointer transition-colors">
+                <input type="checkbox" name="blog-promo-page" value="loan-calculator" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <div>
+                  <div class="font-bold text-slate-800">Loan Calculator</div>
+                  <div class="text-[10px] text-slate-500">loan-calculator.html</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 cursor-pointer transition-colors">
+                <input type="checkbox" name="blog-promo-page" value="currency-converter" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <div>
+                  <div class="font-bold text-slate-800">Currency Converter</div>
+                  <div class="text-[10px] text-slate-500">currency-converter.html</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 cursor-pointer transition-colors">
+                <input type="checkbox" name="blog-promo-page" value="tax-calculator" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <div>
+                  <div class="font-bold text-slate-800">Tax Calculator</div>
+                  <div class="text-[10px] text-slate-500">tax-calculator.html</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 cursor-pointer transition-colors">
+                <input type="checkbox" name="blog-promo-page" value="salary-calculator" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <div>
+                  <div class="font-bold text-slate-800">Salary Calculator</div>
+                  <div class="text-[10px] text-slate-500">salary-calculator.html</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 cursor-pointer transition-colors">
+                <input type="checkbox" name="blog-promo-page" value="invoice-generator" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <div>
+                  <div class="font-bold text-slate-800">Invoice Generator</div>
+                  <div class="text-[10px] text-slate-500">invoice-generator.html</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 cursor-pointer transition-colors">
+                <input type="checkbox" name="blog-promo-page" value="roi-calculator" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <div>
+                  <div class="font-bold text-slate-800">ROI Calculator</div>
+                  <div class="text-[10px] text-slate-500">roi-calculator.html</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 cursor-pointer transition-colors">
+                <input type="checkbox" name="blog-promo-page" value="qr-generator" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <div>
+                  <div class="font-bold text-slate-800">QR Code Generator</div>
+                  <div class="text-[10px] text-slate-500">qr-generator.html</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 cursor-pointer transition-colors">
+                <input type="checkbox" name="blog-promo-page" value="password-generator" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <div>
+                  <div class="font-bold text-slate-800">Password Generator</div>
+                  <div class="text-[10px] text-slate-500">password-generator.html</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 cursor-pointer transition-colors">
+                <input type="checkbox" name="blog-promo-page" value="word-counter" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <div>
+                  <div class="font-bold text-slate-800">Word Counter</div>
+                  <div class="text-[10px] text-slate-500">word-counter.html</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 cursor-pointer transition-colors">
+                <input type="checkbox" name="blog-promo-page" value="unit-converter" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <div>
+                  <div class="font-bold text-slate-800">Unit Converter</div>
+                  <div class="text-[10px] text-slate-500">unit-converter.html</div>
+                </div>
+              </label>
+
+              <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/80 rounded-xl border border-slate-200 cursor-pointer transition-colors">
+                <input type="checkbox" name="blog-promo-page" value="age-calculator" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <div>
+                  <div class="font-bold text-slate-800">Age Calculator</div>
+                  <div class="text-[10px] text-slate-500">age-calculator.html</div>
+                </div>
+              </label>
+
+            </div>
+          </div>
+
+          <div class="pt-2 flex items-center justify-between border-t border-slate-100">
+            <span id="blog-promo-saved-toast" class="text-xs text-emerald-600 font-bold hidden">✓ Blog promo settings saved!</span>
+            <button id="btn-save-blog-promo" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-xs cursor-pointer ml-auto flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              Save Blog Promo Settings
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Operational Toggles & Margin Control -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Feature Flags & Guest Controls</h3>
+          
+          <div class="space-y-3 text-xs">
+            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+              <div>
+                <div class="font-bold text-slate-800">Guest Calculations</div>
+                <div class="text-slate-500 text-[11px]">Allow unauthenticated guests to use all calculators</div>
+              </div>
+              <input type="checkbox" class="w-4 h-4 text-amber-600 rounded" checked disabled />
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+              <div>
+                <div class="font-bold text-slate-800">PDF Invoice Export Engine</div>
+                <div class="text-slate-500 text-[11px]">Browser window print & PDF formatting</div>
+              </div>
+              <input type="checkbox" class="w-4 h-4 text-amber-600 rounded" checked disabled />
+            </div>
+
+            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+              <div>
+                <div class="font-bold text-slate-800">Live Exchange Rates Sync</div>
+                <div class="text-slate-500 text-[11px]">Automated 12-hour Currency API refresh</div>
+              </div>
+              <input type="checkbox" class="w-4 h-4 text-amber-600 rounded" checked disabled />
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Global Currency Rate Spread / Margin</h3>
+          
+          <div class="space-y-3 text-xs">
+            <p class="text-slate-500">Adjust the administrative exchange fee / markup added to raw FX quotes.</p>
+            
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Default FX Margin (% Spread):</label>
+              <div class="flex gap-2">
+                <input type="number" id="ctrl-fx-margin" value="0.0" step="0.1" min="0" max="5" class="w-32 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-amber-500" />
+                <button id="btn-save-fx-margin" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-colors cursor-pointer">
+                  Update Margin
+                </button>
+              </div>
+            </div>
+
+            <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-[11px] leading-relaxed">
+              <strong>Note:</strong> Setting a 0% spread uses raw ECB / Interbank market rates directly for currency calculations.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB 5: URL SHORTENER STATS -->
+    <div id="admin-tab-content-shortener" class="admin-tab-panel hidden space-y-6">
+      
+      <!-- Key Stats Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Links Created</span>
+            <div id="admin-shortener-total-links" class="text-2xl font-black text-slate-900 mt-1">0</div>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Clicks (All Links)</span>
+            <div id="admin-shortener-total-clicks" class="text-2xl font-black text-slate-900 mt-1">0</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top 10 Links Table -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Top 10 Most-Clicked Links</h2>
+            <p class="text-xs text-slate-500 mt-0.5">List of the most popular redirected short URLs across the entire application.</p>
+          </div>
+          <button id="admin-btn-refresh-shortener" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            Refresh Stats
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left text-slate-500">
+            <thead class="text-[10px] text-slate-400 uppercase bg-slate-50">
+              <tr>
+                <th class="py-3 px-4">Short Code</th>
+                <th class="py-3 px-4">Original URL</th>
+                <th class="py-3 px-4">Clicks</th>
+                <th class="py-3 px-4">Created At</th>
+                <th class="py-3 px-4">Expires At</th>
+              </tr>
+            </thead>
+            <tbody id="admin-shortener-table-body" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="5" class="py-8 text-center text-slate-400">Loading URL shortener stats...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: LIVE ACTIVITY LOGS -->
+    <div id="admin-tab-content-logs" class="admin-tab-panel hidden space-y-4">
+      
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+        
+        <div class="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">System Activity & Audit Logs</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Real-time log stream of user logins, calculation triggers, and administrative actions.</p>
+          </div>
+
+          <button id="btn-clear-logs" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-colors cursor-pointer">
+            Clear Stream
+          </button>
+        </div>
+
+        <div class="p-4 bg-slate-900 font-mono text-xs text-slate-300 max-h-96 overflow-y-auto space-y-2" id="admin-activity-logs-container">
+          <!-- Rendered dynamically -->
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- MODAL: USER DETAILS & INVOICE HISTORY -->
+    <div id="admin-user-details-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs hidden">
+      <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 relative text-slate-900 space-y-4">
+        
+        <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-3">
+            <img id="modal-user-avatar" src="" class="w-10 h-10 rounded-full object-cover border border-slate-200" />
+            <div>
+              <h3 id="modal-user-name" class="text-sm font-bold text-slate-900"></h3>
+              <p id="modal-user-email" class="text-xs text-slate-500"></p>
+            </div>
+          </div>
+          <button id="btn-close-user-modal" class="text-slate-400 hover:text-slate-600 p-1 text-lg font-bold cursor-pointer">&times;</button>
+        </div>
+
+        <div class="space-y-3 text-xs">
+          <div class="grid grid-cols-2 gap-2 p-3 bg-slate-50 rounded-xl">
+            <div>
+              <span class="text-slate-400 font-medium">User UID:</span>
+              <div id="modal-user-uid" class="font-mono font-bold text-slate-800 truncate"></div>
+            </div>
+            <div>
+              <span class="text-slate-400 font-medium">First Login:</span>
+              <div id="modal-user-login" class="font-semibold text-slate-800"></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="font-bold text-slate-800 mb-1">Preferences & Currency:</h4>
+            <div id="modal-user-prefs" class="p-3 bg-slate-50 rounded-xl font-mono text-slate-700"></div>
+          </div>
+
+          <div>
+            <h4 class="font-bold text-slate-800 mb-1">Saved User Invoices / Calculations:</h4>
+            <div id="modal-user-saved-items" class="p-3 bg-slate-50 rounded-xl max-h-32 overflow-y-auto space-y-1 text-[11px] font-mono text-slate-600">
+              None recorded yet.
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end">
+          <button id="btn-close-user-modal-bottom" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer">
+            Close Panel
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MODAL: DIAGNOSTIC HEALTH CHECK -->
+    <div id="admin-health-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs hidden">
+      <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full p-6 relative text-slate-900 space-y-4">
+        
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">System Health Diagnostics</h3>
+              <p class="text-[11px] text-slate-500">Live service latency and connectivity test</p>
+            </div>
+          </div>
+          <button id="btn-close-health-modal" class="text-slate-400 hover:text-slate-600 p-1 text-lg font-bold cursor-pointer">&times;</button>
+        </div>
+
+        <div id="health-check-results" class="space-y-2.5 text-xs">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end">
+          <button id="btn-run-health-rerun" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            Re-test Services
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Shared Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-900 font-bold">
+              <svg class="w-4 h-4 text-slate-900 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online finance and business calculators for everyday decisions.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-emerald-400 transition-colors">Loan / Mortgage Calculator</a></li>
+            <li><a href="currency-converter.html" class="hover:text-emerald-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-emerald-400 transition-colors">Tax Calculator (US & Canada)</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Business Tools</h4>
+          <ul class="space-y-2">
+            <li><a href="salary-calculator.html" class="hover:text-emerald-400 transition-colors">Salary & Paycheck Calculator</a></li>
+            <li><a href="invoice-generator.html" class="hover:text-emerald-400 transition-colors">Invoice Generator</a></li>
+            <li><a href="roi-calculator.html" class="hover:text-emerald-400 transition-colors">ROI & Investment Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Financial Disclaimer Notice -->
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px] leading-relaxed max-w-4xl mx-auto">
+        <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+        <p>
+          These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice. Always consult a certified accountant or financial advisor for official tax filings and lending calculations.
+        </p>
+        <p class="mt-4 text-slate-600">
+          © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved. Powered by Firebase Auth & Firestore.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/admin.js"></script>
+</body>
+</html>

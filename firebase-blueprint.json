@@ -1,0 +1,117 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile document containing account credentials, username, and calculation preferences",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "username": { "type": "string", "minLength": 3, "maxLength": 20, "pattern": "^[a-z0-9_]{3,20}$" },
+        "role": { "type": "string", "enum": ["USER", "ADMIN"] },
+        "status": { "type": "string" },
+        "firstLogin": { "type": "string" },
+        "lastLogin": { "type": "string" },
+        "lastActive": { "type": "string" }
+      },
+      "required": ["uid"]
+    },
+    "Username": {
+      "title": "Username Handle Mapping",
+      "description": "Unique username document mapping username handle to user UID",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid"]
+    },
+    "Presence": {
+      "title": "Presence Heartbeat Session",
+      "description": "User active session and heartbeat status",
+      "type": "object",
+      "properties": {
+        "sessionId": { "type": "string" },
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "page": { "type": "string" },
+        "isGuest": { "type": "boolean" }
+      }
+    },
+    "BlogPromoSettings": {
+      "title": "Blog Promotion Settings",
+      "description": "Configuration for self-promotional blog posts display",
+      "type": "object",
+      "properties": {
+        "adCount": { "type": "number", "minimum": 1, "maximum": 10 },
+        "enabledPages": { "type": "array", "items": { "type": "string" } },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "Content": {
+      "title": "Announcement & Blog Post Content",
+      "description": "Site news, announcements, and blog articles",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "type": { "type": "string" },
+        "published": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "createdBy": { "type": "string" }
+      }
+    },
+    "Analytics": {
+      "title": "Usage Analytics Data",
+      "description": "Calculators usage counts and daily active stats",
+      "type": "object",
+      "properties": {
+        "count": { "type": "number" },
+        "toolName": { "type": "string" }
+      }
+    },
+    "RateLimit": {
+      "title": "Rate Limiting Log",
+      "description": "Form submission rate limit records",
+      "type": "object",
+      "properties": {
+        "submissionCount": { "type": "number" },
+        "identifier": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User account documents indexed by auth UID"
+    },
+    "/usernames/{username}": {
+      "schema": { "$ref": "#/entities/Username" },
+      "description": "Unique username documents indexed by lowercase username"
+    },
+    "/presence/{sessionId}": {
+      "schema": { "$ref": "#/entities/Presence" },
+      "description": "Presence session documents for active online users"
+    },
+    "/settings/blogPromo": {
+      "schema": { "$ref": "#/entities/BlogPromoSettings" },
+      "description": "Blog promotion configuration document"
+    },
+    "/content/{contentId}": {
+      "schema": { "$ref": "#/entities/Content" },
+      "description": "Announcement banners and blog articles"
+    },
+    "/analytics/{docPath=**}": {
+      "schema": { "$ref": "#/entities/Analytics" },
+      "description": "Tool usage and visitor analytics"
+    },
+    "/rateLimits/{limitId}": {
+      "schema": { "$ref": "#/entities/RateLimit" },
+      "description": "Rate limiting tracking"
+    }
+  }
+}

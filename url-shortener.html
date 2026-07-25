@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free URL Shortener – Shorten Long URLs Instantly | FinCalc Tools</title>
+  <meta name="description" content="Free premium URL Shortener. Create clean, short, and custom redirect links with optional expiration times, instant QR code generation, and click analytics tracking." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- ================= Shared Header / Navigation ================= -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-800 p-0.5 shadow-md shadow-emerald-600/20 group-hover:shadow-emerald-600/30 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent"></div>
+              <svg class="w-5 h-5 text-emerald-400 group-hover:text-emerald-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-emerald-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">SUITE</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Smart Financial Tools</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <!-- Will be populated dynamically by /js/auth.js -->
+      </nav>
+
+      <!-- User Auth Dropdown -->
+      <div id="navbar-auth-container" class="flex items-center gap-2">
+        <div class="w-24 h-8 bg-slate-100 animate-pulse rounded-lg"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= Main Content ================= -->
+  <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-8">
+    
+    <!-- Hero / Header -->
+    <div class="text-center space-y-3">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Fast, Private redirects via Cloudflare Edge
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+        Premium <span class="text-emerald-600">URL Shortener</span>
+      </h1>
+      <p class="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto leading-relaxed">
+        Paste your long URL below to create a short link. Logged-in users can customize their short codes, set expiration dates, and view comprehensive click analytics.
+      </p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="bg-white border border-slate-200 shadow-xl rounded-3xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
+      
+      <!-- Design Background Accents -->
+      <div class="absolute -right-16 -bottom-16 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+      
+      <form id="shortener-form" class="space-y-5">
+        
+        <!-- Long URL Input -->
+        <div class="space-y-1.5">
+          <label for="long-url" class="block text-xs font-bold text-slate-700 uppercase tracking-wide">Enter Long URL</label>
+          <div class="relative rounded-2xl shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+            </div>
+            <input type="url" id="long-url" name="long-url" required placeholder="https://example.com/very-long-link-to-shorten" class="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-slate-800" />
+          </div>
+        </div>
+
+        <!-- Custom Short Code (Show if logged in) -->
+        <div id="custom-code-container" class="space-y-1.5 hidden animate-fade-in">
+          <div class="flex items-center justify-between">
+            <label for="custom-code" class="block text-xs font-bold text-slate-700 uppercase tracking-wide">Custom short code (Optional)</label>
+            <span class="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-2 py-0.5 rounded-full border border-emerald-200">Logged-in Exclusive</span>
+          </div>
+          <div class="relative rounded-2xl shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <span class="text-xs font-extrabold text-slate-400">/</span>
+            </div>
+            <input type="text" id="custom-code" name="custom-code" placeholder="my-custom-link" class="block w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-slate-800" />
+          </div>
+          <p class="text-[10px] text-slate-400">Alphanumeric characters, dashes, and underscores only. Length: 3 - 30 characters.</p>
+        </div>
+
+        <!-- Expiry Date / Picker (Optional) -->
+        <div class="space-y-1.5">
+          <label for="expiry-date" class="block text-xs font-bold text-slate-700 uppercase tracking-wide">Set Expiration Date (Optional)</label>
+          <div class="relative rounded-2xl shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
+            <input type="datetime-local" id="expiry-date" name="expiry-date" class="block w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-medium focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-slate-700" />
+          </div>
+          <p class="text-[10px] text-slate-400">The short link will stop working automatically after this date.</p>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="btn-submit" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-2xl shadow-md shadow-emerald-600/10 hover:shadow-emerald-600/20 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2">
+          <span>Shorten URL</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+        </button>
+      </form>
+
+      <!-- Logged-out Reminder Banner -->
+      <div id="logged-out-promo" class="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-between gap-3 flex-wrap sm:flex-nowrap">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-600/10 flex items-center justify-center text-indigo-600 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 00-2 2h-2a2 2 0 00-2-2z"></path></svg>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-slate-900">Want custom short codes & analytics?</h4>
+            <p class="text-[10px] text-slate-500">Sign in with Google to manage your links, configure expirations, and track visitor statistics.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result Section (Initially Hidden) -->
+      <div id="result-section" class="hidden border-t border-slate-100 pt-6 space-y-4 animate-fade-in">
+        <h3 class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Your shortened link is ready!</h3>
+        
+        <div class="flex items-center gap-2 flex-col sm:flex-row">
+          <input type="text" id="result-url" readonly class="flex-grow w-full px-4 py-3 bg-emerald-50/60 border border-emerald-200 rounded-xl text-emerald-950 text-sm font-bold focus:outline-none" />
+          
+          <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
+            <!-- Copy button -->
+            <button id="btn-copy" class="flex-grow sm:flex-grow-0 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+              <span>Copy</span>
+            </button>
+            
+            <!-- Generate QR button -->
+            <button id="btn-qr" class="flex-grow sm:flex-grow-0 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+              <span>Generate QR</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ================= Shared Footer ================= -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-900">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online finance and business calculators for everyday decisions.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-emerald-400 transition-colors">Loan / Mortgage</a></li>
+            <li><a href="currency-converter.html" class="hover:text-emerald-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-emerald-400 transition-colors">Tax Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Business Tools</h4>
+          <ul class="space-y-2">
+            <li><a href="salary-calculator.html" class="hover:text-emerald-400 transition-colors">Salary & Paycheck</a></li>
+            <li><a href="invoice-generator.html" class="hover:text-emerald-400 transition-colors">Invoice Generator</a></li>
+            <li><a href="roi-calculator.html" class="hover:text-emerald-400 transition-colors">ROI Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Quick Utilities</h4>
+          <ul class="space-y-2">
+            <li><a href="qr-generator.html" class="hover:text-indigo-400 transition-colors">QR Code Generator</a></li>
+            <li><a href="password-generator.html" class="hover:text-indigo-400 transition-colors">Password Generator</a></li>
+            <li><a href="word-counter.html" class="hover:text-indigo-400 transition-colors">Word Counter</a></li>
+            <li><a href="unit-converter.html" class="hover:text-indigo-400 transition-colors">Unit Converter</a></li>
+            <li><a href="age-calculator.html" class="hover:text-indigo-400 transition-colors">Age Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Financial Disclaimer Notice -->
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px] leading-relaxed max-w-4xl mx-auto">
+        <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+        <p>
+          These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice. Always consult a certified accountant or financial advisor for official tax filings and lending calculations.
+        </p>
+        <p class="mt-4 text-slate-600">
+          © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved. Powered by Firebase Auth & Firestore.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/blog-promo.js"></script>
+
+  <!-- URL Shortener Script -->
+  <script type="module">
+    import { getCurrentUser, showToast } from '/js/auth.js';
+    import { trackToolUsage } from '/js/analytics.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      let activeUser = null;
+      const form = document.getElementById('shortener-form');
+      const customCodeContainer = document.getElementById('custom-code-container');
+      const loggedOutPromo = document.getElementById('logged-out-promo');
+      const resultSection = document.getElementById('result-section');
+      const resultUrl = document.getElementById('result-url');
+      const btnCopy = document.getElementById('btn-copy');
+      const btnQr = document.getElementById('btn-qr');
+      const btnSubmit = document.getElementById('btn-submit');
+
+      // Listen for authentication changes
+      window.addEventListener('auth-state-changed', (e) => {
+        activeUser = e.detail?.user;
+        if (activeUser) {
+          customCodeContainer.classList.remove('hidden');
+          loggedOutPromo.classList.add('hidden');
+        } else {
+          customCodeContainer.classList.add('hidden');
+          loggedOutPromo.classList.remove('hidden');
+          // Clear inputs
+          document.getElementById('custom-code').value = '';
+        }
+      });
+
+      // Also do initial check
+      activeUser = getCurrentUser();
+      if (activeUser) {
+        customCodeContainer.classList.remove('hidden');
+        loggedOutPromo.classList.add('hidden');
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const originalUrl = document.getElementById('long-url').value.trim();
+        const customCode = document.getElementById('custom-code').value.trim();
+        const expiresAt = document.getElementById('expiry-date').value;
+
+        if (!originalUrl) {
+          showToast('Please enter a valid URL.', 'error');
+          return;
+        }
+
+        // Disable submit button during request
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = `
+          <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+          </svg>
+          <span>Processing Link...</span>
+        `;
+
+        try {
+          const bodyData = {
+            originalUrl,
+            customCode: activeUser ? customCode : null,
+            expiresAt: expiresAt ? expiresAt : null,
+            uid: activeUser ? activeUser.uid : null
+          };
+
+          const response = await fetch('/functions/shorten', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bodyData)
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Failed to shorten URL');
+          }
+
+          trackToolUsage('URL Shortener');
+          
+          // Display short URL result
+          resultUrl.value = data.shortUrl;
+          resultSection.classList.remove('hidden');
+          resultSection.scrollIntoView({ behavior: 'smooth' });
+          showToast('Short link created successfully!', 'success');
+
+        } catch (err) {
+          console.error("Shortening failed:", err);
+          showToast(err.message || 'An error occurred. Please try again.', 'error');
+        } finally {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = `
+            <span>Shorten URL</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+          `;
+        }
+      });
+
+      // Copy to Clipboard logic
+      btnCopy.addEventListener('click', () => {
+        const urlToCopy = resultUrl.value;
+        if (!urlToCopy) return;
+
+        navigator.clipboard.writeText(urlToCopy).then(() => {
+          showToast('Link copied to clipboard!', 'success');
+          // Temporarily update button text
+          const btnSpan = btnCopy.querySelector('span');
+          btnSpan.textContent = 'Copied!';
+          setTimeout(() => {
+            btnSpan.textContent = 'Copy';
+          }, 2000);
+        }).catch((err) => {
+          console.error('Could not copy link:', err);
+          showToast('Failed to copy. Try selecting the text manually.', 'error');
+        });
+      });
+
+      // Generate QR Code logic
+      btnQr.addEventListener('click', () => {
+        const urlToQr = resultUrl.value;
+        if (!urlToQr) return;
+
+        // Append ?src=qr to short URL
+        const qrTargetUrl = `${urlToQr}?src=qr`;
+        
+        // Open QR Code Generator page in new tab with the target URL as query parameter
+        window.open(`/qr-generator.html?url=${encodeURIComponent(qrTargetUrl)}`, '_blank');
+      });
+    });
+  </script>
+</body>
+</html>

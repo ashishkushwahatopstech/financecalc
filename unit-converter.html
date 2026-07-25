@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Unit Converter Online – Length, Weight, Temp & Volume | FinCalc Tools</title>
+  <meta name="description" content="Free online unit converter tool. Convert measurements for Length, Weight, Temperature, and Volume in real-time with instant calculations and swap features." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Shared Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-indigo-800 p-0.5 shadow-md shadow-indigo-600/20 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <svg class="w-5 h-5 text-indigo-400 group-hover:text-indigo-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-indigo-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/80">UTILITY</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Free Quick Utilities</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-indigo-600 transition-colors">Home</a>
+        <a href="loan-calculator.html" class="hover:text-indigo-600 transition-colors">Loan</a>
+        <a href="currency-converter.html" class="hover:text-indigo-600 transition-colors">Currency</a>
+        <a href="tax-calculator.html" class="hover:text-indigo-600 transition-colors">Tax</a>
+        <a href="salary-calculator.html" class="hover:text-indigo-600 transition-colors">Salary</a>
+        <a href="invoice-generator.html" class="hover:text-indigo-600 transition-colors">Invoice</a>
+        <a href="roi-calculator.html" class="hover:text-indigo-600 transition-colors">ROI</a>
+
+        <div class="relative group">
+          <button class="flex items-center gap-1 font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200">
+            <span>Utilities</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+            <a href="qr-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">QR Code Generator</a>
+            <a href="password-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Password Generator</a>
+            <a href="word-counter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Word Counter</a>
+            <a href="unit-converter.html" class="block px-4 py-2 text-xs font-bold text-indigo-600 bg-indigo-50/50">Unit Converter</a>
+            <a href="age-calculator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Age Calculator</a>
+          </div>
+        </div>
+
+        <a id="nav-admin-link" href="admin.html" class="hidden text-amber-700 hover:text-amber-800 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
+      </nav>
+
+      <div id="navbar-auth-container" class="flex items-center gap-2">
+        <div class="w-24 h-8 bg-slate-100 animate-pulse rounded-lg"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow">
+    <!-- Header Hero -->
+    <section class="bg-gradient-to-b from-white via-indigo-50/30 to-slate-50 py-10 px-4 sm:px-6 lg:px-8 border-b border-slate-200/80">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-semibold mb-3">
+          <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+          Instant Metric & Imperial Conversion
+        </div>
+        <h1 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+          Universal <span class="text-indigo-600">Unit Converter</span>
+        </h1>
+        <p class="mt-2 text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto">
+          Convert length, weight, temperature, and liquid volume measurements effortlessly between metric and imperial units.
+        </p>
+      </div>
+    </section>
+
+    <!-- Interactive Converter Box -->
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      
+      <!-- Category Selection Tabs -->
+      <div class="flex items-center justify-center gap-2 mb-8 flex-wrap">
+        <button type="button" data-cat="length" class="cat-tab-btn active px-4 py-2 text-xs font-extrabold rounded-xl border border-indigo-500 bg-indigo-50 text-indigo-700 transition-all cursor-pointer">
+          Length
+        </button>
+        <button type="button" data-cat="weight" class="cat-tab-btn px-4 py-2 text-xs font-extrabold rounded-xl border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all cursor-pointer">
+          Weight / Mass
+        </button>
+        <button type="button" data-cat="temp" class="cat-tab-btn px-4 py-2 text-xs font-extrabold rounded-xl border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all cursor-pointer">
+          Temperature
+        </button>
+        <button type="button" data-cat="volume" class="cat-tab-btn px-4 py-2 text-xs font-extrabold rounded-xl border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all cursor-pointer">
+          Volume
+        </button>
+      </div>
+
+      <!-- Converter Card -->
+      <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center">
+          
+          <!-- From Unit & Value -->
+          <div class="md:col-span-5 space-y-2">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">From Amount:</label>
+            <div class="space-y-2">
+              <input type="number" id="input-val" value="1" step="any" placeholder="Enter number..." class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-lg font-extrabold text-slate-900 focus:outline-none focus:border-indigo-500" />
+              <select id="select-from" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-indigo-500"></select>
+            </div>
+          </div>
+
+          <!-- Swap Button -->
+          <div class="md:col-span-1 flex items-center justify-center pt-4 md:pt-6">
+            <button type="button" id="btn-swap" title="Swap Units" class="p-3 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-full border border-indigo-200 transition-all transform hover:rotate-180 duration-300 cursor-pointer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            </button>
+          </div>
+
+          <!-- To Unit & Converted Result -->
+          <div class="md:col-span-5 space-y-2">
+            <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider">Converted Result:</label>
+            <div class="space-y-2">
+              <div id="output-val" class="w-full px-4 py-3 bg-slate-900 text-emerald-400 rounded-xl text-lg font-mono font-extrabold border border-slate-800 overflow-x-auto select-all">
+                0
+              </div>
+              <select id="select-to" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-indigo-500"></select>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Result Formula Display Banner -->
+        <div class="p-4 bg-indigo-50/60 border border-indigo-100 rounded-xl text-center text-xs font-semibold text-indigo-900">
+          <span id="formula-text">1 Meter (m) = 3.28084 Feet (ft)</span>
+        </div>
+
+        <!-- Quick Reference Table -->
+        <div class="pt-4 border-t border-slate-100">
+          <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3">Common Equivalent Conversions</h4>
+          <div id="cheatsheet-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs"></div>
+        </div>
+
+      </div>
+
+      <!-- SEO Article -->
+      <article class="mt-12 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
+        <h2 class="text-lg font-extrabold text-slate-900">Comprehensive Unit Conversion Tool</h2>
+        <p>
+          Navigating between metric measurements (meters, kilograms, liters, Celsius) and US customary / imperial systems (feet, pounds, gallons, Fahrenheit) is essential for engineering, cooking, fitness tracking, and international trade. Our <strong>free online unit converter</strong> converts physical dimensions accurately with real-time browser calculation.
+        </p>
+        <p>
+          Select from length, mass/weight, temperature, or volume categories above to get instant conversions without loading new pages or dealing with pop-up ads.
+        </p>
+      </article>
+
+    </section>
+
+    <!-- Self-promotional blog links container - NOT Google AdSense units -->
+    <div id="promo-ads" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10"></div>
+  </main>
+
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-indigo-500 flex items-center justify-center text-white font-extrabold">F</div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online financial calculators and client-side developer utilities.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-indigo-400 transition-colors">Loan / Mortgage</a></li>
+            <li><a href="currency-converter.html" class="hover:text-indigo-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-indigo-400 transition-colors">Tax Calculator</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Quick Utilities</h4>
+          <ul class="space-y-2">
+            <li><a href="qr-generator.html" class="hover:text-indigo-400 transition-colors">QR Code Generator</a></li>
+            <li><a href="password-generator.html" class="hover:text-indigo-400 transition-colors">Password Generator</a></li>
+            <li><a href="word-counter.html" class="hover:text-indigo-400 transition-colors">Word Counter</a></li>
+            <li><a href="unit-converter.html" class="hover:text-indigo-400 transition-colors">Unit Converter</a></li>
+            <li><a href="age-calculator.html" class="hover:text-indigo-400 transition-colors">Age Calculator</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-indigo-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-indigo-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px]">
+        © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/blog-promo.js"></script>
+
+  <script type="module">
+    import { trackToolUsage } from '/js/analytics.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      let currentCategory = 'length';
+
+      const UNITS = {
+        length: [
+          { id: 'mm', label: 'Millimeters (mm)', factor: 0.001 },
+          { id: 'cm', label: 'Centimeters (cm)', factor: 0.01 },
+          { id: 'm', label: 'Meters (m)', factor: 1 },
+          { id: 'km', label: 'Kilometers (km)', factor: 1000 },
+          { id: 'in', label: 'Inches (in)', factor: 0.0254 },
+          { id: 'ft', label: 'Feet (ft)', factor: 0.3048 },
+          { id: 'yd', label: 'Yards (yd)', factor: 0.9144 },
+          { id: 'mi', label: 'Miles (mi)', factor: 1609.344 }
+        ],
+        weight: [
+          { id: 'mg', label: 'Milligrams (mg)', factor: 0.000001 },
+          { id: 'g', label: 'Grams (g)', factor: 0.001 },
+          { id: 'kg', label: 'Kilograms (kg)', factor: 1 },
+          { id: 't', label: 'Metric Tons (t)', factor: 1000 },
+          { id: 'oz', label: 'Ounces (oz)', factor: 0.028349523125 },
+          { id: 'lb', label: 'Pounds (lb)', factor: 0.45359237 },
+          { id: 'st', label: 'Stones (st)', factor: 6.35029318 }
+        ],
+        temp: [
+          { id: 'c', label: 'Celsius (°C)' },
+          { id: 'f', label: 'Fahrenheit (°F)' },
+          { id: 'k', label: 'Kelvin (K)' }
+        ],
+        volume: [
+          { id: 'ml', label: 'Milliliters (mL)', factor: 0.001 },
+          { id: 'l', label: 'Liters (L)', factor: 1 },
+          { id: 'm3', label: 'Cubic Meters (m³)', factor: 1000 },
+          { id: 'tsp', label: 'Teaspoons (tsp)', factor: 0.00492892 },
+          { id: 'tbsp', label: 'Tablespoons (tbsp)', factor: 0.0147868 },
+          { id: 'floz', label: 'Fluid Ounces (fl oz)', factor: 0.0295735 },
+          { id: 'cup', label: 'Cups (cup)', factor: 0.236588 },
+          { id: 'pt', label: 'Pints (pt)', factor: 0.473176 },
+          { id: 'qt', label: 'Quarts (qt)', factor: 0.946353 },
+          { id: 'gal', label: 'Gallons (gal)', factor: 3.78541 }
+        ]
+      };
+
+      const catBtns = document.querySelectorAll('.cat-tab-btn');
+      const inputVal = document.getElementById('input-val');
+      const selectFrom = document.getElementById('select-from');
+      const selectTo = document.getElementById('select-to');
+      const outputVal = document.getElementById('output-val');
+      const btnSwap = document.getElementById('btn-swap');
+      const formulaText = document.getElementById('formula-text');
+      const cheatsheetGrid = document.getElementById('cheatsheet-grid');
+
+      function populateDropdowns() {
+        const list = UNITS[currentCategory];
+        selectFrom.innerHTML = '';
+        selectTo.innerHTML = '';
+
+        list.forEach((u, i) => {
+          const opt1 = new Option(u.label, u.id);
+          const opt2 = new Option(u.label, u.id);
+          selectFrom.add(opt1);
+          selectTo.add(opt2);
+        });
+
+        // Set default second option for To dropdown
+        if (list.length > 1) {
+          selectTo.selectedIndex = 1;
+        }
+
+        renderCheatsheet();
+        convert();
+      }
+
+      function convert() {
+        trackToolUsage('Unit Converter');
+        const val = parseFloat(inputVal.value);
+        if (isNaN(val)) {
+          outputVal.textContent = '0';
+          formulaText.textContent = 'Enter a valid number above...';
+          return;
+        }
+
+        const fromId = selectFrom.value;
+        const toId = selectTo.value;
+
+        let result = 0;
+
+        if (currentCategory === 'temp') {
+          result = convertTemperature(val, fromId, toId);
+        } else {
+          const list = UNITS[currentCategory];
+          const fromObj = list.find(u => u.id === fromId);
+          const toObj = list.find(u => u.id === toId);
+
+          if (fromObj && toObj) {
+            // Convert to base unit then to target unit
+            const baseValue = val * fromObj.factor;
+            result = baseValue / toObj.factor;
+          }
+        }
+
+        // Format result cleanly
+        let displayStr = '';
+        if (Math.abs(result) < 0.000001 && result !== 0) {
+          displayStr = result.toExponential(6);
+        } else if (Number.isInteger(result)) {
+          displayStr = result.toLocaleString();
+        } else {
+          displayStr = parseFloat(result.toFixed(6)).toLocaleString();
+        }
+
+        outputVal.textContent = displayStr;
+
+        // Show formula
+        const fromLabel = selectFrom.options[selectFrom.selectedIndex]?.text || '';
+        const toLabel = selectTo.options[selectTo.selectedIndex]?.text || '';
+        formulaText.textContent = `${val} ${fromLabel} = ${displayStr} ${toLabel}`;
+      }
+
+      function convertTemperature(val, from, to) {
+        if (from === to) return val;
+
+        let celsius = 0;
+        if (from === 'c') celsius = val;
+        else if (from === 'f') celsius = (val - 32) * (5 / 9);
+        else if (from === 'k') celsius = val - 273.15;
+
+        if (to === 'c') return celsius;
+        if (to === 'f') return (celsius * (9 / 5)) + 32;
+        if (to === 'k') return celsius + 273.15;
+
+        return val;
+      }
+
+      function renderCheatsheet() {
+        cheatsheetGrid.innerHTML = '';
+        let samples = [];
+
+        if (currentCategory === 'length') {
+          samples = [
+            '1 Inch = 2.54 cm',
+            '1 Foot = 30.48 cm',
+            '1 Yard = 0.9144 m',
+            '1 Mile = 1.609 km',
+            '1 Meter = 3.281 ft',
+            '1 Kilometer = 0.621 mi'
+          ];
+        } else if (currentCategory === 'weight') {
+          samples = [
+            '1 Ounce = 28.35 g',
+            '1 Pound = 0.4536 kg',
+            '1 Kilogram = 2.205 lbs',
+            '1 Stone = 6.35 kg',
+            '1 Metric Ton = 2,204.6 lbs',
+            '1 Gram = 1,000 mg'
+          ];
+        } else if (currentCategory === 'temp') {
+          samples = [
+            '0 °C = 32 °F (Water Freezing)',
+            '21 °C = 70 °F (Room Temp)',
+            '37 °C = 98.6 °F (Body Temp)',
+            '100 °C = 212 °F (Water Boiling)',
+            '0 K = -273.15 °C (Absolute Zero)',
+            '100 K = -173.15 °C'
+          ];
+        } else if (currentCategory === 'volume') {
+          samples = [
+            '1 Cup = 236.59 mL',
+            '1 Liter = 1,000 mL',
+            '1 Gallon = 3.785 L',
+            '1 Fluid Oz = 29.57 mL',
+            '1 Pint = 473.18 mL',
+            '1 Quart = 946.35 mL'
+          ];
+        }
+
+        samples.forEach(s => {
+          const div = document.createElement('div');
+          div.className = 'p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 text-center';
+          div.textContent = s;
+          cheatsheetGrid.appendChild(div);
+        });
+      }
+
+      // Category tab switcher
+      catBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          catBtns.forEach(b => {
+            b.classList.remove('border-indigo-500', 'bg-indigo-50', 'text-indigo-700');
+            b.classList.add('border-slate-200', 'bg-slate-50', 'text-slate-600');
+          });
+          btn.classList.add('border-indigo-500', 'bg-indigo-50', 'text-indigo-700');
+          btn.classList.remove('border-slate-200', 'bg-slate-50', 'text-slate-600');
+
+          currentCategory = btn.getAttribute('data-cat');
+          populateDropdowns();
+        });
+      });
+
+      // Swap button
+      btnSwap.addEventListener('click', () => {
+        const tmp = selectFrom.selectedIndex;
+        selectFrom.selectedIndex = selectTo.selectedIndex;
+        selectTo.selectedIndex = tmp;
+        convert();
+      });
+
+      // Inputs event listeners
+      inputVal.addEventListener('input', convert);
+      selectFrom.addEventListener('change', convert);
+      selectTo.addEventListener('change', convert);
+
+      // Initial populate
+      populateDropdowns();
+    });
+  </script>
+</body>
+</html>

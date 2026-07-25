@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Salary & Paycheck Calculator – FinCalc Tools</title>
+  <meta name="description" content="Calculate your net take-home pay per paycheck across hourly, weekly, bi-weekly, monthly, or annual pay periods." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-800 p-0.5 shadow-md shadow-emerald-600/20 group-hover:shadow-emerald-600/30 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent"></div>
+              <svg class="w-5 h-5 text-emerald-400 group-hover:text-emerald-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+          <span class="absolute -top-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white"></span>
+          </span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-emerald-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">SUITE</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Smart Financial Tools</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-emerald-600 transition-colors">Home</a>
+        <a href="loan-calculator.html" class="hover:text-emerald-600 transition-colors">Loan</a>
+        <a href="currency-converter.html" class="hover:text-emerald-600 transition-colors">Currency</a>
+        <a href="tax-calculator.html" class="hover:text-emerald-600 transition-colors">Tax</a>
+        <a href="salary-calculator.html" class="text-indigo-600 font-bold">Salary</a>
+        <a href="invoice-generator.html" class="hover:text-emerald-600 transition-colors">Invoice</a>
+        <a href="roi-calculator.html" class="hover:text-emerald-600 transition-colors">ROI</a>
+
+        <div class="relative group">
+          <button class="flex items-center gap-1 font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200">
+            <span>Utilities</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+            <a href="qr-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">QR Code Generator</a>
+            <a href="password-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Password Generator</a>
+            <a href="word-counter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Word Counter</a>
+            <a href="unit-converter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Unit Converter</a>
+            <a href="age-calculator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Age Calculator</a>
+          </div>
+        </div>
+
+        <a id="nav-admin-link" href="admin.html" class="hidden text-amber-700 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
+      </nav>
+
+      <div id="navbar-auth-container" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    
+    <div class="mb-6">
+      <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+        <a href="index.html" class="hover:text-emerald-600">Home</a> &rsaquo;
+        <span>Salary & Paycheck Calculator</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Salary & Paycheck Calculator</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">Convert gross earnings into net take-home pay per paycheck.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Inputs -->
+      <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+        <h2 class="text-base font-bold text-slate-900 mb-4 pb-3 border-b border-slate-100">Earnings & Pay Schedule</h2>
+        
+        <form id="paycheck-form" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Pay Frequency</label>
+            <select id="pay-freq" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800">
+              <option value="annually" selected>Annually (Gross Salary)</option>
+              <option value="monthly">Monthly</option>
+              <option value="semimonthly">Semi-Monthly (2x / Month)</option>
+              <option value="biweekly">Bi-Weekly (Every 2 Weeks)</option>
+              <option value="weekly">Weekly</option>
+              <option value="hourly">Hourly Rate</option>
+            </select>
+          </div>
+
+          <div>
+            <label id="pay-amount-label" class="block text-xs font-semibold text-slate-700 mb-1">Gross Annual Salary ($)</label>
+            <div class="relative">
+              <span class="absolute left-3 top-2.5 text-slate-400 text-sm font-medium">$</span>
+              <input type="number" id="pay-amount" value="85000" min="0" step="1000" class="w-full pl-8 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+            </div>
+          </div>
+
+          <div id="hours-per-week-container" class="hidden">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Hours Worked per Week</label>
+            <input type="number" id="pay-hours" value="40" min="1" max="168" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Estimated Total Tax & Deduction Rate (%)</label>
+            <input type="number" id="pay-tax-pct" value="22" min="0" max="60" step="1" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+            <span class="text-[11px] text-slate-400 mt-1 block">Includes federal, state/provincial tax, and social payroll deductions.</span>
+          </div>
+
+          <button type="submit" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-xs transition-colors cursor-pointer">
+            Calculate Paycheck Breakdown
+          </button>
+        </form>
+      </div>
+
+      <!-- Results -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Net Take Home Pay Spotlight Card -->
+        <div class="bg-gradient-to-r from-indigo-900 to-slate-900 text-white p-6 rounded-2xl shadow-md border border-indigo-800">
+          <span class="text-xs font-semibold text-indigo-300 uppercase tracking-wider">Estimated Net Pay Per Paycheck</span>
+          <div id="res-paycheck-net" class="text-3xl sm:text-4xl font-black mt-1 text-[#63c1f2]">$2,551.92</div>
+          <div id="res-paycheck-sub" class="text-xs text-indigo-200 mt-2">Based on 26 bi-weekly pay periods per year after 22.0% estimated tax withholding.</div>
+        </div>
+
+        <!-- Breakdown Comparison Table -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+          <div class="p-4 bg-slate-50 border-b border-slate-200">
+            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Earnings Breakdown Matrix</h3>
+          </div>
+          
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+              <tr>
+                <th class="py-2.5 px-4">Period</th>
+                <th class="py-2.5 px-4">Gross Pay</th>
+                <th class="py-2.5 px-4">Tax / Deductions</th>
+                <th class="py-2.5 px-4 text-right">Net Take-Home</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-slate-800">
+              <tr>
+                <td class="py-3 px-4 font-bold text-slate-900">Per Paycheck</td>
+                <td id="row-paycheck-gross" class="py-3 px-4 font-mono">$3,269.23</td>
+                <td id="row-paycheck-tax" class="py-3 px-4 font-mono text-rose-600">-$719.23</td>
+                <td id="row-paycheck-net" class="py-3 px-4 font-mono font-bold text-right text-emerald-700">$2,550.00</td>
+              </tr>
+              <tr class="bg-slate-50/50">
+                <td class="py-3 px-4 font-bold text-slate-900">Monthly</td>
+                <td id="row-monthly-gross" class="py-3 px-4 font-mono">$7,083.33</td>
+                <td id="row-monthly-tax" class="py-3 px-4 font-mono text-rose-600">-$1,558.33</td>
+                <td id="row-monthly-net" class="py-3 px-4 font-mono font-bold text-right text-emerald-700">$5,525.00</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4 font-bold text-slate-900">Annually</td>
+                <td id="row-annual-gross" class="py-3 px-4 font-mono">$85,000.00</td>
+                <td id="row-annual-tax" class="py-3 px-4 font-mono text-rose-600">-$18,700.00</td>
+                <td id="row-annual-net" class="py-3 px-4 font-mono font-bold text-right text-emerald-700">$66,300.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Self-promotional blog links container - NOT Google AdSense units -->
+    <div id="promo-ads" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10"></div>
+
+  </main>
+
+  <!-- Shared Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-900 font-bold">
+              <svg class="w-4 h-4 text-slate-900 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online finance and business calculators for everyday decisions.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-emerald-400 transition-colors">Loan / Mortgage Calculator</a></li>
+            <li><a href="currency-converter.html" class="hover:text-emerald-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-emerald-400 transition-colors">Tax Calculator (US & Canada)</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Business Tools</h4>
+          <ul class="space-y-2">
+            <li><a href="salary-calculator.html" class="hover:text-emerald-400 transition-colors">Salary & Paycheck Calculator</a></li>
+            <li><a href="invoice-generator.html" class="hover:text-emerald-400 transition-colors">Invoice Generator</a></li>
+            <li><a href="roi-calculator.html" class="hover:text-emerald-400 transition-colors">ROI & Investment Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Financial Disclaimer Notice -->
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px] leading-relaxed max-w-4xl mx-auto">
+        <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+        <p>
+          These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice. Always consult a certified accountant or financial advisor for official tax filings and lending calculations.
+        </p>
+        <p class="mt-4 text-slate-600">
+          © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved. Powered by Firebase Auth & Firestore.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <!-- Self-promotional Blog Promo Module (aktechstudio.com) -->
+  <script type="module" src="/js/blog-promo.js"></script>
+  <script type="module">
+    import { FREQUENCIES, calculatePaycheck } from '/js/salary-calc.js';
+    import { trackToolUsage } from '/js/analytics.js';
+
+    function updateFormLabels() {
+      const freq = document.getElementById('pay-freq').value;
+      const lbl = document.getElementById('pay-amount-label');
+      const hrsContainer = document.getElementById('hours-per-week-container');
+
+      if (freq === 'hourly') {
+        lbl.textContent = 'Hourly Pay Rate ($)';
+        hrsContainer.classList.remove('hidden');
+      } else {
+        lbl.textContent = `Gross Pay (${FREQUENCIES[freq]?.label || ''}) ($)`;
+        hrsContainer.classList.add('hidden');
+      }
+    }
+
+    function runPaycheckCalculation() {
+      const freq = document.getElementById('pay-freq').value;
+      const amount = parseFloat(document.getElementById('pay-amount').value) || 0;
+      const hours = parseFloat(document.getElementById('pay-hours').value) || 40;
+      const taxRate = parseFloat(document.getElementById('pay-tax-pct').value) || 0;
+
+      trackToolUsage('Salary Calculator');
+
+      const res = calculatePaycheck({ payAmount: amount, frequency: freq, hoursPerWeek: hours, estimatedTaxPct: taxRate });
+
+      document.getElementById('res-paycheck-net').textContent = `$${res.paycheckNet.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('res-paycheck-sub').textContent = `Based on ${res.frequencyLabel} pay periods after ${res.effectiveTaxPct}% estimated tax withholding.`;
+
+      document.getElementById('row-paycheck-gross').textContent = `$${res.paycheckGross.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('row-paycheck-tax').textContent = `-$${res.paycheckTax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('row-paycheck-net').textContent = `$${res.paycheckNet.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+      document.getElementById('row-monthly-gross').textContent = `$${res.monthlyGross.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('row-monthly-tax').textContent = `-$${res.monthlyTax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('row-monthly-net').textContent = `$${res.monthlyNet.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+      document.getElementById('row-annual-gross').textContent = `$${res.annualGross.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('row-annual-tax').textContent = `-$${res.annualTax.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      document.getElementById('row-annual-net').textContent = `$${res.annualNet.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+
+    document.getElementById('pay-freq').addEventListener('change', () => {
+      updateFormLabels();
+      runPaycheckCalculation();
+    });
+
+    ['pay-amount', 'pay-hours', 'pay-tax-pct'].forEach(id => {
+      document.getElementById(id).addEventListener('input', runPaycheckCalculation);
+    });
+
+    document.getElementById('paycheck-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      runPaycheckCalculation();
+    });
+
+    window.addEventListener('load', () => {
+      updateFormLabels();
+      runPaycheckCalculation();
+    });
+  </script>
+</body>
+</html>
