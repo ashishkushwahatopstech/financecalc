@@ -42,6 +42,7 @@ export default defineConfig(() => {
           contact: path.resolve(__dirname, 'contact.html'),
           about: path.resolve(__dirname, 'about.html'),
           disclaimer: path.resolve(__dirname, 'disclaimer.html'),
+          updates: path.resolve(__dirname, 'updates.html'),
         },
       },
     },
