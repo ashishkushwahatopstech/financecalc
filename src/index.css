@@ -20,3 +20,130 @@ html.lenis, html.lenis body {
 .lenis-scrolling iframe {
   pointer-events: none;
 }
+
+/* ==========================================================================
+   INSPIRA UI & ANIMATE UI - PREMIUM ANIMATION KEYFRAMES
+   ========================================================================== */
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@keyframes shine-sweep {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes border-beam-anim {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ==========================================================================
+   AUTOMATIC SITE-WIDE UI IMPROVEMENTS
+   ========================================================================== */
+
+/* 1. Butter-smooth floating card transition on all tool cards & search results */
+.tool-card, #search-results-grid a, #featured-grid a {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.tool-card:hover, #search-results-grid a:hover, #featured-grid a:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 16px 28px -12px rgba(16, 185, 129, 0.18) !important;
+  border-color: #10b981 !important;
+}
+
+/* 2. Micro-animation icon wiggling on all header navigation hovers */
+header nav a:hover svg, header nav a:hover img, a.hover-wiggle:hover svg {
+  animation: wiggle 0.4s ease-in-out 2;
+}
+
+/* 3. Sweeping light reflection shimmer effect on all action buttons and primary tags */
+button, 
+.btn-shiny, 
+a.inline-flex[class*="bg-emerald-600"], 
+a.inline-flex[class*="bg-indigo-600"],
+button[class*="bg-emerald-600"], 
+button[class*="bg-indigo-600"] {
+  position: relative;
+  overflow: hidden;
+}
+
+button::after, 
+.btn-shiny::after, 
+a.inline-flex[class*="bg-emerald-600"]::after, 
+a.inline-flex[class*="bg-indigo-600"]::after,
+button[class*="bg-emerald-600"]::after, 
+button[class*="bg-indigo-600"]::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transform: skewX(-25deg);
+  pointer-events: none;
+}
+
+button:hover::after, 
+.btn-shiny:hover::after, 
+a.inline-flex[class*="bg-emerald-600"]:hover::after, 
+a.inline-flex[class*="bg-indigo-600"]:hover::after,
+button[class*="bg-emerald-600"]:hover::after, 
+button[class*="bg-indigo-600"]:hover::after {
+  animation: shine-sweep 0.75s ease-in-out forwards;
+}
+
+/* 4. Inspira UI: Animated Border Beam border styling */
+.border-beam {
+  position: relative;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+.border-beam::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(
+    90deg,
+    #10b981,
+    #6366f1,
+    #3b82f6,
+    #10b981
+  );
+  background-size: 300% 300%;
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  animation: border-beam-anim 4s ease infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 5. Inspira UI: Dot Grid Pattern Background class */
+.bg-dot-grid {
+  background-image: radial-gradient(rgba(100, 116, 139, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
