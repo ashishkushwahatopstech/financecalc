@@ -9,11 +9,17 @@
   <!-- Tailwind CSS CDN for instant styling -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/src/index.css" />
+  <style>
+    .dot-grid {
+      background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
+      background-size: 24px 24px;
+    }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased dot-grid">
 
   <!-- ================= Shared Header / Navigation ================= -->
-  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
       
       <!-- Brand Logo -->
@@ -81,239 +87,296 @@
   <main class="flex-grow">
     
     <!-- Hero Section -->
-    <section class="bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16 px-4 sm:px-6 lg:px-8 border-b border-slate-200/60">
-      <div class="max-w-4xl mx-auto text-center">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium mb-4">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          100% Free & Unlimited • No Registration Required
+    <section class="relative bg-white border-b border-slate-200/60 overflow-hidden py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
+      <!-- Gradient decoration -->
+      <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-gradient-to-br from-emerald-400/10 via-teal-400/5 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="max-w-4xl mx-auto text-center relative z-10">
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-semibold mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+          100% Free Suite • Privacy Focused • No Sign-Up Needed
         </div>
-        <h1 class="text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-          Smart Financial & Business <span class="text-slate-900">Calculator Suite</span>
+        <h1 class="text-4xl sm:text-6xl font-black text-slate-900 tracking-tight leading-none mb-6">
+          Simple Calculators.<br><span class="bg-gradient-to-r from-emerald-600 to-teal-700 bg-clip-text text-transparent">Better Decisions.</span>
         </h1>
-        <p class="mt-4 text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
-          Fast, precise financial decision tools for entrepreneurs, homeowners, freelancers, and investors. Calculate loan amortizations, live currency rates, income tax brackets, paychecks, invoices, and compound ROI in seconds.
+        <p class="text-sm sm:text-base text-slate-500 max-w-xl mx-auto leading-relaxed mb-8">
+          A minimalist suite of financial and developer tools built for entrepreneurs, developers, and creators. Get answers instantly.
         </p>
+
+        <!-- Tool Search Input System -->
+        <div class="max-w-md mx-auto relative mb-4">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+          </div>
+          <input 
+            type="text" 
+            id="tool-search" 
+            placeholder="Search all 12 tools (e.g. tax, loan, qr)..." 
+            class="w-full pl-10 pr-10 py-3 sm:py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 focus:bg-white transition-all shadow-xs"
+          />
+          <button 
+            id="btn-clear-search" 
+            class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
       </div>
     </section>
 
-    <!-- 6 Calculator Tools Grid -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <!-- Mobile View Google Sign-In Banner (before tool lists) -->
-      <div id="mobile-homepage-auth-container" class="md:hidden mb-8"></div>
+    <!-- Mobile View Google Sign-In Banner -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+      <div id="mobile-homepage-auth-container" class="md:hidden"></div>
+    </div>
 
+    <!-- MAIN Featured Suite Section -->
+    <section id="featured-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="flex items-center justify-between mb-8">
         <div>
-          <h2 class="text-xl font-bold text-slate-900">Financial Tools & Calculators</h2>
-          <p class="text-xs text-slate-500 mt-1">Select a tool below to begin calculations immediately</p>
+          <h2 class="text-lg font-bold text-slate-800">Featured Core Tools</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Our most popular utilities for quick calculations and redirects.</p>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div id="featured-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-        <!-- Tool 1: Loan & Mortgage Calculator -->
-        <a href="loan-calculator.html" class="group bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between">
+        <!-- Card 1: Loan & Mortgage -->
+        <a href="loan-calculator.html" data-name="loan mortgage amortization schedule payment calculator" class="tool-card group bg-white rounded-2xl p-5 border border-slate-200/70 shadow-2xs hover:shadow-sm hover:border-emerald-400 hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
           <div>
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4 shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
             </div>
-            <h3 class="text-base font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Loan / Mortgage Calculator</h3>
-            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-              Calculate monthly mortgage & loan payments, view detailed amortization schedules, and analyze principal vs interest charts.
+            <h3 class="text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Loan & Mortgage</h3>
+            <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">
+              Calculate loan payments, view complete amortization schedules, and evaluate interest rates.
             </p>
           </div>
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-600">
-            <span>Calculate Payment & Schedule</span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          <div class="mt-5 pt-3 border-t border-slate-50 flex items-center justify-between text-[11px] font-bold text-emerald-600">
+            <span>Calculate Payments</span>
+            <svg class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
           </div>
         </a>
 
-        <!-- Tool 2: Currency Converter -->
-        <a href="currency-converter.html" class="group bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between">
+        <!-- Card 2: Currency Converter -->
+        <a href="currency-converter.html" data-name="currency exchange converter converter rates live rates forex ecb" class="tool-card group bg-white rounded-2xl p-5 border border-slate-200/70 shadow-2xs hover:shadow-sm hover:border-emerald-400 hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
           <div>
-            <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-4 shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
             </div>
-            <h3 class="text-base font-bold text-slate-900 group-hover:text-teal-600 transition-colors">Currency Converter</h3>
-            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-              Live international exchange rates powered by central bank data for USD, EUR, GBP, CAD, AUD, JPY, INR, and more.
+            <h3 class="text-sm font-bold text-slate-900 group-hover:text-teal-600 transition-colors">Currency Converter</h3>
+            <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">
+              Real-time exchange rates powered by central bank data for USD, EUR, INR, GBP, CAD, and more.
             </p>
           </div>
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-teal-600">
+          <div class="mt-5 pt-3 border-t border-slate-50 flex items-center justify-between text-[11px] font-bold text-teal-600">
             <span>Convert Live Rates</span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            <svg class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
           </div>
         </a>
 
-        <!-- Tool 3: Tax Calculator US/Canada -->
-        <a href="tax-calculator.html" class="group bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between">
+        <!-- Card 3: Tax Calculator -->
+        <a href="tax-calculator.html" data-name="tax federal state provincial income tax bracket US Canada" class="tool-card group bg-white rounded-2xl p-5 border border-slate-200/70 shadow-2xs hover:shadow-sm hover:border-emerald-400 hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
           <div>
-            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l2-2 4 4m0-6l-4 4-2-2m-2 4h.01M17 16h.01M9 10h.01M12 10h.01M15 10h.01M9 16h.01M12 16h.01M12 6h.01M9 6h.01M15 6h.01M17 6h.01M17 10h.01"></path></svg>
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 14l2-2 4 4m0-6l-4 4-2-2m-2 4h.01M17 16h.01M9 10h.01M12 10h.01M15 10h.01M9 16h.01M12 16h.01M12 6h.01M9 6h.01M15 6h.01M17 6h.01M17 10h.01"></path></svg>
             </div>
-            <h3 class="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Tax Calculator (US & Canada)</h3>
-            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-              Estimate income taxes for 2025/2026 across US Federal/State brackets and Canadian Federal/Provincial progressive rates.
+            <h3 class="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Income Tax (US & CA)</h3>
+            <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">
+              Estimate income taxes across federal, state, and provincial tax brackets for US and Canada.
             </p>
           </div>
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-blue-600">
-            <span>Estimate Tax Brackets</span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          <div class="mt-5 pt-3 border-t border-slate-50 flex items-center justify-between text-[11px] font-bold text-blue-600">
+            <span>Estimate Income Tax</span>
+            <svg class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
           </div>
         </a>
 
-        <!-- Tool 4: Salary & Paycheck Calculator -->
-        <a href="salary-calculator.html" class="group bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between">
+        <!-- Card 4: URL Shortener -->
+        <a href="url-shortener.html" data-name="url shortener links code redirects stats custom qr analytics shortlink shorten link stats clicks" class="tool-card group bg-white rounded-2xl p-5 border border-slate-200/70 shadow-2xs hover:shadow-sm hover:border-emerald-400 hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
           <div>
-            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4 shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
             </div>
-            <h3 class="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">Salary / Paycheck Calculator</h3>
-            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-              Convert hourly wage or gross annual salary into net take-home pay per weekly, bi-weekly, or monthly paycheck.
+            <h3 class="text-sm font-bold text-slate-900 group-hover:text-purple-600 transition-colors">URL Shortener</h3>
+            <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">
+              Create fast redirect links, track click geolocations, and export QR codes with full statistics.
             </p>
           </div>
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-indigo-600">
-            <span>Calculate Take-Home Pay</span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </div>
-        </a>
-
-        <!-- Tool 5: Invoice Generator -->
-        <a href="invoice-generator.html" class="group bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between">
-          <div>
-            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            </div>
-            <h3 class="text-base font-bold text-slate-900 group-hover:text-purple-600 transition-colors">Invoice Generator</h3>
-            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-              Create clean, professional itemized business invoices with subtotal, tax rates, discounts, and instant PDF download/print.
-            </p>
-          </div>
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-purple-600">
-            <span>Create & Print Invoice</span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </div>
-        </a>
-
-        <!-- Tool 6: ROI & Investment Calculator -->
-        <a href="roi-calculator.html" class="group bg-white rounded-2xl p-6 border border-slate-200/90 shadow-sm hover:shadow-md hover:border-emerald-300 transition-all duration-200 flex flex-col justify-between">
-          <div>
-            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-            </div>
-            <h3 class="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">ROI / Investment Calculator</h3>
-            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-              Project compound investment returns with recurring monthly contributions and visualize growth charts over time.
-            </p>
-          </div>
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-emerald-700">
-            <span>Project Investment ROI</span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          <div class="mt-5 pt-3 border-t border-slate-50 flex items-center justify-between text-[11px] font-bold text-purple-600">
+            <span>Shorten & Track URLs</span>
+            <svg class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
           </div>
         </a>
 
       </div>
     </section>
 
-    <!-- Quick Utilities Section -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-slate-100/60 border-y border-slate-200/80 my-8">
-      <div class="flex items-center justify-between mb-8">
-        <div>
-          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 text-[10px] font-extrabold uppercase tracking-wider mb-1">
-            ⚡ Serverless & Free
-          </div>
-          <h2 class="text-xl font-bold text-slate-900">Quick Utilities & Developer Tools</h2>
-          <p class="text-xs text-slate-500 mt-1">Lightweight tools running 100% inside your web browser — no login or backend required</p>
-        </div>
+    <!-- Search Results Helper Container -->
+    <section id="search-results-section" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <h2 class="text-sm font-bold text-slate-500 mb-4 uppercase tracking-wider">Search Results</h2>
+      <div id="search-results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+
+    <!-- Navigation / Categorized Directory Section -->
+    <section id="directory-section" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-slate-100/40 border-y border-slate-200/60 my-6">
+      <div class="mb-8">
+        <h2 class="text-lg font-bold text-slate-800">All Tools Directory</h2>
+        <p class="text-xs text-slate-400 mt-0.5">Explore our complete catalog of calculators and tools organized by category.</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Category 1: Financial Suite -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-200">
+            <span class="text-emerald-600 font-bold text-xs uppercase tracking-wider">1. Financial Suite</span>
+          </div>
+          <ul class="space-y-3 text-xs text-slate-600 font-medium">
+            <li>
+              <a href="loan-calculator.html" class="directory-item hover:text-emerald-600 transition-colors flex items-center justify-between">
+                <span>Loan / Mortgage Calculator</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold border border-emerald-100">Lending</span>
+              </a>
+            </li>
+            <li>
+              <a href="currency-converter.html" class="directory-item hover:text-emerald-600 transition-colors flex items-center justify-between">
+                <span>Currency Converter</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 font-bold border border-teal-100">Live Rates</span>
+              </a>
+            </li>
+            <li>
+              <a href="tax-calculator.html" class="directory-item hover:text-emerald-600 transition-colors flex items-center justify-between">
+                <span>Income Tax (US/CA)</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-bold border border-blue-100">Tax brackets</span>
+              </a>
+            </li>
+            <li>
+              <a href="salary-calculator.html" class="directory-item hover:text-emerald-600 transition-colors flex items-center justify-between">
+                <span>Salary & Paycheck Calculator</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold border border-indigo-100">Wage Conversion</span>
+              </a>
+            </li>
+            <li>
+              <a href="roi-calculator.html" class="directory-item hover:text-emerald-600 transition-colors flex items-center justify-between">
+                <span>ROI & Investment Calculator</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold border border-emerald-100">Investments</span>
+              </a>
+            </li>
+          </ul>
+        </div>
 
-        <!-- Utility 1: QR Code Generator -->
-        <a href="qr-generator.html" class="group bg-white rounded-2xl p-6 border border-indigo-100 shadow-xs hover:shadow-md hover:border-indigo-400 transition-all duration-200 flex flex-col justify-between">
-          <div>
-            <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+        <!-- Category 2: Business & Documents -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-200">
+            <span class="text-indigo-600 font-bold text-xs uppercase tracking-wider">2. Business Tools</span>
+          </div>
+          <ul class="space-y-3 text-xs text-slate-600 font-medium">
+            <li>
+              <a href="invoice-generator.html" class="directory-item hover:text-indigo-600 transition-colors flex items-center justify-between">
+                <span>Invoice Generator</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-700 font-bold border border-purple-100">PDF Invoices</span>
+              </a>
+            </li>
+            <li>
+              <a href="url-shortener.html" class="directory-item hover:text-indigo-600 transition-colors flex items-center justify-between">
+                <span>URL Shortener & Tracker</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold border border-emerald-100">Link Stats</span>
+              </a>
+            </li>
+            <li>
+              <a href="qr-generator.html" class="directory-item hover:text-indigo-600 transition-colors flex items-center justify-between">
+                <span>QR Code Generator</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold border border-indigo-100">SVG/PNG QR</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Category 3: Productivity Utilities -->
+        <div class="space-y-4">
+          <div class="flex items-center gap-2 pb-2 border-b border-slate-200">
+            <span class="text-purple-600 font-bold text-xs uppercase tracking-wider">3. General Utilities</span>
+          </div>
+          <ul class="space-y-3 text-xs text-slate-600 font-medium">
+            <li>
+              <a href="password-generator.html" class="directory-item hover:text-purple-600 transition-colors flex items-center justify-between">
+                <span>Secure Password Generator</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-700 font-bold border border-indigo-100">Security</span>
+              </a>
+            </li>
+            <li>
+              <a href="word-counter.html" class="directory-item hover:text-purple-600 transition-colors flex items-center justify-between">
+                <span>Word & Character Counter</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 font-bold border border-teal-100">Writing</span>
+              </a>
+            </li>
+            <li>
+              <a href="unit-converter.html" class="directory-item hover:text-purple-600 transition-colors flex items-center justify-between">
+                <span>Metric / Imperial Unit Converter</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-bold border border-blue-100">General</span>
+              </a>
+            </li>
+            <li>
+              <a href="age-calculator.html" class="directory-item hover:text-purple-600 transition-colors flex items-center justify-between">
+                <span>Age Calculator & Birthday Count</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-bold border border-amber-100">General</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Information & Help Section -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-2xs">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-4">Fast. Accurate. Privacy-First.</h2>
+          <p class="text-xs text-slate-500 leading-relaxed mb-6">
+            FinCalc Tools provides client-side computational apps that process calculations immediately in your browser. Because we value your privacy, none of your sensitive financial logs, password inputs, or text details are ever uploaded or stored on our servers.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="block text-lg font-black text-emerald-600 leading-none mb-1">0s</span>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Delay</span>
             </div>
-            <h3 class="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">QR Code Generator</h3>
-            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-              Create custom QR codes for plain text, URLs, WiFi networks, and vCard contact cards. Live preview and high-res PNG download.
-            </p>
-          </div>
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-indigo-600">
-            <span>Generate QR Code</span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </div>
-        </a>
-
-        <!-- Utility 2: Password Generator -->
-        <a href="password-generator.html" class="group bg-white rounded-2xl p-6 border border-indigo-100 shadow-xs hover:shadow-md hover:border-indigo-400 transition-all duration-200 flex flex-col justify-between">
-          <div>
-            <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="block text-lg font-black text-emerald-600 leading-none mb-1">100%</span>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Private</span>
             </div>
-            <h3 class="text-base font-bold text-slate-900 group-hover:text-purple-600 transition-colors">Password Generator</h3>
-            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-              Generate strong, cryptographically secure random passwords using `crypto.getRandomValues()` with length & strength controls.
-            </p>
-          </div>
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-purple-600">
-            <span>Generate Password</span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </div>
-        </a>
-
-        <!-- Utility 3: Word & Character Counter -->
-        <a href="word-counter.html" class="group bg-white rounded-2xl p-6 border border-indigo-100 shadow-xs hover:shadow-md hover:border-indigo-400 transition-all duration-200 flex flex-col justify-between">
-          <div>
-            <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
+              <span class="block text-lg font-black text-emerald-600 leading-none mb-1">12</span>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Free Tools</span>
             </div>
-            <h3 class="text-base font-bold text-slate-900 group-hover:text-teal-600 transition-colors">Word & Character Counter</h3>
-            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-              Live text statistics for word count, character count (with/without spaces), sentence count, and estimated reading time.
-            </p>
           </div>
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-teal-600">
-            <span>Count Text Live</span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </div>
-        </a>
+        </div>
 
-        <!-- Utility 4: Unit Converter -->
-        <a href="unit-converter.html" class="group bg-white rounded-2xl p-6 border border-indigo-100 shadow-xs hover:shadow-md hover:border-indigo-400 transition-all duration-200 flex flex-col justify-between">
-          <div>
-            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+        <div class="space-y-4">
+          <h3 class="font-bold text-sm text-slate-800">Quick Guides & Useful Information</h3>
+          <div class="space-y-3">
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex gap-3">
+              <div class="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+              </div>
+              <div>
+                <h4 class="font-bold text-xs text-slate-800">Lending Decisions</h4>
+                <p class="text-[10px] text-slate-400 leading-relaxed mt-0.5">Use the Loan Calculator to estimate your debt-to-income limits and preview monthly amortization schedules before signing lending agreements.</p>
+              </div>
             </div>
-            <h3 class="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Unit Converter</h3>
-            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-              Convert length, weight, temperature, and volume units instantly between metric and imperial systems as you type.
-            </p>
-          </div>
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-blue-600">
-            <span>Convert Units</span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </div>
-        </a>
 
-        <!-- Utility 5: Age Calculator -->
-        <a href="age-calculator.html" class="group bg-white rounded-2xl p-6 border border-indigo-100 shadow-xs hover:shadow-md hover:border-indigo-400 transition-all duration-200 flex flex-col justify-between">
-          <div>
-            <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex gap-3">
+              <div class="w-6 h-6 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 mt-0.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+              </div>
+              <div>
+                <h4 class="font-bold text-xs text-slate-800">QR Code Tracking</h4>
+                <p class="text-[10px] text-slate-400 leading-relaxed mt-0.5">URLs shortened with custom tags can be printed via QR codes. Every scan is logged with country, source type, and device details on your stats screen.</p>
+              </div>
             </div>
-            <h3 class="text-base font-bold text-slate-900 group-hover:text-amber-600 transition-colors">Age Calculator</h3>
-            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-              Calculate exact age in years, months, and days from date of birth. View total days lived, zodiac sign, and birthday countdown.
-            </p>
           </div>
-          <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-amber-600">
-            <span>Calculate Age</span>
-            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-          </div>
-        </a>
-
+        </div>
       </div>
     </section>
 
@@ -388,6 +451,98 @@
       </div>
     </div>
   </footer>
+
+  <!-- Search Filter Javascript Logic -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('tool-search');
+      const btnClear = document.getElementById('btn-clear-search');
+      const featuredSection = document.getElementById('featured-section');
+      const directorySection = document.getElementById('directory-section');
+      const searchResultsSection = document.getElementById('search-results-section');
+      const searchResultsGrid = document.getElementById('search-results-grid');
+
+      // Collate all search targets
+      const searchItems = [
+        { name: "Loan & Mortgage Calculator", path: "loan-calculator.html", keywords: "loan mortgage payment amortization schedule bank credit calculator interest principal", desc: "Calculate payments, debt schedules, and chart principal vs interest.", iconBg: "bg-emerald-50 text-emerald-600", iconHtml: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>` },
+        { name: "Currency Converter", path: "currency-converter.html", keywords: "currency money forex exchange live rates converter usd eur inr gbp cad", desc: "Real-time global exchange rates powered by central bank feeds.", iconBg: "bg-teal-50 text-teal-600", iconHtml: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>` },
+        { name: "Income Tax (US & CA)", path: "tax-calculator.html", keywords: "tax calculator federal state provincial bracket US Canada income", desc: "Estimate tax brackets and progressive tax rates for US and Canada.", iconBg: "bg-blue-50 text-blue-600", iconHtml: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 14l2-2 4 4m0-6l-4 4-2-2m-2 4h.01M17 16h.01M9 10h.01M12 10h.01M15 10h.01M9 16h.01M12 16h.01M12 6h.01M9 6h.01M15 6h.01M17 6h.01M17 10h.01"></path></svg>` },
+        { name: "URL Shortener & Analytics", path: "url-shortener.html", keywords: "url shortener shortlink redirects code stats custom qr analytics short code clicks link stats delete link", desc: "Shorten URLs, generate QR codes, and track dynamic geolocation clicks.", iconBg: "bg-purple-50 text-purple-600", iconHtml: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>` },
+        { name: "Salary & Paycheck Calculator", path: "salary-calculator.html", keywords: "salary wages paycheck net earnings convert gross hourly paycheck bi-weekly weekly", desc: "Convert gross salary or hourly wages to net take-home earnings.", iconBg: "bg-indigo-50 text-indigo-600", iconHtml: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>` },
+        { name: "Invoice Generator", path: "invoice-generator.html", keywords: "invoice bill generator PDF receipts business template print invoice items tax discount", desc: "Create, format, and download itemized professional PDF invoices.", iconBg: "bg-purple-50 text-purple-600", iconHtml: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>` },
+        { name: "ROI & Investment Calculator", path: "roi-calculator.html", keywords: "roi investment returns compound yield growth rate savings calculator finance interest", desc: "Project compound investment yields and recurring deposits over years.", iconBg: "bg-emerald-50 text-emerald-700", iconHtml: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>` },
+        { name: "QR Code Generator", path: "qr-generator.html", keywords: "qr code barcode generator text wifi vcard links scanner", desc: "Build standard QR codes for Wi-Fi networks, links, and vCards.", iconBg: "bg-indigo-50 text-indigo-600", iconHtml: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>` },
+        { name: "Secure Password Generator", path: "password-generator.html", keywords: "password generator random secure passwords crypto key creator strength secure PIN", desc: "Create high-strength cryptographically secure passwords locally.", iconBg: "bg-purple-50 text-purple-600", iconHtml: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>` },
+        { name: "Word & Character Counter", path: "word-counter.html", keywords: "word character sentence counter reading time analysis count text stats letters", desc: "Analyse text length, character limits, and sentence reading times.", iconBg: "bg-teal-50 text-teal-600", iconHtml: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>` },
+        { name: "Unit Converter", path: "unit-converter.html", keywords: "unit converter length weight volume metric imperial conversion metrics temperature distance", desc: "Convert length, mass, volume, and temperature units.", iconBg: "bg-blue-50 text-blue-600", iconHtml: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>` },
+        { name: "Age Calculator", path: "age-calculator.html", keywords: "age birthday date counter countdown exact age calculator calendar lifespans", desc: "Calculate precise ages down to days and watch birthday countdowns.", iconBg: "bg-amber-50 text-amber-600", iconHtml: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>` }
+      ];
+
+      function performSearch(query) {
+        query = query.trim().toLowerCase();
+
+        if (query.length === 0) {
+          // Reset view
+          btnClear.classList.add('hidden');
+          featuredSection.classList.remove('hidden');
+          directorySection.classList.remove('hidden');
+          searchResultsSection.classList.add('hidden');
+          searchResultsGrid.innerHTML = '';
+          return;
+        }
+
+        btnClear.classList.remove('hidden');
+        featuredSection.classList.add('hidden');
+        directorySection.classList.add('hidden');
+        searchResultsSection.classList.remove('hidden');
+
+        // Filter items
+        const matches = searchItems.filter(item => {
+          return item.name.toLowerCase().includes(query) || 
+                 item.keywords.toLowerCase().includes(query) ||
+                 item.desc.toLowerCase().includes(query);
+        });
+
+        if (matches.length === 0) {
+          searchResultsGrid.innerHTML = `
+            <div class="col-span-full py-12 text-center text-slate-400">
+              <svg class="w-10 h-10 mx-auto text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <h3 class="font-bold text-sm text-slate-700">No Matching Tools Found</h3>
+              <p class="text-xs text-slate-400 mt-1">Try searching another term like "mortgage", "length", or "password".</p>
+            </div>
+          `;
+          return;
+        }
+
+        searchResultsGrid.innerHTML = matches.map(item => `
+          <a href="${item.path}" class="group bg-white rounded-2xl p-5 border border-slate-200/80 shadow-2xs hover:shadow-sm hover:border-emerald-400 hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between">
+            <div>
+              <div class="w-10 h-10 rounded-xl ${item.iconBg} flex items-center justify-center mb-4 shrink-0">
+                ${item.iconHtml}
+              </div>
+              <h3 class="text-sm font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">${item.name}</h3>
+              <p class="text-[11px] text-slate-400 mt-2 leading-relaxed">${item.desc}</p>
+            </div>
+            <div class="mt-5 pt-3 border-t border-slate-50 flex items-center justify-between text-[11px] font-bold text-emerald-600">
+              <span>Open Tool</span>
+              <svg class="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </div>
+          </a>
+        `).join('');
+      }
+
+      // Input Event Listeners
+      searchInput.addEventListener('input', (e) => {
+        performSearch(e.target.value);
+      });
+
+      btnClear.addEventListener('click', () => {
+        searchInput.value = '';
+        performSearch('');
+        searchInput.focus();
+      });
+    });
+  </script>
 
   <!-- Firebase & Global Auth Module -->
   <script type="module" src="/js/auth.js"></script>
