@@ -3,6 +3,8 @@
  * Handles Google Sign-In, User Firestore syncing, Nav Bar dynamic rendering,
  * and Admin Email Check.
  */
+import Lenis from 'https://unpkg.com/lenis@1.1.18/dist/lenis.mjs';
+
 import { 
   auth, 
   db, 
@@ -1470,5 +1472,25 @@ function rebuildDesktopNavbar(user) {
   `;
 
   desktopNav.innerHTML = navHtml;
+}
+
+// Initialize global smooth scrolling with Lenis (darkroomengineering/lenis)
+if (typeof window !== 'undefined') {
+  // Only initialize if the page is the top-level viewport (ignore inside iframes)
+  if (window.self === window.top) {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      smoothTouch: false
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+
+    requestAnimationFrame(raf);
+  }
 }
 
