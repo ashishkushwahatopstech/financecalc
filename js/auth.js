@@ -1308,10 +1308,12 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     renderNavbarSkeleton();
     renderGlobalAnnouncement();
+    updateFooterComplianceLinks();
   });
 } else {
   renderNavbarSkeleton();
   renderGlobalAnnouncement();
+  updateFooterComplianceLinks();
 }
 
 // Global Auth State Observer
@@ -1335,4 +1337,29 @@ onAuthStateChanged(auth, async (user) => {
     }
   }
 });
+
+/**
+ * Automatically update footer compliance links on load
+ */
+function updateFooterComplianceLinks() {
+  const headers = document.querySelectorAll('footer h4');
+  headers.forEach(header => {
+    if (header.textContent.trim() === 'Account' || header.textContent.trim() === 'Legal & Info') {
+      header.textContent = 'Legal & Info';
+      const ul = header.nextElementSibling;
+      if (ul && ul.tagName === 'UL') {
+        const isAdmin = currentUserData ? isAdminEmail(currentUserData.email) : false;
+        ul.innerHTML = `
+          <li><a href="about.html" class="hover:text-emerald-400 transition-colors">About Us</a></li>
+          <li><a href="contact.html" class="hover:text-emerald-400 transition-colors">Contact Us</a></li>
+          <li><a href="privacy-policy.html" class="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
+          <li><a href="terms-of-service.html" class="hover:text-emerald-400 transition-colors">Terms of Service</a></li>
+          <li><a href="disclaimer.html" class="hover:text-emerald-400 transition-colors">Disclaimer</a></li>
+          <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+          <li class="footer-admin-link ${isAdmin ? '' : 'hidden'}"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+        `;
+      }
+    }
+  });
+}
 
