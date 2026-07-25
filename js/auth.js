@@ -424,13 +424,13 @@ export function showUsernameModal({ user, currentUsername = '', isChange = false
         </div>
         <div>
           <h3 class="text-lg font-extrabold text-slate-900">${isChange ? 'Change Your Username' : 'Choose Your Username'}</h3>
-          <p class="text-xs text-slate-500">${isChange ? 'Select a new unique handle for your public profile.' : 'Set up a unique handle for your public profile.'}</p>
+          <p class="text-xs text-slate-500">${isChange ? 'Select a new unique author handle for your blog posts.' : 'Set up a unique author handle for your blog posts.'}</p>
         </div>
       </div>
-
+ 
       <div class="space-y-4">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Public Handle / Username</label>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Blog Author Handle</label>
           <div class="relative flex items-center">
             <span class="absolute left-3.5 text-slate-400 font-bold text-sm">@</span>
             <input 
@@ -448,12 +448,12 @@ export function showUsernameModal({ user, currentUsername = '', isChange = false
           </div>
           <p class="text-[10px] text-slate-400 mt-1">Allowed: lowercase letters, numbers, and underscores (3-20 characters).</p>
         </div>
-
+ 
         <div class="p-3 bg-emerald-50/80 rounded-xl border border-emerald-100 text-[11px] text-emerald-900">
-          <span class="font-bold">Your Public Profile Link:</span><br/>
-          <span class="font-mono font-semibold text-emerald-700" id="username-preview-link">domain.com/@${currentUsername || suggestedBase}</span>
+          <span class="font-bold">Your Blog Author Handle:</span><br/>
+          <span class="font-mono font-semibold text-emerald-700" id="username-preview-link">@${currentUsername || suggestedBase}</span>
         </div>
-
+ 
         <button 
           id="btn-submit-username" 
           disabled
@@ -464,30 +464,30 @@ export function showUsernameModal({ user, currentUsername = '', isChange = false
       </div>
     </div>
   `;
-
+ 
   document.body.appendChild(modal);
-
+ 
   const input = document.getElementById('input-username-field');
   const statusMsg = document.getElementById('username-status-msg');
   const iconBox = document.getElementById('username-validation-icon');
   const previewLink = document.getElementById('username-preview-link');
   const submitBtn = document.getElementById('btn-submit-username');
   const closeBtn = document.getElementById('btn-close-username-modal');
-
+ 
   if (closeBtn) {
     closeBtn.addEventListener('click', () => modal.remove());
   }
-
+ 
   let debounceTimer = null;
   let currentValidUsername = '';
-
+ 
   async function validateInput() {
     const rawVal = input.value;
     const sanitized = sanitizeUsername(rawVal);
     input.value = sanitized;
     
     if (previewLink) {
-      previewLink.textContent = `domain.com/@${sanitized || 'username'}`;
+      previewLink.textContent = `@${sanitized || 'username'}`;
     }
 
     if (!sanitized) {

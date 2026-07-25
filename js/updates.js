@@ -30,6 +30,20 @@ function showToast(message, type = 'success') {
   }, 3000);
 }
 
+// Helper to slugify titles for URLs
+function slugify(text) {
+  if (!text) return '';
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')             // Trim - from start of text
+    .replace(/-+$/, '');            // Trim - from end of text
+}
+
 async function initUpdatesPage() {
   const container = document.getElementById('blog-posts-grid');
   const badge = document.getElementById('posts-count-badge');
@@ -59,13 +73,20 @@ async function initUpdatesPage() {
   container.innerHTML = posts.map(post => {
     const formattedDate = post.createdAt && post.createdAt.seconds 
       ? new Date(post.createdAt.seconds * 1000).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
-      : 'Recently published';
+      : (post.createdAt ? new Date(post.createdAt).toLocaleDateString() : 'Recently published');
 
     const shortBody = post.body.length > 160 ? post.body.substring(0, 160) + '...' : post.body;
+    const hasImage = post.featuredImage && (post.featuredImage.startsWith('http://') || post.featuredImage.startsWith('https://'));
+    const shareUrl = `${window.location.origin}/blog/${post.id}-${slugify(post.title)}`;
 
     return `
       <article class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 group">
-        <div class="space-y-2">
+        <div class="space-y-3">
+          ${hasImage ? `
+            <div class="w-full h-40 rounded-2xl overflow-hidden relative bg-slate-50 border border-slate-100">
+              <img src="${escapeHTML(post.featuredImage)}" alt="${escapeHTML(post.title)}" class="w-full h-full object-cover transition-transform group-hover:scale-102 duration-300" onerror="this.parentElement.remove()" />
+            </div>
+          ` : ''}
           <div class="flex items-center justify-between text-xs text-slate-400">
             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">${escapeHTML(post.type || 'Blog Post')}</span>
             <time class="font-medium text-[11px]">${formattedDate}</time>
@@ -80,7 +101,7 @@ async function initUpdatesPage() {
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
           </button>
           
-          <button data-post-id="${post.id}" class="btn-share-card p-1.5 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800 rounded-xl transition-all cursor-pointer border border-slate-200/80 flex items-center justify-center" title="Share Article">
+          <button data-share-url="${escapeHTML(shareUrl)}" class="btn-share-card p-1.5 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800 rounded-xl transition-all cursor-pointer border border-slate-200/80 flex items-center justify-center" title="Share Article">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 10.742l5.064-2.532m0 0A3 3 0 1015.347 4.9a3 3 0 00-1.6 3.31M8.684 13.258l5.064 2.532m0 0A3 3 0 1015.347 19.1a3 3 0 00-1.6-3.31"></path></svg>
           </button>
         </div>
@@ -102,16 +123,30 @@ async function initUpdatesPage() {
     if (!modal) return;
     const formattedDate = post.createdAt && post.createdAt.seconds 
       ? new Date(post.createdAt.seconds * 1000).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
-      : 'Recently published';
+      : (post.createdAt ? new Date(post.createdAt).toLocaleDateString() : 'Recently published');
 
     modalTitle.textContent = post.title;
     modalType.textContent = post.type || 'Blog Post';
-    modalDate.textContent = `Published on ${formattedDate} by ${post.createdBy || 'Admin'}`;
+    modalDate.textContent = `Published on ${formattedDate} by ${post.createdBy || 'Member'}`;
     modalBody.textContent = post.body;
 
+    // Handle modal featured image
+    let existingImg = document.getElementById('modal-post-featured-image');
+    if (existingImg) existingImg.remove();
+
+    if (post.featuredImage && (post.featuredImage.startsWith('http://') || post.featuredImage.startsWith('https://'))) {
+      const img = document.createElement('img');
+      img.id = 'modal-post-featured-image';
+      img.src = post.featuredImage;
+      img.alt = post.title;
+      img.className = 'w-full h-64 object-cover rounded-2xl border border-slate-200 mb-4 shadow-sm';
+      img.onerror = () => img.remove();
+      modalBody.parentNode.insertBefore(img, modalBody);
+    }
+
     // Render Social Share Options
-    const shareUrl = `${window.location.origin}/updates.html?post=${post.id}`;
-    const shareText = encodeURIComponent(`Check out this update on FinCalc Tools: ${post.title}`);
+    const shareUrl = `${window.location.origin}/blog/${post.id}-${slugify(post.title)}`;
+    const shareText = encodeURIComponent(`Check out this article on FinCalc Tools: ${post.title}`);
     const encodedUrl = encodeURIComponent(shareUrl);
 
     if (modalShareButtons) {
@@ -180,18 +215,17 @@ async function initUpdatesPage() {
   document.querySelectorAll('.btn-share-card').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
-      const postId = btn.getAttribute('data-post-id');
-      const post = posts.find(p => p.id === postId);
+      const shareUrl = btn.getAttribute('data-share-url');
+      const post = posts.find(p => `${window.location.origin}/blog/${p.id}-${slugify(p.title)}` === shareUrl);
       if (!post) return;
 
-      const shareUrl = `${window.location.origin}/updates.html?post=${post.id}`;
       const shareTitle = post.title;
 
       if (navigator.share) {
         try {
           await navigator.share({
             title: shareTitle,
-            text: `Check out this update on FinCalc Tools: ${shareTitle}`,
+            text: `Check out this article on FinCalc Tools: ${shareTitle}`,
             url: shareUrl
           });
         } catch (err) {
@@ -211,11 +245,20 @@ async function initUpdatesPage() {
     if (e.target === modal) closeModal();
   });
 
-  // Deep linking to open specific article from ?post=postId query param
-  const urlParams = new URLSearchParams(window.location.search);
-  const postIdParam = urlParams.get('post');
+  // Deep linking to open specific article from path "/blog/123456-slug" or query "?post=123456"
+  const path = window.location.pathname;
+  let postIdParam = null;
+  const blogMatch = path.match(/\/blog\/(\d{4,6})-.*/);
+  
+  if (blogMatch) {
+    postIdParam = blogMatch[1];
+  } else {
+    const urlParams = new URLSearchParams(window.location.search);
+    postIdParam = urlParams.get('post');
+  }
+
   if (postIdParam) {
-    const post = posts.find(p => p.id === postIdParam);
+    const post = posts.find(p => String(p.id) === String(postIdParam));
     if (post) {
       setTimeout(() => {
         openModal(post);

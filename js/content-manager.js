@@ -9,6 +9,7 @@ import {
   collection, 
   getDocs, 
   addDoc, 
+  setDoc,
   updateDoc, 
   deleteDoc, 
   query, 
@@ -156,8 +157,8 @@ export async function fetchPublishedBlogPosts() {
 
   try {
     const q = query(
-      collection(db, 'content'),
-      where('type', '==', 'Blog Post'),
+      collection(db, 'blog_posts'),
+      where('status', '==', 'public'),
       where('published', '==', true)
     );
 
@@ -169,20 +170,13 @@ export async function fetchPublishedBlogPosts() {
     console.warn('[ContentManager] Blog posts query note:', err.message);
   }
 
-  // Merge with local cached blog posts
-  const localPosts = getLocalContentCache().filter(i => i.type === 'Blog Post' && i.published);
-  const postsMap = new Map();
-  localPosts.forEach(p => postsMap.set(p.id, p));
-  posts.forEach(p => postsMap.set(p.id, p));
-
-  const allPosts = Array.from(postsMap.values());
-  allPosts.sort((a, b) => {
+  posts.sort((a, b) => {
     const timeA = a.createdAt ? (a.createdAt.seconds || (typeof a.createdAt === 'number' ? a.createdAt : 0)) : 0;
     const timeB = b.createdAt ? (b.createdAt.seconds || (typeof b.createdAt === 'number' ? b.createdAt : 0)) : 0;
     return timeB - timeA;
   });
 
-  return allPosts;
+  return posts;
 }
 
 /* ==========================================================================
@@ -196,27 +190,47 @@ export async function createContentItem({ title, body, type, published }) {
   const user = getCurrentUser();
   const createdBy = user?.email || 'ashishkushwaha88643@gmail.com';
 
+  const isBlog = type === 'Blog Post';
+  const targetCollection = isBlog ? 'blog_posts' : 'content';
+  const postId = isBlog ? String(Math.floor(100000 + Math.random() * 900000)) : null;
+
   const newDoc = {
     title: title.trim(),
     body: body.trim(),
     type: type, // "Announcement Banner" or "Blog Post"
     published: Boolean(published),
     createdAt: serverTimestamp(),
-    createdBy: createdBy
+    createdBy: createdBy,
+    authorUid: user?.uid || 'usr_ashish_admin_001',
+    authorName: user?.displayName || 'Ashish (Admin)'
   };
+
+  if (isBlog) {
+    newDoc.status = 'public'; // visibility default
+  }
 
   let createdItem = null;
 
   try {
-    const docRef = await addDoc(collection(db, 'content'), newDoc);
-    createdItem = { 
-      id: docRef.id, 
-      ...newDoc, 
-      createdAt: { seconds: Math.floor(Date.now() / 1000) } 
-    };
+    if (isBlog) {
+      const docRef = doc(db, 'blog_posts', postId);
+      await setDoc(docRef, newDoc);
+      createdItem = { 
+        id: postId, 
+        ...newDoc, 
+        createdAt: { seconds: Math.floor(Date.now() / 1000) } 
+      };
+    } else {
+      const docRef = await addDoc(collection(db, 'content'), newDoc);
+      createdItem = { 
+        id: docRef.id, 
+        ...newDoc, 
+        createdAt: { seconds: Math.floor(Date.now() / 1000) } 
+      };
+    }
   } catch (err) {
     console.warn('[ContentManager] Firestore create note:', err.message);
-    const fallbackId = 'content_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+    const fallbackId = isBlog ? postId : ('content_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7));
     createdItem = {
       id: fallbackId,
       title: title.trim(),
@@ -224,8 +238,11 @@ export async function createContentItem({ title, body, type, published }) {
       type: type,
       published: Boolean(published),
       createdAt: { seconds: Math.floor(Date.now() / 1000) },
-      createdBy: createdBy
+      createdBy: createdBy,
+      authorUid: user?.uid || 'usr_ashish_admin_001',
+      authorName: user?.displayName || 'Ashish (Admin)'
     };
+    if (isBlog) createdItem.status = 'public';
   }
 
   saveToLocalContentCache(createdItem);
@@ -236,6 +253,8 @@ export async function createContentItem({ title, body, type, published }) {
  * Updates existing Content item in Firestore
  */
 export async function updateContentItem(id, { title, body, type, published }) {
+  const isBlog = type === 'Blog Post';
+  
   const updateData = {
     title: title.trim(),
     body: body.trim(),
@@ -244,11 +263,19 @@ export async function updateContentItem(id, { title, body, type, published }) {
   };
 
   try {
-    const docRef = doc(db, 'content', id);
-    await updateDoc(docRef, {
-      ...updateData,
-      updatedAt: serverTimestamp()
-    });
+    if (isBlog) {
+      const docRef = doc(db, 'blog_posts', id);
+      await updateDoc(docRef, {
+        ...updateData,
+        updatedAt: serverTimestamp()
+      });
+    } else {
+      const docRef = doc(db, 'content', id);
+      await updateDoc(docRef, {
+        ...updateData,
+        updatedAt: serverTimestamp()
+      });
+    }
   } catch (err) {
     console.warn('[ContentManager] Update content note:', err.message);
   }
@@ -265,11 +292,14 @@ export async function updateContentItem(id, { title, body, type, published }) {
  */
 export async function deleteContentItem(id) {
   try {
-    const docRef = doc(db, 'content', id);
-    await deleteDoc(docRef);
-  } catch (err) {
-    console.warn('[ContentManager] Delete content note:', err.message);
-  }
+    const contentRef = doc(db, 'content', id);
+    await deleteDoc(contentRef);
+  } catch (err) {}
+
+  try {
+    const blogRef = doc(db, 'blog_posts', id);
+    await deleteDoc(blogRef);
+  } catch (err) {}
 
   removeFromLocalContentCache(id);
 }
@@ -280,6 +310,7 @@ export async function deleteContentItem(id) {
 export async function fetchAllContentItems() {
   let firestoreItems = [];
 
+  // Fetch Announcement Banners
   try {
     const snapshot = await getDocs(collection(db, 'content'));
     snapshot.forEach(docSnap => {
@@ -287,6 +318,20 @@ export async function fetchAllContentItems() {
     });
   } catch (err) {
     console.warn('[ContentManager] Content query note:', err.message);
+  }
+
+  // Fetch Blog Posts
+  try {
+    const snapshot = await getDocs(collection(db, 'blog_posts'));
+    snapshot.forEach(docSnap => {
+      firestoreItems.push({ 
+        id: docSnap.id, 
+        ...docSnap.data(),
+        type: 'Blog Post' // Ensure type badge is set correctly
+      });
+    });
+  } catch (err) {
+    console.warn('[ContentManager] Blog posts query note:', err.message);
   }
 
   const localItems = getLocalContentCache();
@@ -311,4 +356,3 @@ if (typeof window !== 'undefined') {
     initPublicAnnouncementBanner();
   });
 }
-

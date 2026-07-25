@@ -839,10 +839,41 @@ function openUserDetailsModal(u) {
   document.getElementById('modal-user-name').textContent = u.name || 'Anonymous User';
   document.getElementById('modal-user-email').textContent = u.email || 'N/A';
   document.getElementById('modal-user-uid').textContent = u.uid || u.id || 'N/A';
-  document.getElementById('modal-user-login').textContent = u.firstLogin ? (new Date(u.firstLogin).toLocaleDateString()) : 'N/A';
+  
+  let loginStr = 'N/A';
+  if (u.firstLogin) {
+    loginStr = new Date(u.firstLogin).toLocaleDateString();
+  }
+  document.getElementById('modal-user-login').textContent = loginStr;
   
   const prefs = u.preferences || { defaultCountry: 'US', defaultCurrency: 'USD' };
   document.getElementById('modal-user-prefs').textContent = `Default Country: ${prefs.defaultCountry || 'US'} | Default Currency: ${prefs.defaultCurrency || 'USD'}`;
+
+  // Configure blog limits dropdown & save listener
+  const limitSelect = document.getElementById('modal-user-blog-limit');
+  const limitSaveBtn = document.getElementById('btn-save-user-blog-limit');
+  if (limitSelect && limitSaveBtn) {
+    limitSelect.value = u.postLimit || 6;
+    limitSaveBtn.onclick = async () => {
+      limitSaveBtn.disabled = true;
+      limitSaveBtn.textContent = 'Saving...';
+      const newLimit = parseInt(limitSelect.value);
+
+      try {
+        const { doc, updateDoc, db } = await import('./firebase-config.js');
+        const userRef = doc(db, 'users', u.uid);
+        await updateDoc(userRef, { postLimit: newLimit });
+        showToast(`Successfully updated ${u.name}'s blog limit to ${newLimit}!`, 'success');
+        u.postLimit = newLimit;
+        mergeAndRenderUsers();
+      } catch (err) {
+        showToast('Failed to update limit: ' + err.message, 'error');
+      } finally {
+        limitSaveBtn.disabled = false;
+        limitSaveBtn.textContent = 'Save';
+      }
+    };
+  }
 
   modal.classList.remove('hidden');
 }
