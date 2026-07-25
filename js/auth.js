@@ -1161,18 +1161,9 @@ function updateNavbarUI(user) {
   });
 
 
-  // Also update admin link in header and footer navigation if present
-  const adminNavLinks = document.querySelectorAll('#nav-admin-link, .footer-admin-link');
-  adminNavLinks.forEach(link => {
-    if (user && isAdminEmail(user.email)) {
-      link.classList.remove('hidden');
-    } else {
-      link.classList.add('hidden');
-    }
-  });
-
-  // Rebuild the desktop navigation links
+  // Rebuild the desktop navigation links & footer
   rebuildDesktopNavbar(user);
+  rebuildGlobalFooter(user);
 }
 
 /**
@@ -1276,14 +1267,14 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     renderNavbarSkeleton();
     renderGlobalAnnouncement();
-    updateFooterComplianceLinks();
     rebuildDesktopNavbar(currentUserData);
+    rebuildGlobalFooter(currentUserData);
   });
 } else {
   renderNavbarSkeleton();
   renderGlobalAnnouncement();
-  updateFooterComplianceLinks();
   rebuildDesktopNavbar(currentUserData);
+  rebuildGlobalFooter(currentUserData);
 }
 
 // Global Auth State Observer
@@ -1309,28 +1300,85 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 /**
- * Automatically update footer compliance links on load
+ * Rebuilds the footer dynamically across all pages to match index.html
  */
-function updateFooterComplianceLinks() {
-  const headers = document.querySelectorAll('footer h4');
-  headers.forEach(header => {
-    if (header.textContent.trim() === 'Account' || header.textContent.trim() === 'Legal & Info') {
-      header.textContent = 'Legal & Info';
-      const ul = header.nextElementSibling;
-      if (ul && ul.tagName === 'UL') {
-        const isAdmin = currentUserData ? isAdminEmail(currentUserData.email) : false;
-        ul.innerHTML = `
-          <li><a href="about.html" class="hover:text-emerald-400 transition-colors">About Us</a></li>
-          <li><a href="contact.html" class="hover:text-emerald-400 transition-colors">Contact Us</a></li>
-          <li><a href="privacy-policy.html" class="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
-          <li><a href="terms-of-service.html" class="hover:text-emerald-400 transition-colors">Terms of Service</a></li>
-          <li><a href="disclaimer.html" class="hover:text-emerald-400 transition-colors">Disclaimer</a></li>
-          <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
-          <li class="footer-admin-link ${isAdmin ? '' : 'hidden'}"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
-        `;
-      }
-    }
-  });
+function rebuildGlobalFooter(user) {
+  const footer = document.querySelector('footer');
+  if (!footer) return;
+
+  const isAdmin = user ? isAdminEmail(user.email) : false;
+  const currentYear = new Date().getFullYear();
+
+  footer.className = "bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8";
+  footer.innerHTML = `
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+        <div class="md:col-span-1">
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-900">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online finance and business calculators for everyday decisions.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-emerald-400 transition-colors">Loan / Mortgage</a></li>
+            <li><a href="currency-converter.html" class="hover:text-emerald-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-emerald-400 transition-colors">Tax Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Business Tools</h4>
+          <ul class="space-y-2">
+            <li><a href="salary-calculator.html" class="hover:text-emerald-400 transition-colors">Salary & Paycheck</a></li>
+            <li><a href="invoice-generator.html" class="hover:text-emerald-400 transition-colors">Invoice Generator</a></li>
+            <li><a href="roi-calculator.html" class="hover:text-emerald-400 transition-colors">ROI Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Quick Utilities</h4>
+          <ul class="space-y-2">
+            <li><a href="qr-generator.html" class="hover:text-indigo-400 transition-colors">QR Code Generator</a></li>
+            <li><a href="password-generator.html" class="hover:text-indigo-400 transition-colors">Password Generator</a></li>
+            <li><a href="word-counter.html" class="hover:text-indigo-400 transition-colors">Word Counter</a></li>
+            <li><a href="unit-converter.html" class="hover:text-indigo-400 transition-colors">Unit Converter</a></li>
+            <li><a href="age-calculator.html" class="hover:text-indigo-400 transition-colors">Age Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Legal & Info</h4>
+          <ul class="space-y-2">
+            <li><a href="about.html" class="hover:text-emerald-400 transition-colors">About Us</a></li>
+            <li><a href="contact.html" class="hover:text-emerald-400 transition-colors">Contact Us</a></li>
+            <li><a href="privacy-policy.html" class="hover:text-emerald-400 transition-colors">Privacy Policy</a></li>
+            <li><a href="terms-of-service.html" class="hover:text-emerald-400 transition-colors">Terms of Service</a></li>
+            <li><a href="disclaimer.html" class="hover:text-emerald-400 transition-colors">Disclaimer</a></li>
+            <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link ${isAdmin ? '' : 'hidden'}"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px] leading-relaxed max-w-4xl mx-auto">
+        <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+        <p>
+          These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice. Always consult a certified accountant or financial advisor for official tax filings and lending calculations.
+        </p>
+        <p class="mt-4 text-slate-600">
+          &copy; ${currentYear} FinCalc Tools. All rights reserved. Powered by Firebase Auth & Firestore.
+        </p>
+      </div>
+    </div>
+  `;
 }
 
 /**
@@ -1392,15 +1440,11 @@ function rebuildDesktopNavbar(user) {
     navHtml += `<a href="${link.href}" class="${cls}">${link.text}</a>\n`;
   });
 
-  // Render Utilities Dropdown (hover to open)
+  // Render Utilities Dropdown (hover to open) with special violet pill styling to stand out
   const isAnyUtilityActive = UTILITIES_LINKS.some(link => currentPage === link.href);
   const utilitiesBtnClass = isAnyUtilityActive
-    ? (isUtilityPage 
-        ? 'flex items-center gap-1 font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200 hover:bg-indigo-100 transition-colors'
-        : 'flex items-center gap-1 font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200 hover:bg-emerald-100 transition-colors')
-    : (isUtilityPage
-        ? 'flex items-center gap-1 font-semibold text-slate-600 hover:text-indigo-600 transition-colors'
-        : 'flex items-center gap-1 font-semibold text-slate-600 hover:text-emerald-600 transition-colors');
+    ? 'flex items-center gap-1.5 font-bold text-violet-800 bg-violet-100 px-3 py-1.5 rounded-xl border border-violet-400 shadow-2xs hover:bg-violet-200/80 transition-all'
+    : 'flex items-center gap-1.5 font-bold text-violet-700 bg-violet-50 px-3 py-1.5 rounded-xl border border-violet-200/80 hover:bg-violet-100/90 hover:border-violet-300 transition-all';
 
   navHtml += `
     <div class="relative group">
