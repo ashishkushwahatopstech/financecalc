@@ -1829,10 +1829,20 @@ async function openLinkStatsModal(code, uid, token = '') {
     const analytics = data.analytics || {};
 
     // 1. Details
-    destEl.textContent = link.original_url;
-    destEl.href = link.original_url;
-    createdEl.textContent = new Date(link.created_at).toLocaleDateString();
-    expiresEl.textContent = link.expires_at ? new Date(link.expires_at).toLocaleDateString() : 'Permanent';
+    destEl.textContent = link.original_url || '';
+    destEl.href = link.original_url || '#';
+    
+    try {
+      createdEl.textContent = link.created_at ? new Date(link.created_at).toLocaleDateString() : 'Unknown';
+    } catch (e) {
+      createdEl.textContent = 'Unknown';
+    }
+    
+    try {
+      expiresEl.textContent = link.expires_at ? new Date(link.expires_at).toLocaleDateString() : 'Permanent';
+    } catch (e) {
+      expiresEl.textContent = 'Permanent';
+    }
 
     // 2. Geography analysis counts
     const geo = analytics.geography || [];
