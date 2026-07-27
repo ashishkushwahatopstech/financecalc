@@ -1,12 +1,12 @@
 /**
- * Cloudflare Pages Function: GET /functions/api/stats/[code]
+ * Cloudflare Pages Function: GET /functions/api/shortener-stats
  * Returns aggregated click statistics for a specific short link.
  * Verifies link ownership before returning data.
  */
 export async function onRequestGet(context) {
-  const { request, env, params } = context;
-  const { code } = params;
+  const { request, env } = context;
   const urlObj = new URL(request.url);
+  const code = urlObj.searchParams.get('code');
   const uid = urlObj.searchParams.get('uid');
 
   if (!code) {
@@ -55,7 +55,6 @@ export async function onRequestGet(context) {
     }
 
     // 2. Perform Batch Query to fetch all stats efficiently
-    // D1 SQLite uses date(timestamp / 1000, 'unixepoch') to group by day.
     const stmtClicksOverTime = d1.prepare(`
       SELECT date(clicked_at / 1000, 'unixepoch') AS day, COUNT(*) AS count 
       FROM clicks 

@@ -1791,7 +1791,7 @@ async function openLinkStatsModal(code, uid) {
   modal.classList.remove('hidden');
 
   try {
-    const res = await fetch(`/api/stats/${encodeURIComponent(code)}?uid=${encodeURIComponent(uid)}`);
+    const res = await fetch(`/api/shortener-stats?code=${encodeURIComponent(code)}&uid=${encodeURIComponent(uid)}`);
     const data = await res.json();
 
     if (!res.ok) throw new Error(data.error || 'Failed to fetch statistics.');
@@ -1924,15 +1924,21 @@ async function openLinkStatsModal(code, uid) {
 }
 
 // Bind Modal Close Buttons globally
-if (typeof window !== 'undefined') {
-  window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('btn-close-stats-modal')?.addEventListener('click', () => {
-      document.getElementById('admin-link-stats-modal')?.classList.add('hidden');
-    });
-    document.getElementById('btn-close-stats-modal-bottom')?.addEventListener('click', () => {
-      document.getElementById('admin-link-stats-modal')?.classList.add('hidden');
-    });
+function initCloseStatsListeners() {
+  document.getElementById('btn-close-stats-modal')?.addEventListener('click', () => {
+    document.getElementById('admin-link-stats-modal')?.classList.add('hidden');
   });
+  document.getElementById('btn-close-stats-modal-bottom')?.addEventListener('click', () => {
+    document.getElementById('admin-link-stats-modal')?.classList.add('hidden');
+  });
+}
+
+if (typeof window !== 'undefined') {
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', initCloseStatsListeners);
+  } else {
+    initCloseStatsListeners();
+  }
 }
 
 /**
