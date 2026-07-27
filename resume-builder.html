@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Resume Builder — Create & Download Resumes Online | FinCalc Tools</title>
+  <meta name="description" content="Build professional resumes client-side. Fill out templates, choose modern, minimalist or professional layouts, and print or save as PDF instantly." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+  <style>
+    /* Print Styles to extract PDF exactly */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      header, footer, #editor-panel, #promo-ads, #page-header-title {
+        display: none !important;
+      }
+      #resume-preview-wrapper, #resume-preview-wrapper * {
+        visibility: visible;
+      }
+      #resume-preview-wrapper {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none hover-wiggle">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-violet-600 to-indigo-800 p-0.5 shadow-md shadow-indigo-600/20 group-hover:shadow-indigo-600/30 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-transparent"></div>
+              <svg class="w-5 h-5 text-indigo-400 group-hover:text-indigo-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+          <span class="absolute -top-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-500 border-2 border-white"></span>
+          </span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-indigo-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/80">SUITE</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Smart Financial Tools</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-indigo-600 transition-colors">Home</a>
+        <a href="loan-calculator.html" class="hover:text-indigo-600 transition-colors">Loan</a>
+        <a href="emi-calculator.html" class="hover:text-indigo-600 transition-colors">EMI</a>
+        <a href="sip-calculator.html" class="hover:text-indigo-600 transition-colors">SIP</a>
+        <a href="currency-converter.html" class="hover:text-indigo-600 transition-colors">Currency</a>
+        <a href="tax-calculator.html" class="hover:text-indigo-600 transition-colors">Tax</a>
+        <a href="salary-calculator.html" class="hover:text-indigo-600 transition-colors">Salary</a>
+        <a href="invoice-generator.html" class="hover:text-indigo-600 transition-colors">Invoice</a>
+        <a href="roi-calculator.html" class="hover:text-indigo-600 transition-colors">ROI</a>
+
+        <div class="relative group">
+          <button class="flex items-center gap-1.5 font-bold text-violet-800 bg-violet-100 px-3 py-1.5 rounded-xl border border-violet-400 shadow-2xs hover:bg-violet-200/80 transition-all">
+            <span>Utilities</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+            <a href="image-compressor.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Image Compressor</a>
+            <a href="pdf-tools.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">PDF Tools</a>
+            <a href="qr-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">QR Code Generator</a>
+            <a href="password-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Password Generator</a>
+            <a href="word-counter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Word Counter</a>
+            <a href="unit-converter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Unit Converter</a>
+            <a href="age-calculator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Age Calculator</a>
+          </div>
+        </div>
+
+        <a id="nav-admin-link" href="admin.html" class="hidden text-amber-700 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
+      </nav>
+
+      <div id="navbar-auth-container" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    
+    <div id="page-header-title" class="mb-6">
+      <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+        <a href="index.html" class="hover:text-indigo-600">Home</a> &rsaquo;
+        <span>Resume Builder</span>
+      </div>
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Professional Resume Builder</h1>
+          <p class="text-xs sm:text-sm text-slate-500 mt-1">Create, style, and download elegant resumes. Data is processed locally in the browser.</p>
+        </div>
+        
+        <!-- Controls Top -->
+        <div class="flex items-center gap-3">
+          <select id="resume-template" class="px-3.5 py-2 text-xs font-bold bg-white border border-slate-200 rounded-xl focus:outline-none cursor-pointer">
+            <option value="modern" selected>Modern Indigo Layout</option>
+            <option value="professional">Professional Serif Layout</option>
+            <option value="minimalist">Minimalist Sans Layout</option>
+          </select>
+          <button id="btn-print" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span>Download PDF</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workspace Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Editor Panel -->
+      <div id="editor-panel" class="lg:col-span-5 space-y-6">
+        
+        <!-- Personal Info -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">Personal Details</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase">Full Name</label>
+              <input type="text" id="in-name" value="Alex Morgan" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase">Job Title</label>
+              <input type="text" id="in-title" value="Senior Software Engineer" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase">Email Address</label>
+              <input type="email" id="in-email" value="alex.morgan@email.com" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase">Phone Number</label>
+              <input type="text" id="in-phone" value="+1 (555) 019-2834" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase">Location</label>
+              <input type="text" id="in-location" value="San Francisco, CA" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase">LinkedIn / Link</label>
+              <input type="text" id="in-link" value="linkedin.com/in/alexmorgan" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase">Professional Summary</label>
+            <textarea id="in-summary" rows="3" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800">Results-driven software engineer with 5+ years of experience building scalable cloud-native architectures, designing RESTful APIs, and implementing front-end frameworks.</textarea>
+          </div>
+        </div>
+
+        <!-- Experience List -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Work Experience</h3>
+            <button id="add-exp" type="button" class="px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-bold rounded-lg hover:bg-indigo-150 transition-colors cursor-pointer">+ Add Work</button>
+          </div>
+          
+          <div id="exp-fields" class="space-y-4">
+            <!-- Dynamically populated experience editor rows -->
+          </div>
+        </div>
+
+        <!-- Education List -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Education</h3>
+            <button id="add-edu" type="button" class="px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-bold rounded-lg hover:bg-indigo-150 transition-colors cursor-pointer">+ Add Edu</button>
+          </div>
+          
+          <div id="edu-fields" class="space-y-4">
+            <!-- Dynamically populated education editor rows -->
+          </div>
+        </div>
+
+        <!-- Skills Tags -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">Skills</h3>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase">Skills (Comma-separated)</label>
+            <input type="text" id="in-skills" value="JavaScript, TypeScript, React, Node.js, Python, AWS, Docker, Git" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+            <p class="text-[10px] text-slate-400 mt-1">Input skills separated by commas to format them nicely.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Preview Panel -->
+      <div class="lg:col-span-7">
+        <div id="resume-preview-wrapper" class="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 min-h-[840px] max-w-[800px] mx-auto overflow-hidden">
+          <div id="resume-preview" class="h-full">
+            <!-- Populated via Javascript based on template selection -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Promo Blog Links -->
+    <div id="promo-ads" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10"></div>
+
+  </main>
+
+  <!-- Shared Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-900 font-bold">
+              <svg class="w-4 h-4 text-slate-900 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online finance and business calculators for everyday decisions.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-emerald-400 transition-colors">Loan & Mortgage Calculator</a></li>
+            <li><a href="currency-converter.html" class="hover:text-emerald-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-emerald-400 transition-colors">Tax Calculator (US & Canada)</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Business Tools</h4>
+          <ul class="space-y-2">
+            <li><a href="salary-calculator.html" class="hover:text-emerald-400 transition-colors">Salary & Paycheck Calculator</a></li>
+            <li><a href="invoice-generator.html" class="hover:text-emerald-400 transition-colors">Invoice Generator</a></li>
+            <li><a href="roi-calculator.html" class="hover:text-emerald-400 transition-colors">ROI & Investment Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Financial Disclaimer Notice -->
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px] leading-relaxed max-w-4xl mx-auto">
+        <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+        <p>
+          These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice. Always consult a certified accountant or financial advisor for official tax filings and lending calculations.
+        </p>
+        <p class="mt-4 text-slate-600">
+          © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved. Powered by Firebase Auth & Firestore.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/blog-promo.js"></script>
+  <script>
+    // Initial Dynamic lists values
+    let experiences = [
+      { role: 'Senior Engineer', company: 'Google Cloud Corp', tenure: '2023 - Present', desc: 'Designed high-availability microservices serving 10M+ daily active requests. Led team of 4 engineers deploying Docker structures.' },
+      { role: 'Software Engineer', company: 'Stripe Payments Ltd', tenure: '2021 - 2023', desc: 'Maintained core merchant payout workflows. Reduced database loading latencies by 35% through query indices optimizing.' }
+    ];
+
+    let educations = [
+      { degree: 'B.S. Computer Science', university: 'Stanford University', grad: 'Graduated 2021' }
+    ];
+
+    // Dom Selections
+    const templateSelect = document.getElementById('resume-template');
+    const previewContainer = document.getElementById('resume-preview');
+    const expFields = document.getElementById('exp-fields');
+    const eduFields = document.getElementById('edu-fields');
+
+    // Add Work Experience Row
+    document.getElementById('add-exp').addEventListener('click', () => {
+      experiences.push({ role: 'Job Title', company: 'Company Name', tenure: '2023 - Present', desc: 'Summary of contributions.' });
+      renderExperienceInputs();
+      updatePreview();
+    });
+
+    // Add Education Row
+    document.getElementById('add-edu').addEventListener('click', () => {
+      educations.push({ degree: 'Degree Name', university: 'University Name', grad: 'Graduated 2023' });
+      renderEducationInputs();
+      updatePreview();
+    });
+
+    function renderExperienceInputs() {
+      expFields.innerHTML = '';
+      experiences.forEach((exp, idx) => {
+        const div = document.createElement('div');
+        div.className = 'p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 relative';
+        div.innerHTML = `
+          <button onclick="window.removeExp(${idx})" class="absolute top-2 right-2 text-rose-500 hover:bg-rose-50 p-1 rounded border border-rose-100 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400">Job Title</label>
+              <input type="text" value="${exp.role}" oninput="window.updateExpField(${idx}, 'role', this.value)" class="w-full px-2.5 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none font-semibold text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400">Company</label>
+              <input type="text" value="${exp.company}" oninput="window.updateExpField(${idx}, 'company', this.value)" class="w-full px-2.5 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none font-semibold text-slate-800" />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 gap-2">
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400">Date Range / Tenure</label>
+              <input type="text" value="${exp.tenure}" oninput="window.updateExpField(${idx}, 'tenure', this.value)" class="w-full px-2.5 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none font-semibold text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400">Description</label>
+              <textarea rows="2" oninput="window.updateExpField(${idx}, 'desc', this.value)" class="w-full px-2.5 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none font-semibold text-slate-800">${exp.desc}</textarea>
+            </div>
+          </div>
+        `;
+        expFields.appendChild(div);
+      });
+    }
+
+    function renderEducationInputs() {
+      eduFields.innerHTML = '';
+      educations.forEach((edu, idx) => {
+        const div = document.createElement('div');
+        div.className = 'p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 relative';
+        div.innerHTML = `
+          <button onclick="window.removeEdu(${idx})" class="absolute top-2 right-2 text-rose-500 hover:bg-rose-50 p-1 rounded border border-rose-100 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400">Degree / Major</label>
+              <input type="text" value="${edu.degree}" oninput="window.updateEduField(${idx}, 'degree', this.value)" class="w-full px-2.5 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none font-semibold text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400">School / University</label>
+              <input type="text" value="${edu.university}" oninput="window.updateEduField(${idx}, 'university', this.value)" class="w-full px-2.5 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none font-semibold text-slate-800" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[9px] font-bold text-slate-400">Graduation Date</label>
+            <input type="text" value="${edu.grad}" oninput="window.updateEduField(${idx}, 'grad', this.value)" class="w-full px-2.5 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none font-semibold text-slate-800" />
+          </div>
+        `;
+        eduFields.appendChild(div);
+      });
+    }
+
+    // Global Handlers
+    window.removeExp = (idx) => {
+      experiences.splice(idx, 1);
+      renderExperienceInputs();
+      updatePreview();
+    };
+
+    window.updateExpField = (idx, field, value) => {
+      experiences[idx][field] = value;
+      updatePreview();
+    };
+
+    window.removeEdu = (idx) => {
+      educations.splice(idx, 1);
+      renderEducationInputs();
+      updatePreview();
+    };
+
+    window.updateEduField = (idx, field, value) => {
+      educations[idx][field] = value;
+      updatePreview();
+    };
+
+    // Update Live Preview Layout
+    function updatePreview() {
+      const template = templateSelect.value;
+      const name = document.getElementById('in-name').value || 'Full Name';
+      const title = document.getElementById('in-title').value || 'Job Title';
+      const email = document.getElementById('in-email').value || '';
+      const phone = document.getElementById('in-phone').value || '';
+      const loc = document.getElementById('in-location').value || '';
+      const link = document.getElementById('in-link').value || '';
+      const summary = document.getElementById('in-summary').value || '';
+      const skillsStr = document.getElementById('in-skills').value || '';
+      
+      const skillsList = skillsStr.split(',').map(s => s.trim()).filter(Boolean);
+
+      let html = '';
+
+      if (template === 'modern') {
+        html = `
+          <div class="grid grid-cols-12 h-full min-h-[780px] bg-slate-900 text-slate-100">
+            <!-- Sidebar (Personal & Skills) -->
+            <div class="col-span-4 bg-slate-950 p-6 space-y-6">
+              <div class="space-y-1">
+                <h2 class="text-lg font-black text-indigo-400 leading-tight">${name}</h2>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">${title}</p>
+              </div>
+
+              <!-- Contact -->
+              <div class="space-y-2 text-[10px] text-slate-350">
+                <div class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                  <span class="truncate">${email}</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                  <span>${phone}</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                  <span>${loc}</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                  <span class="truncate">${link}</span>
+                </div>
+              </div>
+
+              <!-- Skills -->
+              <div class="space-y-3">
+                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest border-b border-slate-800 pb-1">Skills</h3>
+                <div class="flex flex-wrap gap-1.5">
+                  ${skillsList.map(skill => `<span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-semibold text-slate-200">${skill}</span>`).join('')}
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-span-8 p-6 space-y-6 bg-slate-900">
+              <!-- Summary -->
+              <div class="space-y-2">
+                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest pb-1 border-b border-slate-800">Professional Summary</h3>
+                <p class="text-[11px] text-slate-300 leading-relaxed">${summary}</p>
+              </div>
+
+              <!-- Work Experience -->
+              <div class="space-y-4">
+                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest pb-1 border-b border-slate-800">Experience</h3>
+                <div class="space-y-4">
+                  ${experiences.map(exp => `
+                    <div class="space-y-1">
+                      <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-white">${exp.role}</span>
+                        <span class="text-[10px] text-slate-400">${exp.tenure}</span>
+                      </div>
+                      <p class="text-[10px] text-indigo-300 font-semibold">${exp.company}</p>
+                      <p class="text-[10.5px] text-slate-350 leading-relaxed">${exp.desc}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <!-- Education -->
+              <div class="space-y-3">
+                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest pb-1 border-b border-slate-800">Education</h3>
+                <div class="space-y-3">
+                  ${educations.map(edu => `
+                    <div class="text-[11px]">
+                      <div class="flex items-center justify-between font-bold text-white">
+                        <span>${edu.degree}</span>
+                        <span class="text-[10px] text-slate-400">${edu.grad}</span>
+                      </div>
+                      <p class="text-[10px] text-slate-400 mt-0.5">${edu.university}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } 
+      else if (template === 'professional') {
+        html = `
+          <div class="p-6 space-y-6 text-slate-900 bg-white" style="font-family: Georgia, serif;">
+            <!-- Header Centered -->
+            <div class="text-center space-y-2">
+              <h2 class="text-2xl font-bold tracking-wide text-slate-900">${name}</h2>
+              <p class="text-xs italic font-medium text-slate-600">${title}</p>
+              <p class="text-[10px] text-slate-500 space-x-2">
+                <span>${email}</span> &bull; 
+                <span>${phone}</span> &bull; 
+                <span>${loc}</span> &bull; 
+                <span>${link}</span>
+              </p>
+            </div>
+
+            <!-- Summary -->
+            <div class="space-y-1.5">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Professional Summary</h3>
+              <p class="text-[11px] text-slate-700 leading-relaxed font-sans">${summary}</p>
+            </div>
+
+            <!-- Experience -->
+            <div class="space-y-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Work History</h3>
+              <div class="space-y-4">
+                ${experiences.map(exp => `
+                  <div class="space-y-1">
+                    <div class="flex items-center justify-between text-[11.5px] font-bold">
+                      <span>${exp.role} <span class="font-normal text-slate-600">at ${exp.company}</span></span>
+                      <span class="text-[10px] font-medium text-slate-500">${exp.tenure}</span>
+                    </div>
+                    <p class="text-[10.5px] text-slate-700 leading-relaxed font-sans">${exp.desc}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Education -->
+            <div class="space-y-3">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Education</h3>
+              <div class="space-y-3">
+                ${educations.map(edu => `
+                  <div class="text-[11px] font-sans">
+                    <div class="flex items-center justify-between font-bold text-slate-800">
+                      <span>${edu.degree}</span>
+                      <span class="text-[10px] text-slate-500 font-medium">${edu.grad}</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-0.5">${edu.university}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="space-y-2">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Core Competencies</h3>
+              <p class="text-[10.5px] text-slate-700 leading-relaxed font-sans">
+                ${skillsList.join(', ')}
+              </p>
+            </div>
+          </div>
+        `;
+      } 
+      else if (template === 'minimalist') {
+        html = `
+          <div class="p-6 space-y-6 text-slate-800 bg-white" style="font-family: Arial, sans-serif;">
+            <!-- Simple Left-Align Header -->
+            <div class="flex flex-col sm:flex-row justify-between items-start gap-4 pb-4 border-b border-slate-100">
+              <div class="space-y-1">
+                <h2 class="text-xl font-bold tracking-tight text-slate-900">${name}</h2>
+                <p class="text-xs font-semibold text-slate-500">${title}</p>
+              </div>
+              <div class="text-right text-[10px] text-slate-500 space-y-0.5">
+                <p>${email}</p>
+                <p>${phone}</p>
+                <p>${loc}</p>
+                <p>${link}</p>
+              </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">About Me</div>
+              <div class="col-span-9 text-[11px] text-slate-650 leading-relaxed">${summary}</div>
+            </div>
+
+            <!-- Experience -->
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Experience</div>
+              <div class="col-span-9 space-y-4">
+                ${experiences.map(exp => `
+                  <div class="space-y-1">
+                    <div class="flex items-center justify-between text-[11px] font-bold text-slate-900">
+                      <span>${exp.role} &bull; ${exp.company}</span>
+                      <span class="text-[9.5px] font-medium text-slate-400">${exp.tenure}</span>
+                    </div>
+                    <p class="text-[10.5px] text-slate-600 leading-relaxed">${exp.desc}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Education -->
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Education</div>
+              <div class="col-span-9 space-y-3">
+                ${educations.map(edu => `
+                  <div class="text-[11px]">
+                    <div class="flex items-center justify-between font-bold text-slate-900">
+                      <span>${edu.degree}</span>
+                      <span class="text-[9.5px] font-medium text-slate-400">${edu.grad}</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-0.5">${edu.university}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Expertise</div>
+              <div class="col-span-9 text-[11px] text-slate-650 leading-relaxed">
+                ${skillsList.join(' &bull; ')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      previewContainer.innerHTML = html;
+    }
+
+    // Input listeners to update preview instantly
+    ['in-name', 'in-title', 'in-email', 'in-phone', 'in-location', 'in-link', 'in-summary', 'in-skills'].forEach(id => {
+      document.getElementById(id).addEventListener('input', updatePreview);
+    });
+
+    templateSelect.addEventListener('change', updatePreview);
+
+    // Print Actions
+    document.getElementById('btn-print').addEventListener('click', () => {
+      window.print();
+    });
+
+    // Initialize layout
+    renderExperienceInputs();
+    renderEducationInputs();
+    updatePreview();
+  </script>
+</body>
+</html>
