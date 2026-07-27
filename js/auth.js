@@ -1416,6 +1416,7 @@ function rebuildDesktopNavbar(user) {
   const NAV_LINKS = [
     { text: 'Home', href: 'index.html' },
     { text: 'Loan', href: 'loan-calculator.html' },
+    { text: 'EMI', href: 'emi-calculator.html' },
     { text: 'Currency', href: 'currency-converter.html' },
     { text: 'Tax', href: 'tax-calculator.html' },
     { text: 'Salary', href: 'salary-calculator.html' },

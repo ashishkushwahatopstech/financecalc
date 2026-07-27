@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EMI Calculator — Calculate Loan EMI Online Free | FinCalc Tools</title>
+  <meta name="description" content="Calculate your Equated Monthly Installment (EMI) for home loans, car loans, or personal loans instantly. View detailed amortization schedules and graphical breakdowns." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none hover-wiggle">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-800 p-0.5 shadow-md shadow-emerald-600/20 group-hover:shadow-emerald-600/30 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent"></div>
+              <svg class="w-5 h-5 text-emerald-400 group-hover:text-emerald-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+          <span class="absolute -top-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white"></span>
+          </span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-emerald-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">SUITE</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Smart Financial Tools</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-emerald-600 transition-colors">Home</a>
+        <a href="loan-calculator.html" class="hover:text-emerald-600 transition-colors">Loan</a>
+        <a href="currency-converter.html" class="hover:text-emerald-600 transition-colors">Currency</a>
+        <a href="tax-calculator.html" class="hover:text-emerald-600 transition-colors">Tax</a>
+        <a href="salary-calculator.html" class="hover:text-emerald-600 transition-colors">Salary</a>
+        <a href="invoice-generator.html" class="hover:text-emerald-600 transition-colors">Invoice</a>
+        <a href="roi-calculator.html" class="hover:text-emerald-600 transition-colors">ROI</a>
+
+        <div class="relative group">
+          <button class="flex items-center gap-1.5 font-bold text-violet-700 bg-violet-50 px-3 py-1.5 rounded-xl border border-violet-200/80 hover:bg-violet-100/90 hover:border-violet-300 transition-all">
+            <span>Utilities</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+            <a href="qr-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">QR Code Generator</a>
+            <a href="password-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Password Generator</a>
+            <a href="word-counter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Word Counter</a>
+            <a href="unit-converter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Unit Converter</a>
+            <a href="age-calculator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Age Calculator</a>
+          </div>
+        </div>
+
+        <a id="nav-admin-link" href="admin.html" class="hidden text-amber-700 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
+      </nav>
+
+      <div id="navbar-auth-container" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    
+    <div class="mb-6">
+      <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+        <a href="index.html" class="hover:text-emerald-600">Home</a> &rsaquo;
+        <span>EMI Calculator</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">EMI Calculator</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">Calculate monthly Equated Installments (EMI) for your home, car, or personal loans dynamically.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Inputs Column -->
+      <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+        <h2 class="text-base font-bold text-slate-900 mb-4 pb-3 border-b border-slate-100">Loan Details</h2>
+        
+        <form id="emi-form" class="space-y-4">
+          <!-- Loan Amount -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Loan Amount</label>
+            <div class="flex">
+              <select id="emi-currency" class="px-2 py-2 text-sm bg-slate-50 border border-slate-200 rounded-l-lg focus:bg-white focus:border-emerald-500 focus:outline-none font-semibold text-slate-700 border-r-0 cursor-pointer">
+                <option value="₹">₹ (INR)</option>
+                <option value="$" selected>$ (USD)</option>
+                <option value="£">£ (GBP)</option>
+                <option value="€">€ (EUR)</option>
+                <option value="¥">¥ (JPY)</option>
+              </select>
+              <input type="number" id="emi-amount" value="50000" min="100" step="500" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-r-lg focus:bg-white focus:border-emerald-500 focus:outline-none font-semibold text-slate-800" />
+            </div>
+          </div>
+
+          <!-- Interest Rate -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Interest Rate (% per annum)</label>
+            <input type="number" id="emi-rate" value="8.5" min="0.1" step="0.05" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-emerald-500 focus:outline-none font-semibold text-slate-800" />
+          </div>
+
+          <!-- Tenure -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Loan Tenure</label>
+            <div class="grid grid-cols-3 gap-2">
+              <input type="number" id="emi-tenure" value="5" min="1" step="1" class="col-span-2 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-emerald-500 focus:outline-none font-semibold text-slate-800" />
+              <select id="emi-tenure-type" class="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-emerald-500 focus:outline-none font-semibold text-slate-800 cursor-pointer">
+                <option value="years" selected>Years</option>
+                <option value="months">Months</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs transition-colors cursor-pointer mt-2">
+            Calculate EMI
+          </button>
+        </form>
+      </div>
+
+      <!-- Results Column -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+            <span class="text-[11px] font-semibold text-emerald-800 uppercase tracking-wider">Monthly EMI</span>
+            <div id="res-monthly" class="text-base sm:text-lg font-extrabold text-emerald-900 mt-1">$1,026</div>
+          </div>
+
+          <div class="bg-slate-100 p-4 rounded-xl border border-slate-200">
+            <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider">Total Principal</span>
+            <div id="res-principal" class="text-base sm:text-lg font-extrabold text-slate-900 mt-1">$50,000</div>
+          </div>
+
+          <div class="bg-amber-50 p-4 rounded-xl border border-amber-100">
+            <span class="text-[11px] font-semibold text-amber-800 uppercase tracking-wider">Total Interest</span>
+            <div id="res-interest" class="text-base sm:text-lg font-extrabold text-amber-950 mt-1">$11,548</div>
+          </div>
+
+          <div class="bg-slate-100 p-4 rounded-xl border border-slate-200">
+            <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider">Total Amount</span>
+            <div id="res-cost" class="text-base sm:text-lg font-extrabold text-slate-900 mt-1">$61,548</div>
+          </div>
+        </div>
+
+        <!-- Canvas breakdown chart -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-center gap-6">
+          <div class="w-40 h-40 flex-shrink-0 relative">
+            <canvas id="emi-canvas" class="w-full h-full"></canvas>
+          </div>
+          <div class="flex-grow space-y-3 w-full">
+            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">EMI Payment Breakdown</h3>
+            <div class="flex items-center justify-between text-xs py-1.5 border-b border-slate-100">
+              <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-emerald-500"></span> Principal Loan Amount</span>
+              <span id="chart-principal-lbl" class="font-bold text-slate-800">$50,000</span>
+            </div>
+            <div class="flex items-center justify-between text-xs py-1.5 border-b border-slate-100">
+              <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-amber-500"></span> Total Interest Payable</span>
+              <span id="chart-interest-lbl" class="font-bold text-slate-800">$11,548</span>
+            </div>
+            <p id="tenure-msg" class="text-[11px] text-slate-500 mt-2">Repayment over 5.0 years (60 monthly payments).</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Amortization Schedule Table -->
+    <section class="mt-10 bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+      <div class="p-6 border-b border-slate-100 flex items-center justify-between gap-4">
+        <div>
+          <h2 class="text-base font-bold text-slate-900">EMI Amortization Schedule</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Payment-by-payment distribution of principal and interest balances.</p>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto max-h-96 overflow-y-auto" data-lenis-prevent>
+        <table class="w-full text-left border-collapse text-xs">
+          <thead class="bg-slate-50 text-slate-600 font-semibold sticky top-0 border-b border-slate-200">
+            <tr>
+              <th class="py-3 px-4">Payment No.</th>
+              <th class="py-3 px-4">EMI Amount</th>
+              <th class="py-3 px-4">Principal Paid</th>
+              <th class="py-3 px-4">Interest Paid</th>
+              <th class="py-3 px-4">Interest to Date</th>
+              <th class="py-3 px-4 text-right">Remaining Balance</th>
+            </tr>
+          </thead>
+          <tbody id="emi-table-body" class="divide-y divide-slate-100 text-slate-700">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Promo Blog Links -->
+    <div id="promo-ads" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10"></div>
+
+  </main>
+
+  <!-- Shared Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-900 font-bold">
+              <svg class="w-4 h-4 text-slate-900 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online finance and business calculators for everyday decisions.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-emerald-400 transition-colors">Loan & Mortgage Calculator</a></li>
+            <li><a href="currency-converter.html" class="hover:text-emerald-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-emerald-400 transition-colors">Tax Calculator (US & Canada)</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Business Tools</h4>
+          <ul class="space-y-2">
+            <li><a href="salary-calculator.html" class="hover:text-emerald-400 transition-colors">Salary & Paycheck Calculator</a></li>
+            <li><a href="invoice-generator.html" class="hover:text-emerald-400 transition-colors">Invoice Generator</a></li>
+            <li><a href="roi-calculator.html" class="hover:text-emerald-400 transition-colors">ROI & Investment Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Financial Disclaimer Notice -->
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px] leading-relaxed max-w-4xl mx-auto">
+        <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+        <p>
+          These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice. Always consult a certified accountant or financial advisor for official tax filings and lending calculations.
+        </p>
+        <p class="mt-4 text-slate-600">
+          © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved. Powered by Firebase Auth & Firestore.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/blog-promo.js"></script>
+  <script type="module">
+    import { calculateEMI, drawEMIChart } from '/js/emi-calc.js';
+    import { trackToolUsage } from '/js/analytics.js';
+
+    const form = document.getElementById('emi-form');
+    const currencySelect = document.getElementById('emi-currency');
+    const amountInput = document.getElementById('emi-amount');
+    const rateInput = document.getElementById('emi-rate');
+    const tenureInput = document.getElementById('emi-tenure');
+    const tenureTypeSelect = document.getElementById('emi-tenure-type');
+
+    function formatCurrency(val, symbol) {
+      return `${symbol}${Math.round(val).toLocaleString()}`;
+    }
+
+    function runCalculation() {
+      const principal = parseFloat(amountInput.value) || 0;
+      const annualRate = parseFloat(rateInput.value) || 0;
+      const tenure = parseFloat(tenureInput.value) || 0;
+      const tenureType = tenureTypeSelect.value;
+      const symbol = currencySelect.value;
+
+      const result = calculateEMI({ principal, annualRate, tenure, tenureType });
+      if (!result) return;
+
+      trackToolUsage('EMI Calculator');
+
+      // Update summary fields
+      document.getElementById('res-monthly').textContent = formatCurrency(result.monthlyPayment, symbol);
+      document.getElementById('res-principal').textContent = formatCurrency(result.totalPrincipal, symbol);
+      document.getElementById('res-interest').textContent = formatCurrency(result.totalInterest, symbol);
+      document.getElementById('res-cost').textContent = formatCurrency(result.totalCost, symbol);
+
+      // Labels under breakdown
+      document.getElementById('chart-principal-lbl').textContent = formatCurrency(result.totalPrincipal, symbol);
+      document.getElementById('chart-interest-lbl').textContent = formatCurrency(result.totalInterest, symbol);
+
+      // Repayment sentence
+      const tenureVal = tenureType === 'years' ? tenure : (tenure / 12);
+      document.getElementById('tenure-msg').textContent = `Repayment over ${tenureVal.toFixed(1)} years (${result.totalMonths} monthly payments).`;
+
+      // Render chart
+      drawEMIChart('emi-canvas', result.totalPrincipal, result.totalInterest);
+
+      // Populate schedule table (limit to 180 rows for rendering speed)
+      const tbody = document.getElementById('emi-table-body');
+      tbody.innerHTML = '';
+
+      result.schedule.slice(0, 180).forEach(row => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/80 transition-colors';
+        tr.innerHTML = `
+          <td class="py-2.5 px-4 font-semibold text-slate-900">${row.month} <span class="text-[10px] text-slate-400 font-normal">(Yr ${row.year})</span></td>
+          <td class="py-2.5 px-4 font-mono">${symbol}${row.payment.toFixed(2)}</td>
+          <td class="py-2.5 px-4 font-mono text-emerald-700">${symbol}${row.principalPaid.toFixed(2)}</td>
+          <td class="py-2.5 px-4 font-mono text-amber-700">${symbol}${row.interestPaid.toFixed(2)}</td>
+          <td class="py-2.5 px-4 font-mono text-slate-500">${symbol}${row.totalInterestToDate.toFixed(2)}</td>
+          <td class="py-2.5 px-4 font-mono font-bold text-right text-slate-900">${symbol}${row.remainingBalance.toFixed(2)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      runCalculation();
+    });
+
+    [currencySelect, amountInput, rateInput, tenureInput, tenureTypeSelect].forEach(el => {
+      el.addEventListener('input', runCalculation);
+      el.addEventListener('change', runCalculation);
+    });
+
+    window.addEventListener('load', runCalculation);
+    window.addEventListener('resize', runCalculation);
+  </script>
+</body>
+</html>
