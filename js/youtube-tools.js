@@ -460,6 +460,128 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // =========================================================================
+  // 4. HASHTAG GENERATOR LOGIC
+  // =========================================================================
+  const btnGenerateHashtags = document.getElementById('btn-generate-hashtags');
+  const inputHashtagSeed = document.getElementById('hashtags-seed');
+  const hashtagsLoader = document.getElementById('hashtags-loader');
+  const hashtagsResults = document.getElementById('hashtags-results');
+  const hashtagsCount = document.getElementById('hashtags-count');
+  const hashtagsChipsContainer = document.getElementById('hashtags-chips-container');
+  const btnCopySelectedHashtags = document.getElementById('btn-copy-selected-hashtags');
+
+  function convertToHashtag(str) {
+    if (!str) return '';
+    const clean = str.replace(/[^a-zA-Z0-9\s-_]/g, '');
+    const words = clean.split(/[\s-_]+/).filter(Boolean);
+    const capitalized = words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+    return '#' + capitalized.join('');
+  }
+
+  if (btnGenerateHashtags && inputHashtagSeed) {
+    btnGenerateHashtags.addEventListener('click', async () => {
+      const input = inputHashtagSeed.value.trim();
+      if (!input) {
+        showToast('Please enter a seed keyword or YouTube URL.', 'error');
+        return;
+      }
+
+      hashtagsLoader.classList.remove('hidden');
+      hashtagsResults.classList.add('hidden');
+
+      const videoId = getYouTubeVideoId(input);
+      let items = [];
+
+      try {
+        if (videoId) {
+          // Input is a YouTube URL, fetch tags from server proxy
+          showToast('YouTube Link detected. Fetching tags...', 'success');
+          const res = await fetch(`/api/youtube-tags?id=${videoId}`);
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed to extract tags.');
+          items = data.tags || [];
+        } else {
+          // Input is a seed keyword, fetch suggestions from autocomplete proxy
+          const res = await fetch(`/api/youtube-keywords?q=${encodeURIComponent(input)}`);
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed to fetch suggestions.');
+          items = data.suggestions || [];
+          if (items.length > 0) {
+            items.unshift(input);
+          }
+        }
+
+        hashtagsChipsContainer.innerHTML = '';
+        
+        // Generate Hashtags List
+        const hashtags = items.map(item => convertToHashtag(item)).filter(Boolean);
+        const uniqueHashtags = [...new Set(hashtags)];
+
+        hashtagsCount.textContent = uniqueHashtags.length;
+
+        if (uniqueHashtags.length === 0) {
+          hashtagsChipsContainer.innerHTML = `
+            <div class="text-xs font-semibold text-slate-400 py-2">
+              No hashtags could be derived from this keyword. Try a different term.
+            </div>
+          `;
+          hashtagsResults.classList.remove('hidden');
+          return;
+        }
+
+        uniqueHashtags.forEach(tag => {
+          const chip = document.createElement('div');
+          chip.className = 'selected px-3 py-1.5 rounded-xl border border-rose-300 bg-rose-50 text-rose-700 font-bold text-[11px] cursor-pointer select-none transition-all';
+          chip.textContent = tag;
+
+          chip.addEventListener('click', () => {
+            chip.classList.toggle('selected');
+            if (chip.classList.contains('selected')) {
+              chip.className = 'selected px-3 py-1.5 rounded-xl border border-rose-300 bg-rose-50 text-rose-700 font-bold text-[11px] cursor-pointer select-none transition-all';
+            } else {
+              chip.className = 'px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium text-[11px] hover:border-rose-300 hover:bg-rose-50/50 hover:text-rose-700 cursor-pointer select-none transition-all';
+            }
+          });
+
+          hashtagsChipsContainer.appendChild(chip);
+        });
+
+        // Initialize Shared Export Component for Hashtags
+        renderExportButtons('hashtags-export-container', () => {
+          const selectedChips = hashtagsChipsContainer.querySelectorAll('.selected');
+          const targets = selectedChips.length > 0 ? selectedChips : hashtagsChipsContainer.querySelectorAll('div');
+          return Array.from(targets).map(el => el.textContent);
+        }, `yt-hashtags-${input.replace(/\s+/g, '-')}`);
+
+        hashtagsResults.classList.remove('hidden');
+
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        hashtagsLoader.classList.add('hidden');
+      }
+    });
+
+    // Copy Selected Hashtags to Clipboard
+    if (btnCopySelectedHashtags) {
+      btnCopySelectedHashtags.addEventListener('click', () => {
+        const selected = Array.from(hashtagsChipsContainer.querySelectorAll('.selected')).map(el => el.textContent);
+        if (selected.length === 0) {
+          showToast('No hashtags selected. Click chips to select them.', 'error');
+          return;
+        }
+
+        const text = selected.join(' ');
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Selected hashtags copied to clipboard!', 'success');
+        }).catch(err => {
+          showToast('Failed to copy text: ' + err, 'error');
+        });
+      });
+    }
+  }
+
   // Simple HTML Escaper
   function escapeHTML(str) {
     if (!str) return '';
