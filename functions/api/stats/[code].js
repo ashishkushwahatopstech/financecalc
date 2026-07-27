@@ -1,13 +1,14 @@
 /**
- * Cloudflare Pages Function: GET /functions/api/shortener-stats
+ * Cloudflare Pages Function: GET /functions/api/stats/[code]
  * Returns aggregated click statistics for a specific short link.
- * Verifies link ownership before returning data.
+ * Verifies link ownership or Admin status before returning data.
  */
 export async function onRequestGet(context) {
-  const { request, env } = context;
+  const { request, env, params } = context;
+  const { code } = params;
   const urlObj = new URL(request.url);
-  const code = urlObj.searchParams.get('code');
   const uid = urlObj.searchParams.get('uid');
+  const token = urlObj.searchParams.get('token');
 
   if (!code) {
     return new Response(JSON.stringify({ error: 'Short code is required.' }), {
@@ -32,7 +33,7 @@ export async function onRequestGet(context) {
   }
 
   try {
-    // 1. Verify ownership
+    // 1. Fetch link details
     const link = await d1.prepare(
       'SELECT uid, original_url, created_at, expires_at FROM links WHERE short_code = ?'
     ).bind(code).first();
@@ -44,17 +45,41 @@ export async function onRequestGet(context) {
       });
     }
 
-    const ADMIN_UID = 'RUYOUqQWQLOQar6B3iC0KxShiyq1';
-    const expectedAdminUid = env.ADMIN_UID || ADMIN_UID;
+    // 2. Authorize: must be owner OR authorized admin
+    let authorized = (link.uid === uid);
+    
+    if (!authorized) {
+      // Check Admin UID
+      const ADMIN_UID = 'RUYOUqQWQLOQar6B3iC0KxShiyq1';
+      const expectedAdminUid = env.ADMIN_UID || ADMIN_UID;
+      if (uid === expectedAdminUid) {
+        authorized = true;
+      }
+    }
 
-    if (link.uid !== uid && uid !== expectedAdminUid) {
+    if (!authorized && token) {
+      // Verify Google ID token for admin email
+      try {
+        const tokenRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
+        if (tokenRes.ok) {
+          const tokenInfo = await tokenRes.json();
+          if (tokenInfo.email && tokenInfo.email.toLowerCase() === 'ashishkushwaha88643@gmail.com') {
+            authorized = true;
+          }
+        }
+      } catch (e) {
+        console.error("Token verification error:", e);
+      }
+    }
+
+    if (!authorized) {
       return new Response(JSON.stringify({ error: 'Access denied: You do not own this link.' }), {
         status: 403,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // 2. Perform Batch Query to fetch all stats efficiently
+    // 3. Perform Batch Query to fetch all stats efficiently
     const stmtClicksOverTime = d1.prepare(`
       SELECT date(clicked_at / 1000, 'unixepoch') AS day, COUNT(*) AS count 
       FROM clicks 

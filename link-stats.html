@@ -247,6 +247,7 @@
   <!-- Stats Dashboard Controller -->
   <script type="module">
     import { getCurrentUser, showToast } from '/js/auth.js';
+    import { auth } from '/js/firebase-config.js';
 
     document.addEventListener('DOMContentLoaded', () => {
       let activeUser = null;
@@ -402,7 +403,13 @@
         statsPanel.classList.add('hidden');
 
         try {
-          const res = await fetch(`/api/stats/${code}?uid=${encodeURIComponent(activeUser.uid)}`);
+          let token = '';
+          try {
+            if (auth && auth.currentUser) {
+              token = await auth.currentUser.getIdToken();
+            }
+          } catch (e) {}
+          const res = await fetch(`/api/stats/${code}?uid=${encodeURIComponent(activeUser.uid)}&token=${encodeURIComponent(token)}`);
           const data = await res.json();
 
           if (!res.ok) throw new Error(data.error || 'Failed to fetch statistics');

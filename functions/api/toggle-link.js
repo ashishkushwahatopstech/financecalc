@@ -6,12 +6,27 @@ export async function onRequestPost(context) {
   const { request, env } = context;
   
   try {
-    const { shortCode, active, monetized, uid } = await request.json();
+    const { shortCode, active, monetized, uid, token } = await request.json();
 
     const ADMIN_UID = 'RUYOUqQWQLOQar6B3iC0KxShiyq1';
     const expectedAdminUid = env.ADMIN_UID || ADMIN_UID;
+    let authorized = (uid && uid === expectedAdminUid);
 
-    if (!uid || uid !== expectedAdminUid) {
+    if (!authorized && token) {
+      try {
+        const tokenRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
+        if (tokenRes.ok) {
+          const tokenInfo = await tokenRes.json();
+          if (tokenInfo.email && tokenInfo.email.toLowerCase() === 'ashishkushwaha88643@gmail.com') {
+            authorized = true;
+          }
+        }
+      } catch (e) {
+        console.error("Token verification error:", e);
+      }
+    }
+
+    if (!authorized) {
       return new Response(JSON.stringify({ error: 'Access denied: Admin privileges required.' }), {
         status: 403,
         headers: { 'Content-Type': 'application/json' }

@@ -80,7 +80,18 @@ function checkAndInitAdmin(user) {
   setupModalListeners();
 
   // Load URL Shortener global stats
-  loadShortenerStats(user.uid);
+  const initStats = async () => {
+    let token = '';
+    try {
+      if (auth.currentUser) {
+        token = await auth.currentUser.getIdToken();
+      }
+    } catch (e) {
+      console.warn("Failed to get ID token:", e);
+    }
+    loadShortenerStats(user.uid, token);
+  };
+  initStats();
 
   // Auto-sync unsynced local content items (fallback) to Cloud Firestore
   autoSyncLocalContent();
@@ -88,8 +99,14 @@ function checkAndInitAdmin(user) {
   // Set up refresh button event handler
   const btnRefreshShortener = document.getElementById('admin-btn-refresh-shortener');
   if (btnRefreshShortener) {
-    btnRefreshShortener.onclick = () => {
-      loadShortenerStats(user.uid);
+    btnRefreshShortener.onclick = async () => {
+      let token = '';
+      try {
+        if (auth.currentUser) {
+          token = await auth.currentUser.getIdToken();
+        }
+      } catch (e) {}
+      loadShortenerStats(user.uid, token);
     };
   }
 }
@@ -1601,13 +1618,13 @@ function setupContentManagerUI() {
 /**
  * URL Shortener Stats Loader for Admin Panel
  */
-async function loadShortenerStats(uid) {
+async function loadShortenerStats(uid, token = '') {
   const elTotalLinks = document.getElementById('admin-shortener-total-links');
   const elTotalClicks = document.getElementById('admin-shortener-total-clicks');
   const tableBody = document.getElementById('admin-shortener-table-body');
 
   try {
-    const res = await fetch(`/api/admin-stats?uid=${encodeURIComponent(uid)}`);
+    const res = await fetch(`/api/admin-stats?uid=${encodeURIComponent(uid)}&token=${encodeURIComponent(token)}`);
     const data = await res.json();
 
     if (!res.ok) throw new Error(data.error || 'Failed to fetch admin statistics.');
@@ -1686,13 +1703,13 @@ async function loadShortenerStats(uid) {
             const res = await fetch('/api/toggle-link', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ shortCode, active, uid })
+              body: JSON.stringify({ shortCode, active, uid, token })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Failed to update link status.');
             
             showToast(`Redirection status updated successfully!`, 'success');
-            loadShortenerStats(uid);
+            loadShortenerStats(uid, token);
           } catch (err) {
             console.error("Failed to toggle link active:", err);
             showToast(err.message || 'Failed to toggle status.', 'error');
@@ -1712,13 +1729,13 @@ async function loadShortenerStats(uid) {
             const res = await fetch('/api/toggle-link', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ shortCode, monetized, uid })
+              body: JSON.stringify({ shortCode, monetized, uid, token })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Failed to update monetization status.');
             
             showToast(`Monetization status updated successfully!`, 'success');
-            loadShortenerStats(uid);
+            loadShortenerStats(uid, token);
           } catch (err) {
             console.error("Failed to toggle monetization:", err);
             showToast(err.message || 'Failed to toggle monetization.', 'error');
@@ -1732,7 +1749,7 @@ async function loadShortenerStats(uid) {
       tableBody.querySelectorAll('.btn-view-link-stats').forEach(btn => {
         btn.addEventListener('click', () => {
           const shortCode = btn.dataset.linkCode;
-          openLinkStatsModal(shortCode, uid);
+          openLinkStatsModal(shortCode, uid, token);
         });
       });
     }
@@ -1759,7 +1776,7 @@ async function loadShortenerStats(uid) {
 /**
  * Opens Link Geography & Click Analytics Modal for Admin
  */
-async function openLinkStatsModal(code, uid) {
+async function openLinkStatsModal(code, uid, token = '') {
   const modal = document.getElementById('admin-link-stats-modal');
   const codeEl = document.getElementById('modal-stats-code');
   const destEl = document.getElementById('modal-stats-dest');
@@ -1791,7 +1808,7 @@ async function openLinkStatsModal(code, uid) {
   modal.classList.remove('hidden');
 
   try {
-    const res = await fetch(`/api/shortener-stats?code=${encodeURIComponent(code)}&uid=${encodeURIComponent(uid)}`);
+    const res = await fetch(`/api/stats/${encodeURIComponent(code)}?uid=${encodeURIComponent(uid)}&token=${encodeURIComponent(token)}`);
     const data = await res.json();
 
     if (!res.ok) throw new Error(data.error || 'Failed to fetch statistics.');
