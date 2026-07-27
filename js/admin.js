@@ -1830,8 +1830,8 @@ async function openLinkStatsModal(code, uid, token = '') {
   }
 
   // Show Modal backdrop immediately
-  console.log("[openLinkStatsModal] Removing 'hidden' class from modal");
-  modal.classList.remove('hidden');
+  console.log("[openLinkStatsModal] Showing modal display: flex");
+  modal.style.display = 'flex';
 
   try {
     const fetchUrl = `/api/stats/${encodeURIComponent(code)}?uid=${encodeURIComponent(uid)}&token=${encodeURIComponent(token)}`;
@@ -2016,10 +2016,12 @@ async function openLinkStatsModal(code, uid, token = '') {
 // Bind Modal Close Buttons globally
 function initCloseStatsListeners() {
   document.getElementById('btn-close-stats-modal')?.addEventListener('click', () => {
-    document.getElementById('admin-link-stats-modal')?.classList.add('hidden');
+    const modal = document.getElementById('admin-link-stats-modal');
+    if (modal) modal.style.display = 'none';
   });
   document.getElementById('btn-close-stats-modal-bottom')?.addEventListener('click', () => {
-    document.getElementById('admin-link-stats-modal')?.classList.add('hidden');
+    const modal = document.getElementById('admin-link-stats-modal');
+    if (modal) modal.style.display = 'none';
   });
 }
 
