@@ -33,6 +33,7 @@ export default defineConfig(() => {
           gst: path.resolve(__dirname, 'gst-calculator.html'),
           ppf: path.resolve(__dirname, 'ppf-fd-rd-calculator.html'),
           pdf: path.resolve(__dirname, 'pdf-tools.html'),
+          image: path.resolve(__dirname, 'image-compressor.html'),
           currency: path.resolve(__dirname, 'currency-converter.html'),
           tax: path.resolve(__dirname, 'tax-calculator.html'),
           salary: path.resolve(__dirname, 'salary-calculator.html'),

@@ -1401,6 +1401,7 @@ function rebuildDesktopNavbar(user) {
                         currentPage.includes('unit-converter') || 
                         currentPage.includes('age-calculator') || 
                         currentPage.includes('pdf-tools') || 
+                        currentPage.includes('image-compressor') || 
                         currentPage.includes('url-shortener') || 
                         currentPage.includes('link-stats');
 
@@ -1432,6 +1433,7 @@ function rebuildDesktopNavbar(user) {
 
   const UTILITIES_LINKS = [
     { text: 'PDF Tools', href: 'pdf-tools.html' },
+    { text: 'Image Compressor', href: 'image-compressor.html' },
     { text: 'QR Code Generator', href: 'qr-generator.html' },
     { text: 'Password Generator', href: 'password-generator.html' },
     { text: 'Word Counter', href: 'word-counter.html' },

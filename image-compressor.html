@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Compressor — Compress & Resize Images Online Free | FinCalc Tools</title>
+  <meta name="description" content="Compress PNG, JPG, and WebP images directly in your browser. Reduce file size, resize dimensions, and view real-time side-by-side compression ratios." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none hover-wiggle">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-violet-600 to-indigo-800 p-0.5 shadow-md shadow-indigo-600/20 group-hover:shadow-indigo-600/30 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-transparent"></div>
+              <svg class="w-5 h-5 text-indigo-400 group-hover:text-indigo-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+          <span class="absolute -top-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-indigo-500 border-2 border-white"></span>
+          </span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-indigo-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/80">SUITE</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Smart Financial Tools</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-indigo-600 transition-colors">Home</a>
+        <a href="loan-calculator.html" class="hover:text-indigo-600 transition-colors">Loan</a>
+        <a href="emi-calculator.html" class="hover:text-indigo-600 transition-colors">EMI</a>
+        <a href="sip-calculator.html" class="hover:text-indigo-600 transition-colors">SIP</a>
+        <a href="currency-converter.html" class="hover:text-indigo-600 transition-colors">Currency</a>
+        <a href="tax-calculator.html" class="hover:text-indigo-600 transition-colors">Tax</a>
+        <a href="salary-calculator.html" class="hover:text-indigo-600 transition-colors">Salary</a>
+        <a href="invoice-generator.html" class="hover:text-indigo-600 transition-colors">Invoice</a>
+        <a href="roi-calculator.html" class="hover:text-indigo-600 transition-colors">ROI</a>
+
+        <div class="relative group">
+          <button class="flex items-center gap-1.5 font-bold text-violet-800 bg-violet-100 px-3 py-1.5 rounded-xl border border-violet-400 shadow-2xs hover:bg-violet-200/80 transition-all">
+            <span>Utilities</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+            <a href="pdf-tools.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">PDF Tools</a>
+            <a href="qr-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">QR Code Generator</a>
+            <a href="password-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Password Generator</a>
+            <a href="word-counter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Word Counter</a>
+            <a href="unit-converter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Unit Converter</a>
+            <a href="age-calculator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Age Calculator</a>
+          </div>
+        </div>
+
+        <a id="nav-admin-link" href="admin.html" class="hidden text-amber-700 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
+      </nav>
+
+      <div id="navbar-auth-container" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    
+    <div class="mb-6">
+      <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+        <a href="index.html" class="hover:text-indigo-600">Home</a> &rsaquo;
+        <span>Image Compressor</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Image Compressor</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">Compress file sizes, adjust scaling dimensions, and format outputs locally in your browser.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Inputs Column -->
+      <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-5">
+        <h2 class="text-base font-bold text-slate-900 pb-3 border-b border-slate-100">Upload & Settings</h2>
+        
+        <!-- Drag & Drop Zone -->
+        <div id="dropzone" class="border-2 border-dashed border-slate-200 hover:border-indigo-500 rounded-xl p-8 text-center cursor-pointer transition-colors bg-slate-50/50">
+          <input type="file" id="image-input" class="hidden" accept="image/png, image/jpeg, image/jpg, image/webp" />
+          <svg class="w-10 h-10 text-slate-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          <p class="text-xs font-bold text-slate-700">Drag & drop image here, or <span class="text-indigo-600">browse</span></p>
+          <p class="text-[10px] text-slate-400 mt-1">Supports PNG, JPG, JPEG, and WebP.</p>
+        </div>
+
+        <form id="compress-form" class="space-y-4">
+          <!-- Output Format -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Convert Format</label>
+            <select id="comp-format" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800 cursor-pointer">
+              <option value="original" selected>Original Format</option>
+              <option value="image/jpeg">JPEG (High compression)</option>
+              <option value="image/webp">WebP (Optimized next-gen)</option>
+              <option value="image/png">PNG (Lossless/Transparent)</option>
+            </select>
+          </div>
+
+          <!-- Quality Slider -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Compression Quality</label>
+            <div class="flex items-center gap-3">
+              <input type="range" id="comp-quality" min="10" max="100" step="1" value="75" class="w-full accent-indigo-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
+              <span id="quality-val" class="text-xs font-bold text-slate-600 w-8">75%</span>
+            </div>
+          </div>
+
+          <!-- Max Width -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Max Width (px)</label>
+            <div class="flex items-center gap-3">
+              <input type="number" id="comp-width" placeholder="e.g. 1920" class="w-24 px-3 py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+              <input type="range" id="comp-width-slider" min="100" max="4000" step="50" value="1920" class="w-full accent-indigo-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
+            </div>
+          </div>
+
+          <!-- Max Height -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Max Height (px)</label>
+            <div class="flex items-center gap-3">
+              <input type="number" id="comp-height" placeholder="e.g. 1080" class="w-24 px-3 py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+              <input type="range" id="comp-height-slider" min="100" max="4000" step="50" value="1080" class="w-full accent-indigo-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Results Column -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Size Metrics -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-slate-100 p-4 rounded-xl border border-slate-200">
+            <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider">Original Size</span>
+            <div id="res-orig-size" class="text-base sm:text-lg font-extrabold text-slate-900 mt-1">0 KB</div>
+          </div>
+
+          <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
+            <span class="text-[11px] font-semibold text-indigo-800 uppercase tracking-wider">Compressed Size</span>
+            <div id="res-comp-size" class="text-base sm:text-lg font-extrabold text-indigo-900 mt-1">0 KB</div>
+          </div>
+
+          <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+            <span class="text-[11px] font-semibold text-emerald-800 uppercase tracking-wider">Storage Saved</span>
+            <div id="res-savings" class="text-base sm:text-lg font-extrabold text-emerald-900 mt-1">0%</div>
+          </div>
+        </div>
+
+        <!-- Previews -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col gap-6">
+          <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Side-by-Side Comparison</h3>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <!-- Original Preview -->
+            <div class="space-y-2">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Original Preview</span>
+              <div class="w-full h-48 bg-slate-150 border border-slate-200 rounded-xl overflow-hidden flex items-center justify-center bg-slate-100">
+                <img id="prev-original" class="max-w-full max-h-full object-contain hidden" />
+                <span id="prev-original-lbl" class="text-xs text-slate-400">No image uploaded</span>
+              </div>
+              <div id="orig-dimensions" class="text-[10px] text-slate-500 font-semibold text-center"></div>
+            </div>
+
+            <!-- Compressed Preview -->
+            <div class="space-y-2">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Compressed Preview</span>
+              <div class="w-full h-48 bg-slate-150 border border-slate-200 rounded-xl overflow-hidden flex items-center justify-center bg-slate-100">
+                <img id="prev-compressed" class="max-w-full max-h-full object-contain hidden" />
+                <span id="prev-compressed-lbl" class="text-xs text-slate-400">Awaiting compression</span>
+              </div>
+              <div id="comp-dimensions" class="text-[10px] text-slate-500 font-semibold text-center"></div>
+            </div>
+          </div>
+
+          <button id="btn-download" disabled class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow-md transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">
+            Download Compressed Image
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Promo Blog Links -->
+    <div id="promo-ads" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10"></div>
+
+  </main>
+
+  <!-- Shared Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-900 font-bold">
+              <svg class="w-4 h-4 text-slate-900 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online finance and business calculators for everyday decisions.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-emerald-400 transition-colors">Loan & Mortgage Calculator</a></li>
+            <li><a href="currency-converter.html" class="hover:text-emerald-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-emerald-400 transition-colors">Tax Calculator (US & Canada)</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Business Tools</h4>
+          <ul class="space-y-2">
+            <li><a href="salary-calculator.html" class="hover:text-emerald-400 transition-colors">Salary & Paycheck Calculator</a></li>
+            <li><a href="invoice-generator.html" class="hover:text-emerald-400 transition-colors">Invoice Generator</a></li>
+            <li><a href="roi-calculator.html" class="hover:text-emerald-400 transition-colors">ROI & Investment Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Financial Disclaimer Notice -->
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px] leading-relaxed max-w-4xl mx-auto">
+        <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+        <p>
+          These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice. Always consult a certified accountant or financial advisor for official tax filings and lending calculations.
+        </p>
+        <p class="mt-4 text-slate-600">
+          © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved. Powered by Firebase Auth & Firestore.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/blog-promo.js"></script>
+  <script type="module">
+    import { trackToolUsage } from '/js/analytics.js';
+
+    const dropzone = document.getElementById('dropzone');
+    const imageInput = document.getElementById('image-input');
+    const formatSelect = document.getElementById('comp-format');
+    const qualitySlider = document.getElementById('comp-quality');
+    const qualityVal = document.getElementById('quality-val');
+
+    const widthInput = document.getElementById('comp-width');
+    const widthSlider = document.getElementById('comp-width-slider');
+    const heightInput = document.getElementById('comp-height');
+    const heightSlider = document.getElementById('comp-height-slider');
+
+    const prevOriginal = document.getElementById('prev-original');
+    const prevOriginalLbl = document.getElementById('prev-original-lbl');
+    const origDimensions = document.getElementById('orig-dimensions');
+
+    const prevCompressed = document.getElementById('prev-compressed');
+    const prevCompressedLbl = document.getElementById('prev-compressed-lbl');
+    const compDimensions = document.getElementById('comp-dimensions');
+
+    const btnDownload = document.getElementById('btn-download');
+
+    let sourceImage = null; // HTMLImageElement
+    let sourceFile = null;  // File object
+    let compressedBlob = null; // Blob
+
+    // Drag & Drop bindings
+    dropzone.addEventListener('click', () => imageInput.click());
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('border-indigo-500', 'bg-indigo-50/10');
+    });
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('border-indigo-500', 'bg-indigo-50/10');
+    });
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('border-indigo-500', 'bg-indigo-50/10');
+      if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0]);
+    });
+    imageInput.addEventListener('change', (e) => {
+      if (e.target.files[0]) loadImage(e.target.files[0]);
+    });
+
+    function loadImage(file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Please upload a valid image file.');
+        return;
+      }
+
+      sourceFile = file;
+
+      // Update original size metric
+      document.getElementById('res-orig-size').textContent = formatSize(file.size);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        prevOriginal.src = e.target.result;
+        prevOriginal.classList.remove('hidden');
+        prevOriginalLbl.classList.add('hidden');
+
+        sourceImage = new Image();
+        sourceImage.onload = () => {
+          // Set initial scaling dimensions
+          widthInput.value = sourceImage.naturalWidth;
+          widthSlider.value = sourceImage.naturalWidth;
+          heightInput.value = sourceImage.naturalWidth; // slider defaults
+          widthSlider.max = sourceImage.naturalWidth * 2;
+          heightSlider.max = sourceImage.naturalHeight * 2;
+          
+          heightInput.value = sourceImage.naturalHeight;
+          heightSlider.value = sourceImage.naturalHeight;
+
+          origDimensions.textContent = `${sourceImage.naturalWidth} x ${sourceImage.naturalHeight} px`;
+          
+          // Execute initial compression
+          compressImage();
+        };
+        sourceImage.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function compressImage() {
+      if (!sourceImage) return;
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      const targetWidth = parseInt(widthInput.value) || sourceImage.naturalWidth;
+      const targetHeight = parseInt(heightInput.value) || sourceImage.naturalHeight;
+
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+
+      // Draw onto canvas
+      ctx.drawImage(sourceImage, 0, 0, targetWidth, targetHeight);
+
+      // Extract details
+      const quality = parseFloat(qualitySlider.value) / 100;
+      let mimeType = formatSelect.value;
+      if (mimeType === 'original') {
+        mimeType = sourceFile.type;
+      }
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+
+        compressedBlob = blob;
+
+        // Metric calculations
+        document.getElementById('res-comp-size').textContent = formatSize(blob.size);
+        
+        const savings = 100 - (blob.size / sourceFile.size * 100);
+        document.getElementById('res-savings').textContent = savings > 0 ? `${savings.toFixed(1)}%` : '0%';
+
+        // Display compressed preview
+        const blobUrl = URL.createObjectURL(blob);
+        prevCompressed.src = blobUrl;
+        prevCompressed.classList.remove('hidden');
+        prevCompressedLbl.classList.add('hidden');
+        compDimensions.textContent = `${targetWidth} x ${targetHeight} px`;
+
+        btnDownload.disabled = false;
+        
+        trackToolUsage('Image Compressor');
+      }, mimeType, quality);
+    }
+
+    // Bi-directional slider triggers
+    qualitySlider.addEventListener('input', (e) => {
+      qualityVal.textContent = `${e.target.value}%`;
+    });
+
+    widthInput.addEventListener('input', (e) => {
+      widthSlider.value = e.target.value;
+    });
+    widthSlider.addEventListener('input', (e) => {
+      widthInput.value = e.target.value;
+    });
+
+    heightInput.addEventListener('input', (e) => {
+      heightSlider.value = e.target.value;
+    });
+    heightSlider.addEventListener('input', (e) => {
+      heightInput.value = e.target.value;
+    });
+
+    // Run compression on input adjustments
+    [formatSelect, qualitySlider, widthInput, widthSlider, heightInput, heightSlider].forEach(el => {
+      el.addEventListener('input', compressImage);
+      el.addEventListener('change', compressImage);
+    });
+
+    btnDownload.addEventListener('click', () => {
+      if (!compressedBlob) return;
+      
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(compressedBlob);
+      
+      let ext = 'jpg';
+      let format = formatSelect.value;
+      if (format === 'original') format = sourceFile.type;
+
+      if (format.includes('png')) ext = 'png';
+      else if (format.includes('webp')) ext = 'webp';
+
+      link.download = `compressed_${Date.now()}.${ext}`;
+      link.click();
+    });
+
+    function formatSize(bytes) {
+      if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+  </script>
+</body>
+</html>
