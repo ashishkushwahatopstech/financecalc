@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Exclude Admin Panel and private user pages from crawlers to protect user privacy
+Disallow: /admin.html
+Disallow: /admin
+Disallow: /link-stats.html
+Disallow: /profile.html
+
+Sitemap: https://tool.aktechstudio.com/sitemap.xml
