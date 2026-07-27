@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free JSON Formatter & Validator — Beautify, Minify & Inspect JSON Online | FinCalc Tools</title>
+  <meta name="description" content="Format, beautify, minify, validate, and inspect JSON data. Features collapsible interactive tree view parsing and precise error line highlighting." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+  <style>
+    /* Monospace code theme colors */
+    .json-key { color: #818cf8; font-weight: 600; }     /* Indigo */
+    .json-string { color: #34d399; }                  /* Emerald Green */
+    .json-number { color: #60a5fa; }                  /* Blue */
+    .json-boolean { color: #f59e0b; }                 /* Amber */
+    .json-null { color: #94a3b8; font-style: italic; } /* Slate */
+
+    /* Tree View Styling */
+    .tree-node {
+      margin-left: 1.25rem;
+      border-left: 1px dashed #cbd5e1;
+      padding-left: 0.5rem;
+    }
+    .tree-toggle {
+      user-select: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .tree-toggle::before {
+      content: '▼';
+      font-size: 8px;
+      color: #64748b;
+      transition: transform 0.15s ease;
+      display: inline-block;
+    }
+    .tree-toggle.collapsed::before {
+      transform: rotate(-90deg);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none hover-wiggle">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-violet-600 to-indigo-800 p-0.5 shadow-md shadow-indigo-600/20 group-hover:shadow-indigo-600/30 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-transparent"></div>
+              <svg class="w-5 h-5 text-indigo-400 group-hover:text-indigo-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-indigo-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/80">SUITE</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Smart Financial Tools</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-indigo-600 transition-colors">Home</a>
+        <a href="loan-calculator.html" class="hover:text-indigo-600 transition-colors">Loan</a>
+        <a href="emi-calculator.html" class="hover:text-indigo-600 transition-colors">EMI</a>
+        <a href="sip-calculator.html" class="hover:text-indigo-600 transition-colors">SIP</a>
+        <a href="gst-calculator.html" class="hover:text-indigo-600 transition-colors">GST</a>
+        <a href="ppf-fd-rd-calculator.html" class="hover:text-indigo-600 transition-colors">Savings</a>
+        <a href="currency-converter.html" class="hover:text-indigo-600 transition-colors">Currency</a>
+        <a href="tax-calculator.html" class="hover:text-indigo-600 transition-colors">Tax</a>
+        <a href="salary-calculator.html" class="hover:text-indigo-600 transition-colors">Salary</a>
+        <a href="invoice-generator.html" class="hover:text-indigo-600 transition-colors">Invoice</a>
+        <a href="roi-calculator.html" class="hover:text-indigo-600 transition-colors">ROI</a>
+
+        <div class="relative group">
+          <button class="flex items-center gap-1.5 font-bold text-violet-800 bg-violet-100 px-3 py-1.5 rounded-xl border border-violet-400 shadow-2xs hover:bg-violet-200/80 transition-all">
+            <span>Utilities</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+            <a href="json-formatter.html" class="block px-4 py-2 text-xs font-bold text-indigo-600 bg-indigo-50/50">JSON Formatter</a>
+            <a href="image-compressor.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Image Compressor</a>
+            <a href="pdf-tools.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">PDF Tools</a>
+            <a href="resume-builder.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Resume Builder</a>
+            <a href="qr-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">QR Code Generator</a>
+            <a href="password-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Password Generator</a>
+            <a href="word-counter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Word Counter</a>
+            <a href="unit-converter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Unit Converter</a>
+            <a href="age-calculator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Age Calculator</a>
+          </div>
+        </div>
+
+        <a id="nav-admin-link" href="admin.html" class="hidden text-amber-700 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
+      </nav>
+
+      <div id="navbar-auth-container" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    
+    <!-- Title Section -->
+    <div class="mb-6">
+      <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+        <a href="index.html" class="hover:text-indigo-600">Home</a> &rsaquo;
+        <span>JSON Formatter</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">JSON Formatter & Validator</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">Beautify, minify, validate, and explore JSON data client-side in real time.</p>
+    </div>
+
+    <!-- Validator Banner Status -->
+    <div id="validation-banner" class="mb-6 p-4 rounded-xl border flex items-center gap-3 bg-slate-50 border-slate-200 text-slate-600">
+      <span id="validation-icon" class="text-xl">💡</span>
+      <div class="text-xs font-semibold">
+        <p id="validation-text">Enter some JSON below to begin validating and formatting.</p>
+      </div>
+    </div>
+
+    <!-- Workspace Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+      
+      <!-- Input Pane -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col min-h-[500px]">
+        <!-- Toolbar Input -->
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between shrink-0">
+          <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Raw JSON Input</span>
+          <div class="flex items-center gap-2">
+            <button id="btn-load-sample" class="px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-bold rounded-lg hover:bg-indigo-150 transition-colors cursor-pointer">Load Sample</button>
+            <button id="btn-clear" class="px-2.5 py-1 bg-slate-100 border border-slate-200 text-slate-600 text-[10px] font-bold rounded-lg hover:bg-slate-250 transition-colors cursor-pointer">Clear</button>
+          </div>
+        </div>
+        
+        <!-- Text Area Box -->
+        <div class="flex-grow relative">
+          <textarea id="raw-input" placeholder='Paste your raw JSON string here... (e.g. {"name": "John", "age": 30})' class="w-full h-full min-h-[420px] p-4 font-mono text-xs text-slate-800 bg-slate-50/50 border-0 focus:ring-0 focus:outline-none resize-none leading-relaxed"></textarea>
+        </div>
+      </div>
+
+      <!-- Output Pane -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col min-h-[500px]">
+        <!-- Toolbar Output -->
+        <div class="p-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 shrink-0">
+          <!-- Live Tabs -->
+          <div class="flex p-0.5 bg-slate-100 rounded-lg gap-0.5">
+            <button id="tab-formatted" class="px-3 py-1 text-[10px] font-bold rounded-md bg-white text-slate-800 shadow-3xs cursor-pointer">Beautified</button>
+            <button id="tab-tree" class="px-3 py-1 text-[10px] font-semibold rounded-md text-slate-500 hover:text-slate-900 cursor-pointer">Tree View</button>
+          </div>
+
+          <!-- Format / Action Controls -->
+          <div class="flex items-center gap-1.5">
+            <select id="indent-select" class="px-2 py-1 text-[10px] font-bold bg-slate-50 border border-slate-250 rounded focus:outline-none cursor-pointer">
+              <option value="2">2 Spaces</option>
+              <option value="4" selected>4 Spaces</option>
+              <option value="tab">Tab Indent</option>
+              <option value="minify">Minified</option>
+            </select>
+            <button id="btn-copy" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3M8 9h2m-2 4h4m-4 4h4"></path></svg>
+              <span>Copy</span>
+            </button>
+            <button id="btn-download" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+              <span>Download</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Output Views Area -->
+        <div class="flex-grow p-4 min-h-[420px] overflow-auto bg-slate-950 rounded-b-2xl font-mono text-xs leading-relaxed text-slate-100">
+          
+          <!-- Code Highlighting View -->
+          <pre id="output-code" class="whitespace-pre overflow-x-auto select-all"></pre>
+
+          <!-- Collapsible Tree View -->
+          <div id="output-tree" class="hidden text-slate-300"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- SEO Content Section -->
+    <article class="max-w-4xl mx-auto mt-12 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
+      <h2 class="text-lg font-extrabold text-slate-900">Why Use Our JSON Formatter & Validator?</h2>
+      <p>
+        JSON (JavaScript Object Notation) is the standard data exchange format across web API interfaces, databases, and microservices. Because raw JSON strings strip out indentations, brackets, and line spaces to save bandwidth, reading logs or payloads becomes extremely difficult. Our <strong>JSON Formatter</strong> restores layout hierarchy instantly.
+      </p>
+      <p>
+        Additionally, the built-in linter checks syntax validity on every keystroke. If there is a missing bracket, comma, or double quote, the linter pinpoints the exact line number so you can debug structures immediately. Rest assured, all data is handled locally inside your browser memory—making it 100% private and safe for production secrets.
+      </p>
+    </article>
+
+    <!-- Promo Blog Links -->
+    <div id="promo-ads" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10"></div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-900 font-bold">
+              <svg class="w-4 h-4 text-slate-900 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online financial calculators and client-side developer utilities.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-emerald-400 transition-colors">Loan Calculator</a></li>
+            <li><a href="currency-converter.html" class="hover:text-emerald-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-emerald-400 transition-colors">Tax Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Quick Utilities</h4>
+          <ul class="space-y-2">
+            <li><a href="json-formatter.html" class="hover:text-emerald-400 transition-colors">JSON Formatter</a></li>
+            <li><a href="image-compressor.html" class="hover:text-emerald-400 transition-colors">Image Compressor</a></li>
+            <li><a href="pdf-tools.html" class="hover:text-emerald-400 transition-colors">PDF Tools</a></li>
+            <li><a href="resume-builder.html" class="hover:text-emerald-400 transition-colors">Resume Builder</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px] leading-relaxed max-w-4xl mx-auto">
+        <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+        <p>
+          These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice.
+        </p>
+        <p class="mt-4 text-slate-600">
+          © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/blog-promo.js"></script>
+
+  <script type="module">
+    import { trackToolUsage } from '/js/analytics.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Track Tool Usage
+      trackToolUsage('json-formatter');
+
+      const rawInput = document.getElementById('raw-input');
+      const outputCode = document.getElementById('output-code');
+      const outputTree = document.getElementById('output-tree');
+      const indentSelect = document.getElementById('indent-select');
+      const btnCopy = document.getElementById('btn-copy');
+      const btnDownload = document.getElementById('btn-download');
+      
+      const banner = document.getElementById('validation-banner');
+      const bannerIcon = document.getElementById('validation-icon');
+      const bannerText = document.getElementById('validation-text');
+
+      const tabFormatted = document.getElementById('tab-formatted');
+      const tabTree = document.getElementById('tab-tree');
+      
+      let currentTab = 'formatted'; // 'formatted' or 'tree'
+      let cachedJson = null;
+
+      // Sample Data
+      const sampleJSON = {
+        "title": "JSON Formatter Sample Data",
+        "active": true,
+        "count": 42,
+        "meta": {
+          "version": "1.0.0",
+          "tags": ["developer", "utility", "online"],
+          "author": null
+        },
+        "statistics": [
+          { "metric": "load_time_ms", "value": 12 },
+          { "metric": "valid_checks", "value": true }
+        ]
+      };
+
+      document.getElementById('btn-load-sample').addEventListener('click', () => {
+        rawInput.value = JSON.stringify(sampleJSON, null, 4);
+        processJSON();
+      });
+
+      document.getElementById('btn-clear').addEventListener('click', () => {
+        rawInput.value = '';
+        outputCode.innerHTML = '';
+        outputTree.innerHTML = '';
+        cachedJson = null;
+        updateBanner('neutral', 'Enter some JSON below to begin validating and formatting.');
+      });
+
+      rawInput.addEventListener('input', processJSON);
+      indentSelect.addEventListener('change', processJSON);
+
+      // Tabs triggers
+      tabFormatted.addEventListener('click', () => switchTab('formatted'));
+      tabTree.addEventListener('click', () => switchTab('tree'));
+
+      function switchTab(tab) {
+        currentTab = tab;
+        if (tab === 'formatted') {
+          tabFormatted.className = 'px-3 py-1 text-[10px] font-bold rounded-md bg-white text-slate-800 shadow-3xs cursor-pointer';
+          tabTree.className = 'px-3 py-1 text-[10px] font-semibold rounded-md text-slate-500 hover:text-slate-900 cursor-pointer';
+          outputCode.classList.remove('hidden');
+          outputTree.classList.add('hidden');
+        } else {
+          tabTree.className = 'px-3 py-1 text-[10px] font-bold rounded-md bg-white text-slate-800 shadow-3xs cursor-pointer';
+          tabFormatted.className = 'px-3 py-1 text-[10px] font-semibold rounded-md text-slate-500 hover:text-slate-900 cursor-pointer';
+          outputCode.classList.add('hidden');
+          outputTree.classList.remove('hidden');
+        }
+      }
+
+      function updateBanner(status, text) {
+        banner.className = 'mb-6 p-4 rounded-xl border flex items-center gap-3 transition-all duration-200';
+        if (status === 'success') {
+          banner.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-800');
+          bannerIcon.textContent = '✅';
+        } else if (status === 'error') {
+          banner.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-800');
+          bannerIcon.textContent = '❌';
+        } else {
+          banner.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-650');
+          bannerIcon.textContent = '💡';
+        }
+        bannerText.textContent = text;
+      }
+
+      function processJSON() {
+        const val = rawInput.value.trim();
+        if (!val) {
+          outputCode.innerHTML = '';
+          outputTree.innerHTML = '';
+          cachedJson = null;
+          updateBanner('neutral', 'Enter some JSON below to begin validating and formatting.');
+          return;
+        }
+
+        try {
+          // Parse JSON
+          const parsed = JSON.parse(val);
+          cachedJson = parsed;
+          updateBanner('success', 'Valid JSON format detected!');
+
+          // Formatted View
+          const indentOption = indentSelect.value;
+          let formattedStr = '';
+          
+          if (indentOption === '2') {
+            formattedStr = JSON.stringify(parsed, null, 2);
+          } else if (indentOption === '4') {
+            formattedStr = JSON.stringify(parsed, null, 4);
+          } else if (indentOption === 'tab') {
+            formattedStr = JSON.stringify(parsed, null, '\t');
+          } else if (indentOption === 'minify') {
+            formattedStr = JSON.stringify(parsed);
+          }
+
+          outputCode.innerHTML = syntaxHighlight(formattedStr);
+
+          // Tree View
+          outputTree.innerHTML = '';
+          outputTree.appendChild(renderTreeView(parsed));
+
+        } catch (err) {
+          cachedJson = null;
+          outputCode.innerHTML = `<span class="text-rose-400">Syntax Error: ${err.message}</span>`;
+          outputTree.innerHTML = `<span class="text-rose-400">Invalid JSON - Tree representation unavailable.</span>`;
+          updateBanner('error', `Invalid JSON: ${err.message}`);
+        }
+      }
+
+      // Syntax Highlighter
+      function syntaxHighlight(jsonStr) {
+        // Escape HTML
+        jsonStr = jsonStr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        
+        // Regex for keys and values
+        return jsonStr.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+          let cls = 'json-number';
+          if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+              cls = 'json-key';
+            } else {
+              cls = 'json-string';
+            }
+          } else if (/true|false/.test(match)) {
+            cls = 'json-boolean';
+          } else if (/null/.test(match)) {
+            cls = 'json-null';
+          }
+          return `<span class="${cls}">${match}</span>`;
+        });
+      }
+
+      // Collapsible Tree View Generator
+      function renderTreeView(val, keyName = null) {
+        const root = document.createElement('div');
+        root.className = 'tree-item select-none text-xs';
+
+        const isArr = Array.isArray(val);
+        const isObj = typeof val === 'object' && val !== null;
+
+        // Render object / array node
+        if (isObj) {
+          const header = document.createElement('div');
+          header.className = 'flex items-center gap-1 py-0.5';
+
+          const label = document.createElement('span');
+          label.className = 'tree-toggle';
+          
+          let title = '';
+          if (keyName !== null) {
+            title += `<span class="json-key">"${keyName}"</span>: `;
+          }
+          title += isArr ? `[ Array (${val.length}) ]` : `{ Object (${Object.keys(val).length}) }`;
+          
+          label.innerHTML = title;
+          header.appendChild(label);
+          root.appendChild(header);
+
+          // Children block
+          const childrenBlock = document.createElement('div');
+          childrenBlock.className = 'tree-node';
+
+          const entries = isArr ? val : Object.keys(val);
+          
+          if (entries.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'text-slate-500 py-0.5 pl-4 italic';
+            empty.textContent = 'Empty';
+            childrenBlock.appendChild(empty);
+          } else {
+            if (isArr) {
+              val.forEach((item, idx) => {
+                childrenBlock.appendChild(renderTreeView(item, idx));
+              });
+            } else {
+              Object.keys(val).forEach(k => {
+                childrenBlock.appendChild(renderTreeView(val[k], k));
+              });
+            }
+          }
+
+          root.appendChild(childrenBlock);
+
+          // Accordion trigger click
+          label.addEventListener('click', () => {
+            childrenBlock.classList.toggle('hidden');
+            label.classList.toggle('collapsed');
+          });
+
+        } else {
+          // Primitives
+          const line = document.createElement('div');
+          line.className = 'py-0.5 pl-4';
+
+          let valHtml = '';
+          if (typeof val === 'string') {
+            valHtml = `<span class="json-string">"${val}"</span>`;
+          } else if (typeof val === 'number') {
+            valHtml = `<span class="json-number">${val}</span>`;
+          } else if (typeof val === 'boolean') {
+            valHtml = `<span class="json-boolean">${val}</span>`;
+          } else if (val === null) {
+            valHtml = `<span class="json-null">null</span>`;
+          }
+
+          let keyHtml = '';
+          if (keyName !== null) {
+            keyHtml = `<span class="json-key">${typeof keyName === 'number' ? keyName : `"${keyName}"`}</span>: `;
+          }
+
+          line.innerHTML = `${keyHtml}${valHtml}`;
+          root.appendChild(line);
+        }
+
+        return root;
+      }
+
+      // Copy Action
+      btnCopy.addEventListener('click', () => {
+        if (!cachedJson) return;
+        const indentOption = indentSelect.value;
+        let copyStr = '';
+        if (indentOption === '2') {
+          copyStr = JSON.stringify(cachedJson, null, 2);
+        } else if (indentOption === '4') {
+          copyStr = JSON.stringify(cachedJson, null, 4);
+        } else if (indentOption === 'tab') {
+          copyStr = JSON.stringify(cachedJson, null, '\t');
+        } else if (indentOption === 'minify') {
+          copyStr = JSON.stringify(cachedJson);
+        }
+
+        navigator.clipboard.writeText(copyStr).then(() => {
+          const span = btnCopy.querySelector('span');
+          span.textContent = 'Copied!';
+          setTimeout(() => span.textContent = 'Copy', 2000);
+        });
+      });
+
+      // Download Action
+      btnDownload.addEventListener('click', () => {
+        if (!cachedJson) return;
+        const indentOption = indentSelect.value;
+        let downloadStr = '';
+        if (indentOption === '2') {
+          downloadStr = JSON.stringify(cachedJson, null, 2);
+        } else if (indentOption === '4') {
+          downloadStr = JSON.stringify(cachedJson, null, 4);
+        } else if (indentOption === 'tab') {
+          downloadStr = JSON.stringify(cachedJson, null, '\t');
+        } else if (indentOption === 'minify') {
+          downloadStr = JSON.stringify(cachedJson);
+        }
+
+        const blob = new Blob([downloadStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'formatted_data.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // Initialize with sample JSON
+      rawInput.value = JSON.stringify(sampleJSON, null, 4);
+      processJSON();
+    });
+  </script>
+</body>
+</html>

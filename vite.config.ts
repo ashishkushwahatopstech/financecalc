@@ -50,6 +50,7 @@ export default defineConfig(() => {
           about: path.resolve(__dirname, 'about.html'),
           disclaimer: path.resolve(__dirname, 'disclaimer.html'),
           updates: path.resolve(__dirname, 'updates.html'),
+          json: path.resolve(__dirname, 'json-formatter.html'),
         },
       },
     },
