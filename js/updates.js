@@ -145,6 +145,7 @@ async function initUpdatesPage() {
 
     const isMonetized = post.monetized === true && post.demonetizedByAdmin !== true;
     if (isMonetized) {
+      modal.classList.add('gap-6');
       try {
         const settings = await getBlogPromoSettings();
         const adsMode = settings.adsMode || 'self';
@@ -161,27 +162,27 @@ async function initUpdatesPage() {
               const ad3 = sponsored[2] || ad1;
               const ad4 = sponsored[3] || ad1;
 
-              // Render Top Ad Card
+              // Render Top Ad Card (Mobile Responsive: flex-col on mobile, flex-row on sm+)
               const topAd = document.createElement('div');
               topAd.id = 'modal-top-ad';
               topAd.className = 'w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl mb-6 shadow-2xs font-sans text-xs select-none';
               topAd.innerHTML = `
                 <div class="text-[9px] font-bold text-indigo-700 uppercase tracking-widest mb-2 flex items-center justify-between">
                   <span>📢 Sponsored Content from AK Tech Studio</span>
-                  <span class="px-1 py-0.5 rounded bg-indigo-50 border border-indigo-250 text-indigo-850 text-[8px] font-bold">AD</span>
+                  <span class="px-1 py-0.5 rounded bg-indigo-50 border border-indigo-200 text-indigo-850 text-[8px] font-bold">AD</span>
                 </div>
-                <a href="${escapeHTML(ad1.url)}" target="_blank" class="flex gap-4 items-center hover:opacity-95 transition-opacity">
-                  ${ad1.image ? `<img src="${escapeHTML(ad1.image)}" class="w-14 h-14 rounded-xl object-cover border border-slate-100 shrink-0" />` : ''}
+                <a href="${escapeHTML(ad1.url)}" target="_blank" class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center hover:opacity-95 transition-opacity">
+                  ${ad1.image ? `<img src="${escapeHTML(ad1.image)}" class="w-full sm:w-16 h-28 sm:h-16 rounded-xl object-cover border border-slate-100 shrink-0" />` : ''}
                   <div class="flex-grow min-w-0">
-                    <h4 class="font-bold text-slate-800 text-[11px] line-clamp-1 mb-0.5 leading-tight">${escapeHTML(ad1.title)}</h4>
-                    <p class="text-[9.5px] text-slate-500 line-clamp-2 leading-relaxed font-medium">${escapeHTML(ad1.snippet)}</p>
+                    <h4 class="font-bold text-slate-800 text-[11.5px] sm:text-[12px] line-clamp-2 sm:line-clamp-1 mb-0.5 leading-tight">${escapeHTML(ad1.title)}</h4>
+                    <p class="text-[10px] sm:text-[9.5px] text-slate-505 line-clamp-3 sm:line-clamp-2 leading-relaxed font-medium">${escapeHTML(ad1.snippet)}</p>
                   </div>
-                  <span class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[9px] font-bold transition-all shrink-0">Visit Article</span>
+                  <span class="w-full sm:w-auto text-center py-2 sm:py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[9px] font-bold transition-all shrink-0">Visit Article</span>
                 </a>
               `;
               modalBody.parentNode.insertBefore(topAd, modalBody);
 
-              // Render Bottom Ad Card
+              // Render Bottom Ad Card (Mobile Responsive: flex-col on mobile, flex-row on sm+)
               const bottomAd = document.createElement('div');
               bottomAd.id = 'modal-bottom-ad';
               bottomAd.className = 'w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl mt-6 shadow-2xs font-sans text-xs select-none';
@@ -190,59 +191,59 @@ async function initUpdatesPage() {
                   <span>📢 Recommended for You</span>
                   <span class="px-1 py-0.5 rounded bg-indigo-50 border border-indigo-255 text-indigo-850 text-[8px] font-bold">AD</span>
                 </div>
-                <a href="${escapeHTML(ad2.url)}" target="_blank" class="flex gap-4 items-center hover:opacity-95 transition-opacity">
-                  ${ad2.image ? `<img src="${escapeHTML(ad2.image)}" class="w-14 h-14 rounded-xl object-cover border border-slate-100 shrink-0" />` : ''}
+                <a href="${escapeHTML(ad2.url)}" target="_blank" class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center hover:opacity-95 transition-opacity">
+                  ${ad2.image ? `<img src="${escapeHTML(ad2.image)}" class="w-full sm:w-16 h-28 sm:h-16 rounded-xl object-cover border border-slate-100 shrink-0" />` : ''}
                   <div class="flex-grow min-w-0">
-                    <h4 class="font-bold text-slate-800 text-[11px] line-clamp-1 mb-0.5 leading-tight">${escapeHTML(ad2.title)}</h4>
-                    <p class="text-[9.5px] text-slate-500 line-clamp-2 leading-relaxed font-medium">${escapeHTML(ad2.snippet)}</p>
+                    <h4 class="font-bold text-slate-800 text-[11.5px] sm:text-[12px] line-clamp-2 sm:line-clamp-1 mb-0.5 leading-tight">${escapeHTML(ad2.title)}</h4>
+                    <p class="text-[10px] sm:text-[9.5px] text-slate-550 line-clamp-3 sm:line-clamp-2 leading-relaxed font-medium">${escapeHTML(ad2.snippet)}</p>
                   </div>
-                  <span class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[9px] font-bold transition-all shrink-0">Visit Article</span>
+                  <span class="w-full sm:w-auto text-center py-2 sm:py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[9px] font-bold transition-all shrink-0">Visit Article</span>
                 </a>
               `;
               modalBody.parentNode.appendChild(bottomAd);
 
-              // Render Side Vertical Ad Cards
+              // Render Side Vertical Ad Cards (Wider w-52 layout, large image h-28, visible only on XL screens >= 1280px)
               const leftAd = document.createElement('div');
               leftAd.id = 'modal-left-ad';
-              leftAd.className = 'hidden xl:flex flex-col w-36 bg-slate-50 border border-slate-200 rounded-3xl p-3 shadow-2xs shrink-0 select-none font-sans';
+              leftAd.className = 'hidden xl:flex flex-col w-52 h-[520px] bg-slate-50 border border-slate-200 rounded-3xl p-4 shadow-2xs shrink-0 select-none font-sans';
               leftAd.innerHTML = `
-                <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                <div class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center justify-between">
                   <span>Sponsored</span>
-                  <span class="px-1 rounded bg-indigo-100 text-indigo-800 text-[7px] font-bold">Ad</span>
+                  <span class="px-1 py-0.5 rounded bg-indigo-50 border border-indigo-150 text-indigo-750 text-[7.5px] font-black">Ad</span>
                 </div>
-                <a href="${escapeHTML(ad3.url)}" target="_blank" class="flex flex-col gap-2 h-full justify-between hover:opacity-95 transition-opacity">
-                  <div>
-                    ${ad3.image ? `<img src="${escapeHTML(ad3.image)}" class="w-full h-20 rounded-xl object-cover border border-slate-100 mb-2" />` : ''}
-                    <h4 class="font-bold text-slate-800 text-[10px] line-clamp-2 leading-tight">${escapeHTML(ad3.title)}</h4>
-                    <p class="text-[9px] text-slate-500 line-clamp-3 leading-relaxed mt-1 font-medium">${escapeHTML(ad3.snippet)}</p>
+                <a href="${escapeHTML(ad3.url)}" target="_blank" class="flex flex-col gap-2.5 h-full justify-between hover:opacity-95 transition-opacity">
+                  <div class="space-y-2">
+                    ${ad3.image ? `<img src="${escapeHTML(ad3.image)}" class="w-full h-28 rounded-2xl object-cover border border-slate-100 shadow-3xs" />` : ''}
+                    <h4 class="font-bold text-slate-800 text-[12px] line-clamp-2 leading-snug hover:text-emerald-600 transition-colors">${escapeHTML(ad3.title)}</h4>
+                    <p class="text-[10.5px] text-slate-500 line-clamp-5 leading-relaxed font-medium">${escapeHTML(ad3.snippet)}</p>
                   </div>
-                  <span class="w-full text-center py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[9px] font-bold transition-all mt-2">Read Post</span>
+                  <span class="w-full text-center py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all mt-2">Read Post</span>
                 </a>
               `;
               modal.insertBefore(leftAd, modal.firstElementChild);
 
               const rightAd = document.createElement('div');
               rightAd.id = 'modal-right-ad';
-              rightAd.className = 'hidden xl:flex flex-col w-36 bg-slate-50 border border-slate-200 rounded-3xl p-3 shadow-2xs shrink-0 select-none font-sans';
+              rightAd.className = 'hidden xl:flex flex-col w-52 h-[520px] bg-slate-50 border border-slate-200 rounded-3xl p-4 shadow-2xs shrink-0 select-none font-sans';
               rightAd.innerHTML = `
-                <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                <div class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center justify-between">
                   <span>Sponsored</span>
-                  <span class="px-1 rounded bg-indigo-100 text-indigo-800 text-[7px] font-bold">Ad</span>
+                  <span class="px-1 py-0.5 rounded bg-indigo-50 border border-indigo-150 text-indigo-750 text-[7.5px] font-black">Ad</span>
                 </div>
-                <a href="${escapeHTML(ad4.url)}" target="_blank" class="flex flex-col gap-2 h-full justify-between hover:opacity-95 transition-opacity">
-                  <div>
-                    ${ad4.image ? `<img src="${escapeHTML(ad4.image)}" class="w-full h-20 rounded-xl object-cover border border-slate-100 mb-2" />` : ''}
-                    <h4 class="font-bold text-slate-800 text-[10px] line-clamp-2 leading-tight">${escapeHTML(ad4.title)}</h4>
-                    <p class="text-[9px] text-slate-500 line-clamp-3 leading-relaxed mt-1 font-medium">${escapeHTML(ad4.snippet)}</p>
+                <a href="${escapeHTML(ad4.url)}" target="_blank" class="flex flex-col gap-2.5 h-full justify-between hover:opacity-95 transition-opacity">
+                  <div class="space-y-2">
+                    ${ad4.image ? `<img src="${escapeHTML(ad4.image)}" class="w-full h-28 rounded-2xl object-cover border border-slate-100 shadow-3xs" />` : ''}
+                    <h4 class="font-bold text-slate-800 text-[12px] line-clamp-2 leading-snug hover:text-emerald-600 transition-colors">${escapeHTML(ad4.title)}</h4>
+                    <p class="text-[10.5px] text-slate-500 line-clamp-5 leading-relaxed font-medium">${escapeHTML(ad4.snippet)}</p>
                   </div>
-                  <span class="w-full text-center py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[9px] font-bold transition-all mt-2">Read Post</span>
+                  <span class="w-full text-center py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all mt-2">Read Post</span>
                 </a>
               `;
               modal.appendChild(rightAd);
             }
           }
         } else {
-          // Real Google AdSense Mock Banners
+          // Real Google AdSense Mock Banners (Wider w-52 and h-[520px])
           const topAd = document.createElement('div');
           topAd.id = 'modal-top-ad';
           topAd.className = 'w-full py-3.5 bg-amber-50/50 border border-dashed border-amber-300 rounded-2xl text-center text-[10px] text-amber-800 font-extrabold tracking-wider uppercase mb-6 flex items-center justify-center gap-1.5 shadow-2xs select-none font-sans';
@@ -257,14 +258,14 @@ async function initUpdatesPage() {
 
           const leftAd = document.createElement('div');
           leftAd.id = 'modal-left-ad';
-          leftAd.className = 'hidden xl:flex flex-col items-center justify-center w-36 h-[500px] bg-slate-900/10 border border-dashed border-slate-300 text-slate-650 rounded-3xl p-3 text-center text-[10px] font-black tracking-widest uppercase shadow-2xs shrink-0 select-none font-sans';
+          leftAd.className = 'hidden xl:flex flex-col items-center justify-center w-52 h-[520px] bg-slate-900/10 border border-dashed border-slate-300 text-slate-650 rounded-3xl p-4 text-center text-xs font-black tracking-widest uppercase shadow-2xs shrink-0 select-none font-sans';
           leftAd.style.writingMode = 'vertical-rl';
           leftAd.innerHTML = `⚡ GOOGLE ADSENSE VERTICAL BANNER (160x600) ⚡`;
           modal.insertBefore(leftAd, modal.firstElementChild);
 
           const rightAd = document.createElement('div');
           rightAd.id = 'modal-right-ad';
-          rightAd.className = 'hidden xl:flex flex-col items-center justify-center w-36 h-[500px] bg-slate-900/10 border border-dashed border-slate-300 text-slate-650 rounded-3xl p-3 text-center text-[10px] font-black tracking-widest uppercase shadow-2xs shrink-0 select-none font-sans';
+          rightAd.className = 'hidden xl:flex flex-col items-center justify-center w-52 h-[520px] bg-slate-900/10 border border-dashed border-slate-300 text-slate-650 rounded-3xl p-4 text-center text-xs font-black tracking-widest uppercase shadow-2xs shrink-0 select-none font-sans';
           rightAd.style.writingMode = 'vertical-rl';
           rightAd.innerHTML = `⚡ GOOGLE ADSENSE VERTICAL BANNER (160x600) ⚡`;
           modal.appendChild(rightAd);
@@ -394,7 +395,7 @@ async function initUpdatesPage() {
 
   const closeModal = () => {
     if (!modal) return;
-    modal.classList.remove('opacity-100');
+    modal.classList.remove('opacity-100', 'gap-6');
     modalContent?.classList.remove('scale-100');
     modalContent?.classList.add('scale-95');
     setTimeout(() => {
