@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Base64 Encode & Decode Tool — Convert Plain Text & Files Online | FinCalc Tools</title>
+  <meta name="description" content="Encode plain text or upload files to base64 strings, and decode base64 data back to plain text. Real-time conversion, validation check, and files encoder." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none hover-wiggle">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-violet-600 to-indigo-800 p-0.5 shadow-md shadow-indigo-600/20 group-hover:shadow-indigo-600/30 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-transparent"></div>
+              <svg class="w-5 h-5 text-indigo-400 group-hover:text-indigo-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-indigo-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/80">SUITE</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Smart Financial Tools</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-indigo-600 transition-colors">Home</a>
+        <a href="loan-calculator.html" class="hover:text-indigo-600 transition-colors">Loan</a>
+        <a href="emi-calculator.html" class="hover:text-indigo-600 transition-colors">EMI</a>
+        <a href="sip-calculator.html" class="hover:text-indigo-600 transition-colors">SIP</a>
+        <a href="gst-calculator.html" class="hover:text-indigo-600 transition-colors">GST</a>
+        <a href="ppf-fd-rd-calculator.html" class="hover:text-indigo-600 transition-colors">Savings</a>
+        <a href="currency-converter.html" class="hover:text-indigo-600 transition-colors">Currency</a>
+        <a href="tax-calculator.html" class="hover:text-indigo-600 transition-colors">Tax</a>
+        <a href="salary-calculator.html" class="hover:text-indigo-600 transition-colors">Salary</a>
+        <a href="invoice-generator.html" class="hover:text-indigo-600 transition-colors">Invoice</a>
+        <a href="roi-calculator.html" class="hover:text-indigo-600 transition-colors">ROI</a>
+
+        <div class="relative group">
+          <button class="flex items-center gap-1.5 font-bold text-violet-800 bg-violet-100 px-3 py-1.5 rounded-xl border border-violet-400 shadow-2xs hover:bg-violet-200/80 transition-all">
+            <span>Utilities</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+            <a href="base64-converter.html" class="block px-4 py-2 text-xs font-bold text-indigo-600 bg-indigo-50/50">Base64 Converter</a>
+            <a href="json-formatter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">JSON Formatter</a>
+            <a href="image-compressor.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Image Compressor</a>
+            <a href="pdf-tools.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">PDF Tools</a>
+            <a href="resume-builder.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Resume Builder</a>
+            <a href="qr-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">QR Code Generator</a>
+            <a href="password-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Password Generator</a>
+            <a href="word-counter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Word Counter</a>
+            <a href="unit-converter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Unit Converter</a>
+            <a href="age-calculator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Age Calculator</a>
+          </div>
+        </div>
+
+        <a id="nav-admin-link" href="admin.html" class="hidden text-amber-700 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
+      </nav>
+
+      <div id="navbar-auth-container" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    
+    <!-- Title Section -->
+    <div class="mb-6">
+      <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+        <a href="index.html" class="hover:text-indigo-600">Home</a> &rsaquo;
+        <span>Base64 Converter</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Base64 Encoder & Decoder</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">Convert plain text to base64, base64 back to text, or encode files to Data URIs locally.</p>
+    </div>
+
+    <!-- Workspace Mode Tabs -->
+    <div class="mb-6 flex justify-center">
+      <div class="inline-flex p-1 bg-slate-200/60 backdrop-blur rounded-2xl border border-slate-300 shadow-2xs gap-1">
+        <button id="mode-text-btn" class="px-5 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer bg-white text-slate-900 shadow-2xs">
+          <span>📝</span> Text Mode
+        </button>
+        <button id="mode-file-btn" class="px-5 py-2 text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer text-slate-600 hover:text-slate-900">
+          <span>📁</span> File to Base64
+        </button>
+      </div>
+    </div>
+
+    <!-- Status Banner -->
+    <div id="status-banner" class="mb-6 p-4 rounded-xl border flex items-center gap-3 bg-slate-50 border-slate-200 text-slate-650">
+      <span id="status-icon" class="text-xl">💡</span>
+      <div class="text-xs font-semibold">
+        <p id="status-text">Enter text or load sample data to see dynamic Base64 conversion.</p>
+      </div>
+    </div>
+
+    <!-- 1. TEXT MODE PANELS -->
+    <div id="text-mode-workspace" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Plain Text Side -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col min-h-[400px]">
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between shrink-0">
+          <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Plain Text</span>
+          <div class="flex items-center gap-2">
+            <button id="btn-load-sample" class="px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-bold rounded-lg hover:bg-indigo-150 transition-colors cursor-pointer">Sample</button>
+            <button id="btn-copy-plain" class="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold rounded-lg transition-colors cursor-pointer">Copy</button>
+          </div>
+        </div>
+        <div class="flex-grow relative">
+          <textarea id="plain-input" placeholder="Type plain text here..." class="w-full h-full min-h-[320px] p-4 font-mono text-xs text-slate-800 bg-slate-50/50 border-0 focus:ring-0 focus:outline-none resize-none leading-relaxed"></textarea>
+        </div>
+      </div>
+
+      <!-- Base64 String Side -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col min-h-[400px]">
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between shrink-0">
+          <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Base64 Encoded</span>
+          <div class="flex items-center gap-2">
+            <button id="btn-copy-base64" class="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold rounded-lg transition-colors cursor-pointer">Copy</button>
+          </div>
+        </div>
+        <div class="flex-grow relative">
+          <textarea id="base64-input" placeholder="Base64 encoded string goes here..." class="w-full h-full min-h-[320px] p-4 font-mono text-xs text-slate-800 bg-slate-50/50 border-0 focus:ring-0 focus:outline-none resize-none leading-relaxed break-all"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 2. FILE MODE PANELS -->
+    <div id="file-mode-workspace" class="hidden bg-white rounded-2xl border border-slate-200 shadow-xs p-6 space-y-6">
+      
+      <!-- Upload Box -->
+      <div class="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center bg-slate-50/50 hover:bg-slate-50 transition-colors relative">
+        <input type="file" id="file-uploader" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+        <div class="space-y-2 pointer-events-none">
+          <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center mx-auto border border-indigo-100">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+          </div>
+          <p class="text-xs font-bold text-slate-750">Click to choose a file or drag it here</p>
+          <p class="text-[10px] text-slate-450 font-medium">Supports images, text, PDFs, and any binary documents up to 5MB.</p>
+        </div>
+      </div>
+
+      <!-- File Details & Result Box -->
+      <div id="file-result-container" class="hidden space-y-4">
+        <div class="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
+          <div class="flex items-center gap-3">
+            <div class="text-xl">📄</div>
+            <div class="text-xs">
+              <p id="result-filename" class="font-bold text-slate-800">filename.png</p>
+              <p id="result-filesize" class="text-slate-450 font-semibold">120 KB • image/png</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btn-copy-file-base64" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold rounded-lg transition-colors cursor-pointer">Copy Base64 Data</button>
+            <button id="btn-download-file-base64" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-bold rounded-lg transition-colors cursor-pointer">Download .txt</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-2">Base64 Data URI String</label>
+          <textarea id="file-base64-output" readonly class="w-full h-48 p-4 font-mono text-xs text-slate-800 bg-slate-900 text-slate-200 border border-slate-950 rounded-xl focus:outline-none resize-none break-all"></textarea>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SEO Content Section -->
+    <article class="max-w-4xl mx-auto mt-12 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
+      <h2 class="text-lg font-extrabold text-slate-900">Understanding Base64 Encoding & Decoding</h2>
+      <p>
+        Base64 is a binary-to-text encoding scheme that represents binary data in an ASCII string format. By translating values into 64 safe printable characters (A-Z, a-z, 0-9, +, /, and = padding), it allows binary information such as images, files, or key pairs to be embedded inside HTML scripts, CSS styles, XML sheets, or JSON payloads without causing parsing conflicts.
+      </p>
+      <p>
+        Developers frequently use Base64 to inline assets (like icons) directly inside templates to reduce HTTP request roundtrips, or to safely serialize keys. Our client-side Base64 converter offers safe processing with no servers in the loop, guaranteeing that private keys or sensitive payloads are never exposed.
+      </p>
+    </article>
+
+    <!-- Promo Blog Links -->
+    <div id="promo-ads" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10"></div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-900 font-bold">
+              <svg class="w-4 h-4 text-slate-900 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online financial calculators and client-side developer utilities.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-emerald-400 transition-colors">Loan Calculator</a></li>
+            <li><a href="currency-converter.html" class="hover:text-emerald-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-emerald-400 transition-colors">Tax Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Quick Utilities</h4>
+          <ul class="space-y-2">
+            <li><a href="base64-converter.html" class="hover:text-emerald-400 transition-colors">Base64 Converter</a></li>
+            <li><a href="json-formatter.html" class="hover:text-emerald-400 transition-colors">JSON Formatter</a></li>
+            <li><a href="image-compressor.html" class="hover:text-emerald-400 transition-colors">Image Compressor</a></li>
+            <li><a href="pdf-tools.html" class="hover:text-emerald-400 transition-colors">PDF Tools</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px] leading-relaxed max-w-4xl mx-auto">
+        <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+        <p>
+          These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice.
+        </p>
+        <p class="mt-4 text-slate-600">
+          © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/blog-promo.js"></script>
+
+  <script type="module">
+    import { trackToolUsage } from '/js/analytics.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Track Tool Usage
+      trackToolUsage('base64-converter');
+
+      // Tabs triggers
+      const modeTextBtn = document.getElementById('mode-text-btn');
+      const modeFileBtn = document.getElementById('mode-file-btn');
+      const textWorkspace = document.getElementById('text-mode-workspace');
+      const fileWorkspace = document.getElementById('file-mode-workspace');
+
+      const plainInput = document.getElementById('plain-input');
+      const base64Input = document.getElementById('base64-input');
+      const btnLoadSample = document.getElementById('btn-load-sample');
+      
+      const banner = document.getElementById('status-banner');
+      const bannerIcon = document.getElementById('status-icon');
+      const bannerText = document.getElementById('status-text');
+
+      const btnCopyPlain = document.getElementById('btn-copy-plain');
+      const btnCopyBase64 = document.getElementById('btn-copy-base64');
+
+      // File Mode items
+      const fileUploader = document.getElementById('file-uploader');
+      const fileResultContainer = document.getElementById('file-result-container');
+      const resultFilename = document.getElementById('result-filename');
+      const resultFilesize = document.getElementById('result-filesize');
+      const fileBase64Output = document.getElementById('file-base64-output');
+      const btnCopyFileBase64 = document.getElementById('btn-copy-file-base64');
+      const btnDownloadFileBase64 = document.getElementById('btn-download-file-base64');
+
+      let currentMode = 'text'; // 'text' or 'file'
+
+      // Mode toggling
+      modeTextBtn.addEventListener('click', () => {
+        currentMode = 'text';
+        modeTextBtn.className = 'px-5 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer bg-white text-slate-900 shadow-2xs';
+        modeFileBtn.className = 'px-5 py-2 text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer text-slate-600 hover:text-slate-900';
+        textWorkspace.classList.remove('hidden');
+        fileWorkspace.classList.add('hidden');
+        updateBanner('neutral', 'Enter text or load sample data to see dynamic Base64 conversion.');
+      });
+
+      modeFileBtn.addEventListener('click', () => {
+        currentMode = 'file';
+        modeFileBtn.className = 'px-5 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer bg-white text-slate-900 shadow-2xs';
+        modeTextBtn.className = 'px-5 py-2 text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer text-slate-600 hover:text-slate-900';
+        textWorkspace.classList.add('hidden');
+        fileWorkspace.classList.remove('hidden');
+        updateBanner('neutral', 'Upload a file to encode it directly to a Base64 data URI string.');
+      });
+
+      // Sample Loader
+      btnLoadSample.addEventListener('click', () => {
+        plainInput.value = 'Hello World! FinCalc Tools offers cryptographically secure utilities.';
+        convertPlainToBase64();
+      });
+
+      function updateBanner(status, text) {
+        banner.className = 'mb-6 p-4 rounded-xl border flex items-center gap-3 transition-all duration-200';
+        if (status === 'success') {
+          banner.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-800');
+          bannerIcon.textContent = '✅';
+        } else if (status === 'error') {
+          banner.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-800');
+          bannerIcon.textContent = '❌';
+        } else {
+          banner.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-650');
+          bannerIcon.textContent = '💡';
+        }
+        bannerText.textContent = text;
+      }
+
+      // Plain -> Base64
+      plainInput.addEventListener('input', convertPlainToBase64);
+
+      function convertPlainToBase64() {
+        const val = plainInput.value;
+        if (!val) {
+          base64Input.value = '';
+          updateBanner('neutral', 'Enter text to see dynamic Base64 conversion.');
+          return;
+        }
+
+        try {
+          // Using UTF-8 safe encoding
+          const utf8Bytes = new TextEncoder().encode(val);
+          let binary = '';
+          const len = utf8Bytes.byteLength;
+          for (let i = 0; i < len; i++) {
+            binary += String.fromCharCode(utf8Bytes[i]);
+          }
+          const base64Str = btoa(binary);
+          base64Input.value = base64Str;
+          updateBanner('success', `Encoded successfully! (${len} bytes of UTF-8 text)`);
+        } catch (e) {
+          updateBanner('error', `Encoding error: ${e.message}`);
+        }
+      }
+
+      // Base64 -> Plain
+      base64Input.addEventListener('input', convertBase64ToPlain);
+
+      function convertBase64ToPlain() {
+        const val = base64Input.value.trim().replace(/\s+/g, ''); // strip spacing
+        if (!val) {
+          plainInput.value = '';
+          updateBanner('neutral', 'Enter Base64 encoded characters to decode.');
+          return;
+        }
+
+        try {
+          const decodedBinary = atob(val);
+          const bytes = new Uint8Array(decodedBinary.length);
+          for (let i = 0; i < decodedBinary.length; i++) {
+            bytes[i] = decodedBinary.charCodeAt(i);
+          }
+          const decodedText = new TextDecoder().decode(bytes);
+          plainInput.value = decodedText;
+          updateBanner('success', `Decoded successfully! (${bytes.length} bytes of decoded plain text)`);
+        } catch (e) {
+          updateBanner('error', `Invalid Base64 format: ${e.message}`);
+        }
+      }
+
+      // Copy Action plain
+      btnCopyPlain.addEventListener('click', () => {
+        if (!plainInput.value) return;
+        navigator.clipboard.writeText(plainInput.value).then(() => {
+          btnCopyPlain.textContent = 'Copied!';
+          setTimeout(() => btnCopyPlain.textContent = 'Copy', 2000);
+        });
+      });
+
+      // Copy Action base64
+      btnCopyBase64.addEventListener('click', () => {
+        if (!base64Input.value) return;
+        navigator.clipboard.writeText(base64Input.value).then(() => {
+          btnCopyBase64.textContent = 'Copied!';
+          setTimeout(() => btnCopyBase64.textContent = 'Copy', 2000);
+        });
+      });
+
+      // File Uploader Handler
+      fileUploader.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Size check (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          updateBanner('error', 'File size exceeds the 5MB limit. Please upload a smaller file.');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          const resultBase64 = reader.result;
+          
+          resultFilename.textContent = file.name;
+          
+          // Formatted size
+          let sizeStr = '';
+          if (file.size < 1024) {
+            sizeStr = file.size + ' B';
+          } else if (file.size < 1024 * 1024) {
+            sizeStr = (file.size / 1024).toFixed(1) + ' KB';
+          } else {
+            sizeStr = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+          }
+          resultFilesize.textContent = `${sizeStr} • ${file.type || 'unknown type'}`;
+
+          fileBase64Output.value = resultBase64;
+          
+          fileResultContainer.classList.remove('hidden');
+          updateBanner('success', 'File encoded successfully to Base64 Data URI!');
+        };
+
+        reader.onerror = () => {
+          updateBanner('error', 'Error reading file.');
+        };
+
+        reader.readAsDataURL(file);
+      });
+
+      // Copy File Base64
+      btnCopyFileBase64.addEventListener('click', () => {
+        if (!fileBase64Output.value) return;
+        navigator.clipboard.writeText(fileBase64Output.value).then(() => {
+          btnCopyFileBase64.textContent = 'Copied!';
+          setTimeout(() => btnCopyFileBase64.textContent = 'Copy Base64 Data', 2000);
+        });
+      });
+
+      // Download File Base64
+      btnDownloadFileBase64.addEventListener('click', () => {
+        if (!fileBase64Output.value) return;
+        const blob = new Blob([fileBase64Output.value], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${resultFilename.textContent}_base64.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      // Default sample loading
+      plainInput.value = 'Hello World! FinCalc Tools offers cryptographically secure utilities.';
+      convertPlainToBase64();
+    });
+  </script>
+</body>
+</html>
