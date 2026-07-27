@@ -1419,6 +1419,7 @@ function rebuildDesktopNavbar(user) {
     { text: 'EMI', href: 'emi-calculator.html' },
     { text: 'SIP', href: 'sip-calculator.html' },
     { text: 'GST', href: 'gst-calculator.html' },
+    { text: 'Savings', href: 'ppf-fd-rd-calculator.html' },
     { text: 'Currency', href: 'currency-converter.html' },
     { text: 'Tax', href: 'tax-calculator.html' },
     { text: 'Salary', href: 'salary-calculator.html' },

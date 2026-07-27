@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PPF / FD / RD Calculator — Indian Savings Scheme Projections | FinCalc Tools</title>
+  <meta name="description" content="Calculate returns for Indian savings schemes: Public Provident Fund (PPF), Fixed Deposit (FD), and Recurring Deposit (RD). View yearly compound growth charts." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none hover-wiggle">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-800 p-0.5 shadow-md shadow-emerald-600/20 group-hover:shadow-emerald-600/30 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent"></div>
+              <svg class="w-5 h-5 text-emerald-400 group-hover:text-emerald-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+          <span class="absolute -top-1 -right-1 flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500 border-2 border-white"></span>
+          </span>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-emerald-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80">SUITE</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Smart Financial Tools</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-emerald-600 transition-colors">Home</a>
+        <a href="loan-calculator.html" class="hover:text-emerald-600 transition-colors">Loan</a>
+        <a href="emi-calculator.html" class="hover:text-emerald-600 transition-colors">EMI</a>
+        <a href="sip-calculator.html" class="hover:text-emerald-600 transition-colors">SIP</a>
+        <a href="currency-converter.html" class="hover:text-emerald-600 transition-colors">Currency</a>
+        <a href="tax-calculator.html" class="hover:text-emerald-600 transition-colors">Tax</a>
+        <a href="salary-calculator.html" class="hover:text-emerald-600 transition-colors">Salary</a>
+        <a href="invoice-generator.html" class="hover:text-emerald-600 transition-colors">Invoice</a>
+        <a href="roi-calculator.html" class="hover:text-emerald-600 transition-colors">ROI</a>
+
+        <div class="relative group">
+          <button class="flex items-center gap-1.5 font-bold text-violet-700 bg-violet-50 px-3 py-1.5 rounded-xl border border-violet-200/80 hover:bg-violet-100/90 hover:border-violet-300 transition-all">
+            <span>Utilities</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+            <a href="qr-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">QR Code Generator</a>
+            <a href="password-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Password Generator</a>
+            <a href="word-counter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Word Counter</a>
+            <a href="unit-converter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Unit Converter</a>
+            <a href="age-calculator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Age Calculator</a>
+          </div>
+        </div>
+
+        <a id="nav-admin-link" href="admin.html" class="hidden text-amber-700 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
+      </nav>
+
+      <div id="navbar-auth-container" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    
+    <div class="mb-6">
+      <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+        <a href="index.html" class="hover:text-emerald-600">Home</a> &rsaquo;
+        <span>PPF / FD / RD Calculator</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Savings Schemes Calculator</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">Estimate maturity yields for Indian savings systems: Public Provident Fund (PPF), Fixed Deposit (FD), and Recurring Deposit (RD).</p>
+    </div>
+
+    <!-- Tabs Container -->
+    <div class="mb-6">
+      <div class="flex border-b border-slate-200">
+        <button id="tab-ppf" class="tab-btn px-6 py-2.5 text-xs font-bold border-b-2 border-emerald-600 text-emerald-600 transition-all cursor-pointer">
+          PPF (Public Provident Fund)
+        </button>
+        <button id="tab-fd" class="tab-btn px-6 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-900 transition-all cursor-pointer">
+          FD (Fixed Deposit)
+        </button>
+        <button id="tab-rd" class="tab-btn px-6 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-900 transition-all cursor-pointer">
+          RD (Recurring Deposit)
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Inputs Column -->
+      <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
+        <h2 id="inputs-header" class="text-base font-bold text-slate-900 mb-4 pb-3 border-b border-slate-100">PPF Investment Details</h2>
+        
+        <form id="savings-form" class="space-y-4">
+          <!-- Investment Amount -->
+          <div>
+            <label id="amount-label" class="block text-xs font-semibold text-slate-700 mb-1">Yearly Investment</label>
+            <div class="flex">
+              <select id="savings-currency" class="px-2 py-2 text-sm bg-slate-50 border border-slate-200 rounded-l-lg focus:bg-white focus:border-emerald-500 focus:outline-none font-semibold text-slate-700 border-r-0 cursor-pointer">
+                <option value="₹" selected>₹ (INR)</option>
+                <option value="$">$ (USD)</option>
+                <option value="£">£ (GBP)</option>
+                <option value="€">€ (EUR)</option>
+              </select>
+              <input type="number" id="savings-amount" value="100000" min="500" max="150000" step="500" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-r-lg focus:bg-white focus:border-emerald-500 focus:outline-none font-semibold text-slate-800" />
+            </div>
+            <input type="range" id="savings-amount-slider" min="500" max="150000" step="500" value="100000" class="w-full mt-2 accent-emerald-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
+            <p id="amount-limit-msg" class="text-[10px] text-amber-600 font-medium mt-1">PPF annual investment capped at ₹1,50,000 per financial year.</p>
+          </div>
+
+          <!-- PPF Deposit Frequency (Hidden for FD/RD) -->
+          <div id="ppf-frequency-container">
+            <label class="block text-xs font-semibold text-slate-700 mb-2">Deposit Frequency</label>
+            <div class="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-lg">
+              <button type="button" id="freq-yearly" class="py-1.5 text-xs font-bold rounded-md bg-white text-emerald-700 shadow-xs transition-all cursor-pointer">Yearly</button>
+              <button type="button" id="freq-monthly" class="py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition-all cursor-pointer">Monthly</button>
+            </div>
+          </div>
+
+          <!-- FD Compounding (Hidden for PPF/RD) -->
+          <div id="fd-compounding-container" class="hidden">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Compounding Interval</label>
+            <select id="fd-compounding" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-emerald-500 focus:outline-none font-semibold text-slate-800 cursor-pointer">
+              <option value="quarterly" selected>Quarterly (Standard)</option>
+              <option value="monthly">Monthly</option>
+              <option value="half-yearly">Half-Yearly</option>
+              <option value="yearly">Yearly</option>
+              <option value="simple">Simple Interest (No compounding)</option>
+            </select>
+          </div>
+
+          <!-- Interest Rate -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Interest Rate (% per annum)</label>
+            <input type="number" id="savings-rate" value="7.1" min="1" max="15" step="0.05" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-emerald-500 focus:outline-none font-semibold text-slate-800" />
+            <input type="range" id="savings-rate-slider" min="1" max="15" step="0.05" value="7.1" class="w-full mt-2 accent-emerald-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
+          </div>
+
+          <!-- Tenure -->
+          <div>
+            <label id="tenure-label" class="block text-xs font-semibold text-slate-700 mb-1">Tenure (Years)</label>
+            <input type="number" id="savings-years" value="15" min="15" max="50" step="1" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-emerald-500 focus:outline-none font-semibold text-slate-800" />
+            <input type="range" id="savings-years-slider" min="15" max="50" step="1" value="15" class="w-full mt-2 accent-emerald-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
+          </div>
+
+          <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs transition-colors cursor-pointer mt-2">
+            Calculate Yield
+          </button>
+        </form>
+      </div>
+
+      <!-- Results Column -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="bg-slate-100 p-4 rounded-xl border border-slate-200">
+            <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider">Total Invested</span>
+            <div id="res-invested" class="text-base sm:text-lg font-extrabold text-slate-900 mt-1">₹15,00,000</div>
+          </div>
+
+          <div class="bg-amber-55 p-4 rounded-xl border border-amber-200 bg-amber-50">
+            <span class="text-[11px] font-semibold text-amber-800 uppercase tracking-wider">Est. Interest Earned</span>
+            <div id="res-interest" class="text-base sm:text-lg font-extrabold text-amber-950 mt-1">₹12,12,139</div>
+          </div>
+
+          <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
+            <span class="text-[11px] font-semibold text-emerald-800 uppercase tracking-wider">Total Maturity Value</span>
+            <div id="res-maturity" class="text-base sm:text-lg font-extrabold text-emerald-900 mt-1">₹27,12,139</div>
+          </div>
+        </div>
+
+        <!-- Canvas breakdown chart -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col md:flex-row items-center gap-6">
+          <div class="w-40 h-40 flex-shrink-0 relative">
+            <canvas id="savings-canvas" class="w-full h-full"></canvas>
+          </div>
+          <div class="flex-grow space-y-3 w-full">
+            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Maturity Breakdown</h3>
+            <div class="flex items-center justify-between text-xs py-1.5 border-b border-slate-100">
+              <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-emerald-500"></span> Principal Invested</span>
+              <span id="chart-invested-lbl" class="font-bold text-slate-800">₹15,00,000</span>
+            </div>
+            <div class="flex items-center justify-between text-xs py-1.5 border-b border-slate-100">
+              <span class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-amber-500"></span> Accumulated Interest</span>
+              <span id="chart-interest-lbl" class="font-bold text-slate-800">₹12,12,139</span>
+            </div>
+            <p id="savings-summary-msg" class="text-[11px] text-slate-500 mt-2">Maturity yield modeled for standard Indian banking rules.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Yearly Milestone projections table -->
+    <section class="mt-10 bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+      <div class="p-6 border-b border-slate-100">
+        <h2 class="text-base font-bold text-slate-900">Year-on-Year Growth Milestones</h2>
+        <p class="text-xs text-slate-500 mt-0.5">Summary of contributions and compound returns at the end of each fiscal year.</p>
+      </div>
+
+      <div class="overflow-x-auto max-h-96 overflow-y-auto" data-lenis-prevent>
+        <table class="w-full text-left border-collapse text-xs">
+          <thead class="bg-slate-50 text-slate-600 font-semibold sticky top-0 border-b border-slate-200">
+            <tr>
+              <th class="py-3 px-4">Year</th>
+              <th class="py-3 px-4">Invested Capital</th>
+              <th class="py-3 px-4">Interest Earned</th>
+              <th class="py-3 px-4 text-right">Accumulated Balance</th>
+            </tr>
+          </thead>
+          <tbody id="savings-table-body" class="divide-y divide-slate-100 text-slate-700">
+            <!-- Populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Promo Blog Links -->
+    <div id="promo-ads" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10"></div>
+
+  </main>
+
+  <!-- Shared Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-900 font-bold">
+              <svg class="w-4 h-4 text-slate-900 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online finance and business calculators for everyday decisions.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-emerald-400 transition-colors">Loan & Mortgage Calculator</a></li>
+            <li><a href="currency-converter.html" class="hover:text-emerald-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-emerald-400 transition-colors">Tax Calculator (US & Canada)</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Business Tools</h4>
+          <ul class="space-y-2">
+            <li><a href="salary-calculator.html" class="hover:text-emerald-400 transition-colors">Salary & Paycheck Calculator</a></li>
+            <li><a href="invoice-generator.html" class="hover:text-emerald-400 transition-colors">Invoice Generator</a></li>
+            <li><a href="roi-calculator.html" class="hover:text-emerald-400 transition-colors">ROI & Investment Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Financial Disclaimer Notice -->
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px] leading-relaxed max-w-4xl mx-auto">
+        <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+        <p>
+          These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice. Always consult a certified accountant or financial advisor for official tax filings and lending calculations.
+        </p>
+        <p class="mt-4 text-slate-600">
+          © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved. Powered by Firebase Auth & Firestore.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/blog-promo.js"></script>
+  <script type="module">
+    import { calculatePPF, calculateFD, calculateRD, drawSavingsChart } from '/js/ppf-fd-rd-calc.js';
+    import { trackToolUsage } from '/js/analytics.js';
+
+    const currencySelect = document.getElementById('savings-currency');
+    const amountInput = document.getElementById('savings-amount');
+    const amountSlider = document.getElementById('savings-amount-slider');
+    const rateInput = document.getElementById('savings-rate');
+    const rateSlider = document.getElementById('savings-rate-slider');
+    const yearsInput = document.getElementById('savings-years');
+    const yearsSlider = document.getElementById('savings-years-slider');
+
+    const ppfFreqContainer = document.getElementById('ppf-frequency-container');
+    const fdCompoundingContainer = document.getElementById('fd-compounding-container');
+    const fdCompoundingSelect = document.getElementById('fd-compounding');
+    const amountLimitMsg = document.getElementById('amount-limit-msg');
+
+    const btnYearly = document.getElementById('freq-yearly');
+    const btnMonthly = document.getElementById('freq-monthly');
+    let ppfFrequency = 'yearly';
+
+    let currentTab = 'ppf'; // 'ppf', 'fd', 'rd'
+
+    function formatCurrency(val, symbol) {
+      return `${symbol}${Math.round(val).toLocaleString()}`;
+    }
+
+    function updateTabUI() {
+      // Deactivate all tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = 'tab-btn px-6 py-2.5 text-xs font-semibold border-b-2 border-transparent text-slate-500 hover:text-slate-900 transition-all cursor-pointer';
+      });
+
+      // Activate selected tab
+      const activeBtn = document.getElementById(`tab-${currentTab}`);
+      activeBtn.className = 'tab-btn px-6 py-2.5 text-xs font-bold border-b-2 border-emerald-600 text-emerald-600 transition-all cursor-pointer';
+
+      // Setup labels and bounds based on current scheme
+      if (currentTab === 'ppf') {
+        document.getElementById('inputs-header').textContent = 'PPF Investment Details';
+        document.getElementById('amount-label').textContent = ppfFrequency === 'yearly' ? 'Yearly Contribution' : 'Monthly Contribution';
+        document.getElementById('tenure-label').textContent = 'Tenure (Years)';
+        
+        ppfFreqContainer.classList.remove('hidden');
+        fdCompoundingContainer.classList.add('hidden');
+        amountLimitMsg.classList.remove('hidden');
+
+        // Adjust PPF limits
+        amountInput.min = "500";
+        amountSlider.min = "500";
+        if (ppfFrequency === 'yearly') {
+          amountInput.max = "150000";
+          amountSlider.max = "150000";
+          amountInput.value = Math.min(150000, Math.max(500, amountInput.value));
+          amountLimitMsg.textContent = 'PPF annual investment capped at ₹1,50,000 per financial year.';
+        } else {
+          amountInput.max = "12500";
+          amountSlider.max = "12500";
+          amountInput.value = Math.min(12500, Math.max(500, amountInput.value));
+          amountLimitMsg.textContent = 'PPF monthly investment capped at ₹12,500 (total ₹1,50,000/year).';
+        }
+        amountSlider.value = amountInput.value;
+
+        // Interest rate
+        rateInput.value = "7.1";
+        rateSlider.value = "7.1";
+
+        // Years limit (PPF min 15, max 50)
+        yearsInput.min = "15";
+        yearsSlider.min = "15";
+        yearsInput.max = "50";
+        yearsSlider.max = "50";
+        yearsInput.value = Math.max(15, yearsInput.value);
+        yearsSlider.value = yearsInput.value;
+      } 
+      else if (currentTab === 'fd') {
+        document.getElementById('inputs-header').textContent = 'FD Investment Details';
+        document.getElementById('amount-label').textContent = 'Principal Amount';
+        document.getElementById('tenure-label').textContent = 'Tenure (Years)';
+
+        ppfFreqContainer.classList.add('hidden');
+        fdCompoundingContainer.classList.remove('hidden');
+        amountLimitMsg.classList.add('hidden');
+
+        // Adjust FD limits
+        amountInput.min = "1000";
+        amountSlider.min = "1000";
+        amountInput.max = "10000000";
+        amountSlider.max = "10000000";
+        amountInput.value = Math.max(1000, amountInput.value);
+        amountSlider.value = amountInput.value;
+
+        // Interest rate
+        rateInput.value = "6.8";
+        rateSlider.value = "6.8";
+
+        // Years limit (FD min 1, max 25)
+        yearsInput.min = "1";
+        yearsSlider.min = "1";
+        yearsInput.max = "25";
+        yearsSlider.max = "25";
+        yearsInput.value = Math.min(25, Math.max(1, yearsInput.value));
+        yearsSlider.value = yearsInput.value;
+      } 
+      else if (currentTab === 'rd') {
+        document.getElementById('inputs-header').textContent = 'RD Investment Details';
+        document.getElementById('amount-label').textContent = 'Monthly Deposit';
+        document.getElementById('tenure-label').textContent = 'Tenure (Years)';
+
+        ppfFreqContainer.classList.add('hidden');
+        fdCompoundingContainer.classList.add('hidden');
+        amountLimitMsg.classList.add('hidden');
+
+        // Adjust RD limits
+        amountInput.min = "100";
+        amountSlider.min = "100";
+        amountInput.max = "1000000";
+        amountSlider.max = "1000000";
+        amountInput.value = Math.min(1000000, Math.max(100, amountInput.value));
+        amountSlider.value = amountInput.value;
+
+        // Interest rate
+        rateInput.value = "6.5";
+        rateSlider.value = "6.5";
+
+        // Years limit (RD min 1, max 10)
+        yearsInput.min = "1";
+        yearsSlider.min = "1";
+        yearsInput.max = "10";
+        yearsSlider.max = "10";
+        yearsInput.value = Math.min(10, Math.max(1, yearsInput.value));
+        yearsSlider.value = yearsInput.value;
+      }
+
+      runCalculation();
+    }
+
+    function runCalculation() {
+      const depositVal = parseFloat(amountInput.value) || 0;
+      const rateVal = parseFloat(rateInput.value) || 0;
+      const yearsVal = parseFloat(yearsInput.value) || 0;
+      const symbol = currencySelect.value;
+
+      let result = null;
+
+      if (currentTab === 'ppf') {
+        result = calculatePPF({ deposit: depositVal, annualRate: rateVal, years: yearsVal, frequency: ppfFrequency });
+        trackToolUsage('PPF Calculator');
+      } else if (currentTab === 'fd') {
+        const compoundingVal = fdCompoundingSelect.value;
+        result = calculateFD({ principal: depositVal, annualRate: rateVal, years: yearsVal, compounding: compoundingVal });
+        trackToolUsage('FD Calculator');
+      } else if (currentTab === 'rd') {
+        result = calculateRD({ monthlyDeposit: depositVal, annualRate: rateVal, years: yearsVal });
+        trackToolUsage('RD Calculator');
+      }
+
+      if (!result) return;
+
+      // Update summary cards
+      document.getElementById('res-invested').textContent = formatCurrency(result.totalInvested, symbol);
+      document.getElementById('res-interest').textContent = formatCurrency(result.totalInterest, symbol);
+      document.getElementById('res-maturity').textContent = formatCurrency(result.maturityValue, symbol);
+
+      // Label breakdown details
+      document.getElementById('chart-invested-lbl').textContent = formatCurrency(result.totalInvested, symbol);
+      document.getElementById('chart-interest-lbl').textContent = formatCurrency(result.totalInterest, symbol);
+
+      // Repayment sentence
+      document.getElementById('savings-summary-msg').textContent = `Maturity yield projected over ${yearsVal.toFixed(0)} years of deposits.`;
+
+      // Render chart
+      drawSavingsChart('savings-canvas', result.totalInvested, result.totalInterest);
+
+      // Populate schedule table
+      const tbody = document.getElementById('savings-table-body');
+      tbody.innerHTML = '';
+
+      result.schedule.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/80 transition-colors';
+        tr.innerHTML = `
+          <td class="py-2.5 px-4 font-semibold text-slate-900">Year ${row.year}</td>
+          <td class="py-2.5 px-4 font-mono">${symbol}${Math.round(row.totalInvested).toLocaleString()}</td>
+          <td class="py-2.5 px-4 font-mono text-amber-700">${symbol}${Math.round(row.totalInterest).toLocaleString()}</td>
+          <td class="py-2.5 px-4 font-mono font-bold text-right text-emerald-700">${symbol}${Math.round(row.maturityValue).toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Toggle tab behaviors
+    document.getElementById('tab-ppf').addEventListener('click', () => { currentTab = 'ppf'; updateTabUI(); });
+    document.getElementById('tab-fd').addEventListener('click', () => { currentTab = 'fd'; updateTabUI(); });
+    document.getElementById('tab-rd').addEventListener('click', () => { currentTab = 'rd'; updateTabUI(); });
+
+    // PPF Frequency Toggle
+    btnYearly.addEventListener('click', () => {
+      ppfFrequency = 'yearly';
+      btnYearly.className = 'py-1.5 text-xs font-bold rounded-md bg-white text-emerald-700 shadow-xs transition-all cursor-pointer';
+      btnMonthly.className = 'py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition-all cursor-pointer';
+      updateTabUI();
+    });
+    btnMonthly.addEventListener('click', () => {
+      ppfFrequency = 'monthly';
+      btnMonthly.className = 'py-1.5 text-xs font-bold rounded-md bg-white text-emerald-700 shadow-xs transition-all cursor-pointer';
+      btnYearly.className = 'py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-slate-900 transition-all cursor-pointer';
+      updateTabUI();
+    });
+
+    // Bi-directional slider syncing
+    amountInput.addEventListener('input', (e) => {
+      amountSlider.value = e.target.value;
+    });
+    amountSlider.addEventListener('input', (e) => {
+      amountInput.value = e.target.value;
+    });
+
+    rateInput.addEventListener('input', (e) => {
+      rateSlider.value = e.target.value;
+    });
+    rateSlider.addEventListener('input', (e) => {
+      rateInput.value = e.target.value;
+    });
+
+    yearsInput.addEventListener('input', (e) => {
+      yearsSlider.value = e.target.value;
+    });
+    yearsSlider.addEventListener('input', (e) => {
+      yearsInput.value = e.target.value;
+    });
+
+    document.getElementById('savings-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      runCalculation();
+    });
+
+    [currencySelect, amountInput, amountSlider, rateInput, rateSlider, yearsInput, yearsSlider, fdCompoundingSelect].forEach(el => {
+      el.addEventListener('input', runCalculation);
+      el.addEventListener('change', runCalculation);
+    });
+
+    window.addEventListener('load', updateTabUI);
+    window.addEventListener('resize', runCalculation);
+  </script>
+</body>
+</html>
