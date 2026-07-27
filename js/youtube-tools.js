@@ -381,14 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
       keywordsResults.classList.add('hidden');
 
       try {
-        const response = await fetch(`/api/youtube-keywords?q=${encodeURIComponent(seed)}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to fetch suggestions.');
-        }
-
-        const list = data.suggestions || [];
+        const list = await fetchAutocompleteJSONP(seed);
         keywordsCount.textContent = list.length;
         tableBody.innerHTML = '';
 
@@ -502,11 +495,8 @@ document.addEventListener('DOMContentLoaded', () => {
           if (!res.ok) throw new Error(data.error || 'Failed to extract tags.');
           items = data.tags || [];
         } else {
-          // Input is a seed keyword, fetch suggestions from autocomplete proxy
-          const res = await fetch(`/api/youtube-keywords?q=${encodeURIComponent(input)}`);
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || 'Failed to fetch suggestions.');
-          items = data.suggestions || [];
+          // Input is a seed keyword, fetch suggestions client-side using JSONP
+          items = await fetchAutocompleteJSONP(input);
           if (items.length > 0) {
             items.unshift(input);
           }
@@ -580,6 +570,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
     }
+  }
+
+  // Fetch YouTube Autocomplete suggestions client-side using JSONP
+  function fetchAutocompleteJSONP(query) {
+    return new Promise((resolve, reject) => {
+      const callbackName = 'ytSuggestCallback_' + Math.random().toString(36).substr(2, 9);
+      
+      window[callbackName] = function(data) {
+        delete window[callbackName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+        if (Array.isArray(data) && Array.isArray(data[1])) {
+          resolve(data[1]);
+        } else {
+          resolve([]);
+        }
+      };
+
+      const script = document.createElement('script');
+      script.src = `https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&q=${encodeURIComponent(query)}&jsonp=${callbackName}`;
+      script.onerror = (err) => {
+        delete window[callbackName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+        reject(new Error('Failed to load YouTube suggestions.'));
+      };
+      
+      document.body.appendChild(script);
+    });
   }
 
   // Simple HTML Escaper

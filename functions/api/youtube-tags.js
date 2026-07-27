@@ -1,10 +1,11 @@
 /**
  * Cloudflare Pages Function: GET /api/youtube-tags
- * Proxies and parses tags/keywords from a YouTube video page server-side.
+ * Retrieves video tags/keywords using the YouTube InnerTube player JSON API endpoint.
+ * This completely avoids HTML scraping and bypasses 429 rate limits.
  */
 
 const cache = new Map();
-const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes cache for tags
 
 function getFromCache(id) {
   const entry = cache.get(id);
@@ -51,72 +52,51 @@ export async function onRequestGet(context) {
     });
   }
 
-  const targetUrl = `https://www.youtube.com/watch?v=${id}`;
+  // YouTube InnerTube player JSON endpoint (keyless POST)
+  const targetUrl = 'https://www.youtube.com/youtubei/v1/player';
+  const payload = {
+    videoId: id,
+    context: {
+      client: {
+        clientName: 'WEB',
+        clientVersion: '2.20230621.02.00'
+      }
+    }
+  };
 
   try {
     const res = await fetch(targetUrl, {
+      method: 'POST',
       headers: {
-        'User-Agent': 'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; Googlebot/2.1; +http://www.google.com/bot.html) Safari/537.36',
-        'Accept-Language': 'en-US,en;q=0.9'
-      }
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      },
+      body: JSON.stringify(payload)
     });
 
     if (!res.ok) {
-      throw new Error(`Failed to fetch video page. Status: ${res.status}`);
+      throw new Error(`InnerTube API returned status: ${res.status}`);
     }
 
-    const body = await res.text();
+    const data = await res.json();
 
-    // 1. Check meta tags
-    let tagsStr = '';
-    const matchMeta1 = body.match(/<meta\s+name="keywords"\s+content="([^"]*)"/i);
-    if (matchMeta1) {
-      tagsStr = matchMeta1[1];
-    } else {
-      const matchMeta2 = body.match(/<meta\s+content="([^"]*)"\s+name="keywords"/i);
-      if (matchMeta2) {
-        tagsStr = matchMeta2[1];
-      }
-    }
-
-    // 2. Fallback to parsing ytInitialPlayerResponse keywords array
-    let tags = [];
-    if (tagsStr) {
-      // Split by comma and clean whitespace
-      tags = tagsStr.split(',').map(t => t.trim()).filter(Boolean);
-    } else {
-      const playerResponseMatch = body.match(/ytInitialPlayerResponse\s*=\s*({.+?});/);
-      if (playerResponseMatch) {
-        try {
-          const rawJson = playerResponseMatch[1];
-          const data = JSON.parse(rawJson);
-          if (data?.videoDetails?.keywords) {
-            tags = data.videoDetails.keywords.map(t => t.trim()).filter(Boolean);
-          }
-        } catch (e) {
-          console.warn('Failed parsing ytInitialPlayerResponse JSON:', e);
-        }
-      }
-    }
-
-    // If still no tags found, check if video is private or unavailable
-    if (tags.length === 0) {
-      if (body.includes('Video unavailable') || body.includes('This video is private') || body.includes('This video is unavailable')) {
-        return new Response(JSON.stringify({ error: 'Video is private, deleted, or unavailable' }), {
-          status: 404,
-          headers: { 'content-type': 'application/json' }
-        });
-      }
-      return new Response(JSON.stringify({ tags: [], message: 'No tags found for this video' }), {
-        status: 200,
+    // Check if the video is private, deleted or unavailable
+    const playability = data.playabilityStatus || {};
+    if (playability.status && playability.status !== 'OK') {
+      return new Response(JSON.stringify({ error: playability.reason || 'Video is private, deleted, or unavailable' }), {
+        status: 404,
         headers: { 'content-type': 'application/json' }
       });
     }
 
-    // Cache the resolved tags list
-    setToCache(id, tags);
+    const keywords = data.videoDetails && Array.isArray(data.videoDetails.keywords)
+      ? data.videoDetails.keywords.map(k => k.trim()).filter(Boolean)
+      : [];
 
-    return new Response(JSON.stringify({ tags, cached: false }), {
+    // Cache the resolved tags list
+    setToCache(id, keywords);
+
+    return new Response(JSON.stringify({ tags: keywords, cached: false }), {
       status: 200,
       headers: { 'content-type': 'application/json' }
     });
