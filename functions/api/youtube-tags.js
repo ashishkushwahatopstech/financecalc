@@ -80,6 +80,18 @@ export async function onRequestGet(context) {
 
     const data = await res.json();
 
+    const keywords = data.videoDetails && Array.isArray(data.videoDetails.keywords)
+      ? data.videoDetails.keywords.map(k => k.trim()).filter(Boolean)
+      : [];
+
+    if (keywords.length > 0) {
+      setToCache(id, keywords);
+      return new Response(JSON.stringify({ tags: keywords, cached: false }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' }
+      });
+    }
+
     // Check if the video is private, deleted or unavailable
     const playability = data.playabilityStatus || {};
     if (playability.status && playability.status !== 'OK') {
@@ -89,14 +101,9 @@ export async function onRequestGet(context) {
       });
     }
 
-    const keywords = data.videoDetails && Array.isArray(data.videoDetails.keywords)
-      ? data.videoDetails.keywords.map(k => k.trim()).filter(Boolean)
-      : [];
+    setToCache(id, []);
 
-    // Cache the resolved tags list
-    setToCache(id, keywords);
-
-    return new Response(JSON.stringify({ tags: keywords, cached: false }), {
+    return new Response(JSON.stringify({ tags: [], cached: false }), {
       status: 200,
       headers: { 'content-type': 'application/json' }
     });
