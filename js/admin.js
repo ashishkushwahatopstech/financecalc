@@ -78,6 +78,7 @@ function checkAndInitAdmin(user) {
   setupBlogPromoManager();
   renderActivityLogs();
   setupModalListeners();
+  setupFeaturedToolsManager();
 
   // Load URL Shortener global stats
   const initStats = async () => {
@@ -2303,12 +2304,112 @@ function initMonetizationTickets(uid, token) {
 
           showToast(`Request ${action}d successfully!`, 'success');
         } catch (err) {
-          console.error("Failed to process ticket action:", err);
-          showToast(err.message || 'Error processing request.', 'error');
         }
       });
     });
   });
 }
+
+const ALL_SITE_TOOLS = [
+  { id: 'loan-calculator.html', name: 'Loan & Mortgage', desc: 'Calculate loan payments and amortization schedule.', color: 'emerald' },
+  { id: 'currency-converter.html', name: 'Currency Converter', desc: 'Real-time exchange rates powered by central bank data.', color: 'teal' },
+  { id: 'tax-calculator.html', name: 'Income Tax (US & CA)', desc: 'Estimate income taxes across federal and state tax brackets.', color: 'blue' },
+  { id: 'url-shortener.html', name: 'URL Shortener', desc: 'Create fast redirect links and track click analytics.', color: 'purple' },
+  { id: 'emi-calculator.html', name: 'EMI Calculator', desc: 'Calculate monthly payments for auto, home, or personal loans.', color: 'emerald' },
+  { id: 'sip-calculator.html', name: 'SIP Calculator', desc: 'Estimate returns of Systematic Investment Plans.', color: 'emerald' },
+  { id: 'gst-calculator.html', name: 'GST Calculator', desc: 'Calculate Goods and Services Tax with predefined tax slabs.', color: 'emerald' },
+  { id: 'ppf-fd-rd-calculator.html', name: 'Savings (PPF/FD/RD)', desc: 'Compare PPF, Fixed Deposit, and Recurring Deposit returns.', color: 'emerald' },
+  { id: 'salary-calculator.html', name: 'Salary Calculator', desc: 'Convert annual salary to hourly, weekly, or monthly wage.', color: 'indigo' },
+  { id: 'invoice-generator.html', name: 'Invoice Generator', desc: 'Create, customize, and print professional PDF invoices.', color: 'purple' },
+  { id: 'roi-calculator.html', name: 'ROI Calculator', desc: 'Calculate rate of return on any investment project.', color: 'emerald' },
+  { id: 'pdf-tools.html', name: 'PDF Utilities', desc: 'Merge, split, compress, and sign PDF documents.', color: 'purple' },
+  { id: 'image-compressor.html', name: 'Image Compressor', desc: 'Compress, resize, and optimize images for the web.', color: 'purple' },
+  { id: 'resume-builder.html', name: 'Resume Builder', desc: 'Create a professional resume with modern templates.', color: 'purple' },
+  { id: 'json-formatter.html', name: 'JSON Formatter', desc: 'Format, validate, minify, and inspect JSON documents.', color: 'indigo' },
+  { id: 'base64-converter.html', name: 'Base64 Converter', desc: 'Encode and decode plain text or files to Base64 format.', color: 'indigo' },
+  { id: 'uuid-hash-generator.html', name: 'UUID & Hash Gen', desc: 'Generate random UUID v4 and SHA-256 hash values.', color: 'indigo' },
+  { id: 'regex-tester.html', name: 'Regex Tester', desc: 'Build and test JavaScript regular expressions in real time.', color: 'indigo' },
+  { id: 'color-converter.html', name: 'Color Converter', desc: 'Convert between HEX, RGB, HSL, and CMYK color codes.', color: 'indigo' },
+  { id: 'markdown-editor.html', name: 'Markdown Editor', desc: 'Write, preview, and compile Markdown markup to HTML.', color: 'indigo' },
+  { id: 'qr-generator.html', name: 'QR Code Generator', desc: 'Generate custom QR codes for URLs, WiFi, or text.', color: 'purple' },
+  { id: 'password-generator.html', name: 'Password Generator', desc: 'Generate strong, custom cryptographic passwords.', color: 'purple' },
+  { id: 'word-counter.html', name: 'Word Counter', desc: 'Count words, characters, sentences, and reading times.', color: 'teal' },
+  { id: 'unit-converter.html', name: 'Unit Converter', desc: 'Convert length, mass, temperature, and volume metrics.', color: 'blue' },
+  { id: 'age-calculator.html', name: 'Age Calculator', desc: 'Calculate age, next birthday, and date differences.', color: 'amber' },
+  { id: 'youtube-thumbnail-downloader.html', name: 'YouTube Thumbnail', desc: 'Download high-definition video cover images.', color: 'rose' }
+];
+
+function setupFeaturedToolsManager() {
+  const container = document.getElementById('featured-tools-checkboxes-container');
+  const btnSave = document.getElementById('btn-save-featured-tools');
+  if (!container || !btnSave) return;
+
+  // Render checklist checkboxes
+  container.innerHTML = ALL_SITE_TOOLS.map(t => `
+    <label class="flex items-center gap-2.5 p-3 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-200/60 transition-all cursor-pointer select-none font-sans">
+      <input type="checkbox" name="featured-tool" value="${t.id}" class="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer" />
+      <div class="overflow-hidden">
+        <span class="font-bold text-slate-800 text-[11px] block">${t.name}</span>
+        <span class="block text-[9.5px] text-slate-450 truncate max-w-[170px] font-medium" title="${t.desc}">${t.desc}</span>
+      </div>
+    </label>
+  `).join('');
+
+  // Fetch saved featured tools selection from Firestore settings/featured_tools
+  const docRef = doc(db, 'settings', 'featured_tools');
+  getDoc(docRef).then((snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
+      const featured = data.tools || [];
+      // Tick matching checkboxes
+      const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(cb => {
+        if (featured.includes(cb.value)) {
+          cb.checked = true;
+        }
+      });
+    } else {
+      // Default fallback (first 4 tools) if no settings doc yet
+      const defaultFeatured = ['loan-calculator.html', 'currency-converter.html', 'tax-calculator.html', 'url-shortener.html'];
+      const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(cb => {
+        if (defaultFeatured.includes(cb.value)) {
+          cb.checked = true;
+        }
+      });
+    }
+  }).catch(err => {
+    console.error("Failed to load featured tools config:", err);
+  });
+
+  // Handle Save
+  btnSave.onclick = async () => {
+    btnSave.disabled = true;
+    const originalHtml = btnSave.innerHTML;
+    btnSave.textContent = 'Saving...';
+
+    const selected = [];
+    const checkboxes = container.querySelectorAll('input[type="checkbox"]:checked');
+    checkboxes.forEach(cb => {
+      selected.push(cb.value);
+    });
+
+    try {
+      await setDoc(docRef, {
+        tools: selected,
+        updatedAt: new Date(),
+        updatedBy: auth.currentUser?.email || 'Admin'
+      });
+      showToast('Featured tools selection updated successfully!', 'success');
+    } catch (err) {
+      console.error("Failed to save featured tools selection:", err);
+      showToast('Failed to save selection. Check security rules.', 'error');
+    } finally {
+      btnSave.disabled = false;
+      btnSave.innerHTML = originalHtml;
+    }
+  };
+}
+
 
 
