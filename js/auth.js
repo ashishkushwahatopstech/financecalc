@@ -1349,14 +1349,47 @@ if (document.readyState === 'loading') {
   rebuildGlobalFooter(currentUserData);
 }
 
+// Keep track of active user profile snapshot unsubscribe function
+let unsubscribeUserProfileListener = null;
+
 // Global Auth State Observer
 onAuthStateChanged(auth, async (user) => {
+  if (unsubscribeUserProfileListener) {
+    unsubscribeUserProfileListener();
+    unsubscribeUserProfileListener = null;
+  }
+
   if (user) {
     currentUserData = user;
-    await syncUserProfile(user);
-    updateNavbarUI(user);
-    window.dispatchEvent(new CustomEvent('auth-state-changed', { detail: { user, isAdmin: isAdminEmail(user.email) } }));
-    enforceGlobalSettings();
+    const syncedUser = await syncUserProfile(user);
+    updateNavbarUI(syncedUser || user);
+    window.dispatchEvent(new CustomEvent('auth-state-changed', { detail: { user: syncedUser || user, isAdmin: isAdminEmail(user.email) } }));
+    
+    // Subscribe to Firestore user doc in real time to catch suspensions/role changes instantly
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      unsubscribeUserProfileListener = onSnapshot(userRef, (docSnap) => {
+        if (docSnap.exists()) {
+          const profileData = docSnap.data();
+          // Update local caches and current user data reference
+          currentUserData = {
+            ...user,
+            role: profileData.role || 'USER',
+            status: profileData.status || 'Active',
+            username: profileData.username || ''
+          };
+          
+          // Re-sync local storage registry and session storage
+          sessionStorage.setItem('fincalc_user_session', safeJsonStringify(currentUserData));
+          
+          // Re-enforce global settings with updated status/role
+          enforceGlobalSettings();
+        }
+      });
+    } catch (e) {
+      console.warn("Real-time profile subscription failed:", e);
+      enforceGlobalSettings();
+    }
   } else {
     // Check if demo user is active
     const demoUser = getCurrentUser();
@@ -1460,7 +1493,20 @@ function loadLocalSettingsFallback() {
 
 export function enforceGlobalSettings() {
   const settings = window.globalSettings || globalSettings;
-  const user = currentUserData || getCurrentUser();
+  
+  let user = currentUserData;
+  if (!user) {
+    try {
+      const sessionData = sessionStorage.getItem('fincalc_user_session');
+      if (sessionData) {
+        user = JSON.parse(sessionData);
+      }
+    } catch (e) {}
+  }
+  if (!user) {
+    user = getCurrentUser();
+  }
+
   const isAdmin = user ? isAdminEmail(user.email) : false;
 
   const rawPath = window.location.pathname.split('/').pop() || 'index.html';
