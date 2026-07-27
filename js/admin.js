@@ -1690,9 +1690,19 @@ async function loadShortenerStats(uid, token = '') {
             <td class="py-3 px-4 font-medium">${redirectionSelect}</td>
             <td class="py-3 px-4 font-medium">${monetizationSelect}</td>
             <td class="py-3 px-4">
-              <button data-link-code="${link.short_code}" class="btn-view-link-stats px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold text-[10px] rounded-lg transition-colors cursor-pointer border border-indigo-100 flex items-center gap-1">
-                📊 Stats
-              </button>
+              <div class="flex items-center gap-1.5">
+                <button data-link-code="${link.short_code}" class="btn-view-link-stats px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold text-[10px] rounded-lg transition-colors cursor-pointer border border-indigo-100 flex items-center gap-1">
+                  📊 Stats
+                </button>
+                <button data-copy-code="${link.short_code}" class="btn-admin-copy px-2 py-1 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-250 text-slate-600 font-extrabold text-[10px] rounded-lg transition-colors cursor-pointer border border-slate-200 flex items-center gap-1" title="Copy Short URL">
+                  <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path></svg>
+                  Copy
+                </button>
+                <button data-open-code="${link.short_code}" class="btn-admin-open px-2 py-1 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-250 text-slate-600 font-extrabold text-[10px] rounded-lg transition-colors cursor-pointer border border-slate-200 flex items-center gap-1" title="Open Link in New Tab">
+                  <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                  Open
+                </button>
+              </div>
             </td>
           </tr>
         `;
@@ -1766,6 +1776,28 @@ async function loadShortenerStats(uid, token = '') {
           }
           
           openLinkStatsModal(shortCode, uid, dynamicToken);
+        });
+      });
+
+      // Attach Admin Copy button listener
+      tableBody.querySelectorAll('.btn-admin-copy').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const code = btn.getAttribute('data-copy-code');
+          const shortUrl = `${window.location.origin}/${code}`;
+          navigator.clipboard.writeText(shortUrl).then(() => {
+            showToast('Short URL copied to clipboard!', 'success');
+          }).catch(err => {
+            showToast('Copy failed.', 'error');
+          });
+        });
+      });
+
+      // Attach Admin Open button listener
+      tableBody.querySelectorAll('.btn-admin-open').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const code = btn.getAttribute('data-open-code');
+          const shortUrl = `${window.location.origin}/${code}`;
+          window.open(shortUrl, '_blank');
         });
       });
     }
