@@ -616,11 +616,29 @@
       pages.forEach(page => {
         const { width, height } = page.getSize();
         
-        // Draw centered watermark
+        // 1. Auto-adjust size if it exceeds the page width (margins)
+        let adjustedSize = size;
+        let textWidth = standardFont.widthOfTextAtSize(text, adjustedSize);
+        const maxWidth = width * 0.85; // leave 15% margin
+        if (textWidth > maxWidth) {
+          adjustedSize = Math.max(10, Math.floor(adjustedSize * (maxWidth / textWidth)));
+          textWidth = standardFont.widthOfTextAtSize(text, adjustedSize);
+        }
+        
+        const textHeight = standardFont.heightAtSize(adjustedSize);
+
+        // 2. Centering math with rotation offsets
+        const rad = (angle * Math.PI) / 180;
+        const cx = width / 2;
+        const cy = height / 2;
+
+        const x = cx - (textWidth / 2) * Math.cos(rad) + (textHeight / 2) * Math.sin(rad);
+        const y = cy - (textWidth / 2) * Math.sin(rad) - (textHeight / 2) * Math.cos(rad);
+
         page.drawText(text, {
-          x: width / 2 - (text.length * size * 0.3),
-          y: height / 2,
-          size: size,
+          x: x,
+          y: y,
+          size: adjustedSize,
           font: standardFont,
           color: PDFLib.rgb(0.38, 0.4, 0.94), // Indigo
           rotate: PDFLib.degrees(angle),
