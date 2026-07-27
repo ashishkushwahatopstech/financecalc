@@ -11,6 +11,14 @@
   <style>
     /* Print Styles to extract PDF exactly */
     @media print {
+      @page {
+        margin: 0; /* Hides browser default headers and footers */
+      }
+      body {
+        background: #ffffff;
+        margin: 0;
+        padding: 0;
+      }
       body * {
         visibility: hidden;
       }
@@ -28,7 +36,7 @@
         border: none !important;
         box-shadow: none !important;
         margin: 0 !important;
-        padding: 0 !important;
+        padding: 1.6cm !important; /* Adds professional print margins inside the A4 sheet page boundary */
       }
     }
   </style>
