@@ -427,55 +427,94 @@ function setupBlogManagerUI(user) {
 }
 
 async function setupSavedCollectionsUI(user) {
-  const elList = document.getElementById('saved-collection-list');
-  const elCount = document.getElementById('saved-collection-count');
-  const tabPages = document.getElementById('tab-saved-pages');
-  const tabBlogs = document.getElementById('tab-saved-blogs');
-  const tabCalcs = document.getElementById('tab-saved-calcs');
+  const foldersGrid = document.getElementById('collections-folders-grid');
+  const listView = document.getElementById('collections-list-view');
+  const btnBack = document.getElementById('btn-back-to-folders');
+  const elTitle = document.getElementById('saved-collections-title');
+  const elSummary = document.getElementById('saved-collections-summary-text');
 
-  if (!elList) return;
+  const countPages = document.getElementById('count-saved-pages');
+  const countBlogs = document.getElementById('count-saved-blogs');
+  const countCalcs = document.getElementById('count-saved-calculations');
 
-  let currentTab = 'pages'; // 'pages', 'blogs', 'calculations'
+  const folderPages = document.getElementById('folder-pages');
+  const folderBlogs = document.getElementById('folder-blogs');
+  const folderCalcs = document.getElementById('folder-calculations');
+
+  if (!foldersGrid || !listView) return;
 
   const collections = await getSavedCollections();
 
-  const renderCurrentTab = () => {
-    const list = collections[currentTab] || [];
-    
-    // Set active tab styles
-    const activeClass = 'px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200/80 cursor-pointer';
-    const inactiveClass = 'px-2.5 py-1 rounded-lg bg-slate-50 text-slate-650 hover:bg-slate-100/80 border border-slate-200/50 cursor-pointer';
-    
-    if (tabPages) tabPages.className = currentTab === 'pages' ? activeClass : inactiveClass;
-    if (tabBlogs) tabBlogs.className = currentTab === 'blogs' ? activeClass : inactiveClass;
-    if (tabCalcs) tabCalcs.className = currentTab === 'calculations' ? activeClass : inactiveClass;
+  // Update counts on folders
+  const updateCounts = () => {
+    const pagesLength = collections.pages ? collections.pages.length : 0;
+    const blogsLength = collections.blogs ? collections.blogs.length : 0;
+    const calculationsLength = collections.calculations ? collections.calculations.length : 0;
 
-    if (elCount) {
-      elCount.textContent = `${list.length} ${currentTab} saved`;
-    }
+    if (countPages) countPages.textContent = `${pagesLength} ${pagesLength === 1 ? 'item' : 'items'}`;
+    if (countBlogs) countBlogs.textContent = `${blogsLength} ${blogsLength === 1 ? 'item' : 'items'}`;
+    if (countCalcs) countCalcs.textContent = `${calculationsLength} ${calculationsLength === 1 ? 'item' : 'items'}`;
+    
+    const total = pagesLength + blogsLength + calculationsLength;
+    if (elSummary) elSummary.textContent = `${total} total items bookmarked`;
+  };
+
+  updateCounts();
+
+  let activeFolder = null; // 'pages', 'blogs', 'calculations'
+
+  const showFolder = (folderName) => {
+    activeFolder = folderName;
+    foldersGrid.classList.add('hidden');
+    listView.classList.remove('hidden');
+    listView.classList.add('flex');
+    if (btnBack) btnBack.classList.remove('hidden');
+
+    let titleText = 'Saved Items';
+    if (folderName === 'pages') titleText = '🛠️ Saved Pages & Tools';
+    else if (folderName === 'blogs') titleText = '📰 Saved Blogs & Articles';
+    else if (folderName === 'calculations') titleText = '📊 Saved Calculations';
+    if (elTitle) elTitle.innerHTML = `<span>${titleText}</span>`;
+
+    renderFolderItems();
+  };
+
+  const showFoldersGrid = () => {
+    activeFolder = null;
+    foldersGrid.classList.remove('hidden');
+    listView.classList.add('hidden');
+    listView.classList.remove('flex');
+    if (btnBack) btnBack.classList.add('hidden');
+    if (elTitle) elTitle.innerHTML = `<span>🔖 My Saved Collections</span>`;
+    updateCounts();
+  };
+
+  const renderFolderItems = () => {
+    if (!activeFolder) return;
+    const list = collections[activeFolder] || [];
 
     if (list.length === 0) {
-      elList.innerHTML = `
-        <div class="text-center py-6 px-4 border-2 border-dashed border-slate-100 rounded-xl">
-          <p class="text-[11px] font-semibold text-slate-400">No saved ${currentTab} yet</p>
+      listView.innerHTML = `
+        <div class="text-center py-8 px-4 border-2 border-dashed border-slate-100 rounded-xl w-full">
+          <p class="text-xs font-semibold text-slate-400">No saved items in this collection yet</p>
         </div>
       `;
       return;
     }
 
-    elList.innerHTML = list.map(item => {
+    listView.innerHTML = list.map(item => {
       let icon = '🔖';
       let title = item.name || item.title || 'Untitled';
       let subtitle = '';
       let actionUrl = item.href || item.url || '#';
 
-      if (currentTab === 'pages') {
+      if (activeFolder === 'pages') {
         icon = '🛠️';
         subtitle = 'Calculator Tool';
-      } else if (currentTab === 'blogs') {
+      } else if (activeFolder === 'blogs') {
         icon = '📰';
         subtitle = 'Blog Post';
-      } else if (currentTab === 'calculations') {
+      } else if (activeFolder === 'calculations') {
         icon = '📊';
         subtitle = item.toolName || 'Calculation';
         if (item.inputs) {
@@ -487,15 +526,15 @@ async function setupSavedCollectionsUI(user) {
       }
 
       return `
-        <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-200/60 transition-colors gap-3">
+        <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-200/60 transition-colors gap-3 w-full">
           <a href="${actionUrl}" class="flex items-center gap-2.5 min-w-0 flex-1 hover:underline">
             <span class="text-base shrink-0">${icon}</span>
             <div class="min-w-0">
               <p class="text-xs font-bold text-slate-800 truncate">${escapeHTML(title)}</p>
-              <p class="text-[9px] text-slate-400 font-semibold truncate leading-none mt-0.5">${escapeHTML(subtitle)}</p>
+              <p class="text-[9px] text-slate-450 font-semibold truncate leading-none mt-0.5">${escapeHTML(subtitle)}</p>
             </div>
           </a>
-          <button data-id="${item.id}" class="btn-remove-saved-item p-1 text-slate-450 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Remove Bookmark">
+          <button data-id="${item.id}" class="btn-remove-saved-item p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Remove Bookmark">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
           </button>
         </div>
@@ -503,45 +542,34 @@ async function setupSavedCollectionsUI(user) {
     }).join('');
 
     // Attach remove listener
-    elList.querySelectorAll('.btn-remove-saved-item').forEach(btn => {
+    listView.querySelectorAll('.btn-remove-saved-item').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.preventDefault();
         e.stopPropagation();
         const id = btn.getAttribute('data-id');
-        await removeItemFromCollection(currentTab, id);
-        collections[currentTab] = collections[currentTab].filter(x => x.id !== id);
+        await removeItemFromCollection(activeFolder, id);
+        collections[activeFolder] = collections[activeFolder].filter(x => x.id !== id);
         showToast(`Removed from saved collections`, 'info');
-        renderCurrentTab();
+        renderFolderItems();
       });
     });
   };
 
-  if (tabPages) {
-    tabPages.addEventListener('click', () => {
-      currentTab = 'pages';
-      renderCurrentTab();
-    });
-  }
-  if (tabBlogs) {
-    tabBlogs.addEventListener('click', () => {
-      currentTab = 'blogs';
-      renderCurrentTab();
-    });
-  }
-  if (tabCalcs) {
-    tabCalcs.addEventListener('click', () => {
-      currentTab = 'calculations';
-      renderCurrentTab();
-    });
-  }
+  // Bind click events to folders
+  if (folderPages) folderPages.addEventListener('click', () => showFolder('pages'));
+  if (folderBlogs) folderBlogs.addEventListener('click', () => showFolder('blogs'));
+  if (folderCalcs) folderCalcs.addEventListener('click', () => showFolder('calculations'));
 
-  renderCurrentTab();
+  // Bind click event to back button
+  if (btnBack) btnBack.addEventListener('click', showFoldersGrid);
 
+  // Listen for dynamic updates (e.g. if saved elsewhere)
   window.addEventListener('saved-collections-updated', (e) => {
     const updated = e.detail;
     if (updated) {
       Object.assign(collections, updated);
-      renderCurrentTab();
+      updateCounts();
+      if (activeFolder) renderFolderItems();
     }
   });
 }
