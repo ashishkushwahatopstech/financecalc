@@ -97,6 +97,7 @@
             <input type="text" id="custom-code" name="custom-code" placeholder="my-custom-link" class="block w-full pl-8 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-sm font-semibold focus:outline-none focus:border-emerald-500 focus:bg-white transition-all text-slate-800" />
           </div>
           <p class="text-[10px] text-slate-400">Alphanumeric characters, dashes, and underscores only. Length: 3 - 30 characters.</p>
+          <div id="custom-code-feedback" class="text-[11px] font-bold mt-1.5 hidden animate-fade-in"></div>
         </div>
 
         <!-- Expiry Date / Picker (Optional) -->
@@ -274,6 +275,80 @@
         loggedOutPromo.classList.add('hidden');
       }
 
+      const customCodeInput = document.getElementById('custom-code');
+      const customCodeFeedback = document.getElementById('custom-code-feedback');
+      let customCodeTimeout = null;
+      let isCustomCodeAvailable = true;
+
+      if (customCodeInput) {
+        customCodeInput.addEventListener('input', () => {
+          clearTimeout(customCodeTimeout);
+          const val = customCodeInput.value.trim();
+          
+          if (!val) {
+            if (customCodeFeedback) {
+              customCodeFeedback.classList.add('hidden');
+              customCodeFeedback.innerHTML = '';
+            }
+            isCustomCodeAvailable = true;
+            return;
+          }
+
+          if (customCodeFeedback) {
+            customCodeFeedback.classList.remove('hidden');
+            customCodeFeedback.className = "text-[11px] font-bold mt-1.5 text-slate-500 animate-fade-in";
+            customCodeFeedback.innerHTML = `
+              <span class="inline-flex items-center gap-1">
+                <svg class="animate-spin h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Checking availability...
+              </span>
+            `;
+          }
+          isCustomCodeAvailable = false;
+
+          customCodeTimeout = setTimeout(async () => {
+            if (!/^[a-zA-Z0-9_-]{3,30}$/.test(val)) {
+              if (customCodeFeedback) {
+                customCodeFeedback.className = "text-[11px] font-bold mt-1.5 text-rose-600 animate-fade-in";
+                customCodeFeedback.textContent = "✗ Letters, numbers, hyphens, and underscores only (3-30 chars).";
+              }
+              isCustomCodeAvailable = false;
+              return;
+            }
+
+            try {
+              const res = await fetch(`/api/check-code?code=${encodeURIComponent(val)}`);
+              const data = await res.json();
+              if (res.ok && data.available) {
+                if (customCodeFeedback) {
+                  customCodeFeedback.className = "text-[11px] font-bold mt-1.5 text-emerald-600 animate-fade-in";
+                  customCodeFeedback.textContent = "✓ Short code is available!";
+                }
+                isCustomCodeAvailable = true;
+              } else {
+                if (customCodeFeedback) {
+                  customCodeFeedback.className = "text-[11px] font-bold mt-1.5 text-rose-600 animate-fade-in";
+                  customCodeFeedback.textContent = data.reason === 'invalid_format'
+                    ? "✗ Invalid short code format."
+                    : "✗ This short code is already taken. Please choose another one.";
+                }
+                isCustomCodeAvailable = false;
+              }
+            } catch (err) {
+              console.error("Failed to check code availability:", err);
+              if (customCodeFeedback) {
+                customCodeFeedback.className = "text-[11px] font-bold mt-1.5 text-amber-600 animate-fade-in";
+                customCodeFeedback.textContent = "⚠️ Verification offline. Will check on submit.";
+              }
+              isCustomCodeAvailable = true;
+            }
+          }, 500);
+        });
+      }
+
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -285,6 +360,12 @@
 
         if (!originalUrl) {
           showToast('Please enter a valid URL.', 'error');
+          return;
+        }
+
+        if (activeUser && customCode && !isCustomCodeAvailable) {
+          showToast('Please select a valid and available custom short code.', 'error');
+          customCodeInput?.focus();
           return;
         }
 

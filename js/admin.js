@@ -594,7 +594,11 @@ function setupAdminControls() {
     renderUsersTable(filtered);
   };
 
-  elSearchInput?.addEventListener('input', applyFilters);
+  let searchTimeout = null;
+  elSearchInput?.addEventListener('input', () => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(applyFilters, 200);
+  });
   elRoleFilter?.addEventListener('change', applyFilters);
 
   // CSV Export Listener
