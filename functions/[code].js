@@ -18,7 +18,7 @@ export async function onRequestGet(context) {
     'markdown-editor'
   ];
 
-  // If the code matches assets, static pages, or sub-folders, pass it to next handler
+  // If the code matches assets, static pages, or sub-folders, serve them from static assets
   if (
     !code || 
     code === 'favicon.ico' || 
@@ -26,7 +26,7 @@ export async function onRequestGet(context) {
     code === 'functions' || 
     staticPages.includes(code.toLowerCase())
   ) {
-    return next();
+    return env.ASSETS.fetch(request);
   }
 
   const d1 = env.fincalc_urlshortener;

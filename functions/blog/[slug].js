@@ -76,9 +76,9 @@ export async function onRequestGet(context) {
     console.error('Serverless pretty routing fetch updates.html error:', err);
   }
 
-  // If we couldn't load the template, fallback to standard next()
+  // If we couldn't load the template, fallback to standard static assets fetch
   if (!html) {
-    return context.next();
+    return context.env.ASSETS.fetch(request);
   }
 
   // Inject base href to resolve all relative navigation and asset links from the root directory
