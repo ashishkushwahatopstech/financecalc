@@ -898,42 +898,42 @@ function updateNavbarUI(user) {
     };
 
     return `
-      <div class="space-y-3">
+      <div class="space-y-1">
         <!-- 1. Financial Tools Group -->
-        <div class="border border-slate-150 rounded-2xl overflow-hidden bg-slate-50/50">
-          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-4 py-3 text-xs font-extrabold text-slate-800 hover:bg-slate-100/50 transition-colors cursor-pointer" data-target="drawer-financial">
-            <span class="flex items-center gap-2">
-              <span>📈</span> Financial Calculators
+        <div class="overflow-hidden">
+          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-2 py-2.5 text-xs font-bold text-slate-850 hover:bg-slate-100/60 rounded-xl transition-colors cursor-pointer" data-target="drawer-financial">
+            <span class="flex items-center gap-2.5">
+              <span class="text-sm">📈</span> Financial Calculators
             </span>
-            <svg class="toggle-arrow w-4.5 h-4.5 text-slate-400 transition-transform duration-200" style="transform: rotate(${hasActiveFinancial ? 90 : 0}deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+            <svg class="toggle-arrow w-3.5 h-3.5 text-slate-400 transition-transform duration-200" style="transform: rotate(${hasActiveFinancial ? 90 : 0}deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
           </button>
-          <div id="drawer-financial" class="px-2 pb-2 space-y-1 bg-white border-t border-slate-100 ${hasActiveFinancial ? '' : 'hidden'}">
+          <div id="drawer-financial" class="pl-3 pr-1 py-1 space-y-0.5 border-l border-slate-200/80 ml-4 ${hasActiveFinancial ? '' : 'hidden'}">
             ${buildGroupHtml(financialGroup)}
           </div>
         </div>
 
         <!-- 2. Business Tools Group -->
-        <div class="border border-slate-150 rounded-2xl overflow-hidden bg-slate-50/50">
-          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-4 py-3 text-xs font-extrabold text-slate-800 hover:bg-slate-100/50 transition-colors cursor-pointer" data-target="drawer-business">
-            <span class="flex items-center gap-2">
-              <span>💼</span> Business & Documents
+        <div class="overflow-hidden">
+          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-2 py-2.5 text-xs font-bold text-slate-850 hover:bg-slate-100/60 rounded-xl transition-colors cursor-pointer" data-target="drawer-business">
+            <span class="flex items-center gap-2.5">
+              <span class="text-sm">💼</span> Business & Documents
             </span>
-            <svg class="toggle-arrow w-4.5 h-4.5 text-slate-400 transition-transform duration-200" style="transform: rotate(${hasActiveBusiness ? 90 : 0}deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+            <svg class="toggle-arrow w-3.5 h-3.5 text-slate-400 transition-transform duration-200" style="transform: rotate(${hasActiveBusiness ? 90 : 0}deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
           </button>
-          <div id="drawer-business" class="px-2 pb-2 space-y-1 bg-white border-t border-slate-100 ${hasActiveBusiness ? '' : 'hidden'}">
+          <div id="drawer-business" class="pl-3 pr-1 py-1 space-y-0.5 border-l border-slate-200/80 ml-4 ${hasActiveBusiness ? '' : 'hidden'}">
             ${buildGroupHtml(businessGroup)}
           </div>
         </div>
 
         <!-- 3. Utilities Group -->
-        <div class="border border-slate-150 rounded-2xl overflow-hidden bg-slate-50/50">
-          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-4 py-3 text-xs font-extrabold text-slate-800 hover:bg-slate-100/50 transition-colors cursor-pointer" data-target="drawer-utilities">
-            <span class="flex items-center gap-2">
-              <span>🛠️</span> Productivity Utilities
+        <div class="overflow-hidden">
+          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-2 py-2.5 text-xs font-bold text-slate-850 hover:bg-slate-100/60 rounded-xl transition-colors cursor-pointer" data-target="drawer-utilities">
+            <span class="flex items-center gap-2.5">
+              <span class="text-sm">🛠️</span> Productivity Utilities
             </span>
-            <svg class="toggle-arrow w-4.5 h-4.5 text-slate-400 transition-transform duration-200" style="transform: rotate(${hasActiveUtilities ? 90 : 0}deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+            <svg class="toggle-arrow w-3.5 h-3.5 text-slate-400 transition-transform duration-200" style="transform: rotate(${hasActiveUtilities ? 90 : 0}deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
           </button>
-          <div id="drawer-utilities" class="px-2 pb-2 space-y-1 bg-white border-t border-slate-100 ${hasActiveUtilities ? '' : 'hidden'}">
+          <div id="drawer-utilities" class="pl-3 pr-1 py-1 space-y-0.5 border-l border-slate-200/80 ml-4 ${hasActiveUtilities ? '' : 'hidden'}">
             ${buildGroupHtml(utilitiesGroup)}
           </div>
         </div>
