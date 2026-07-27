@@ -16,15 +16,20 @@ export async function onRequestGet(context) {
     const token = urlObj.searchParams.get('token');
     if (token) {
       try {
-        const tokenRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
-        if (tokenRes.ok) {
-          const tokenInfo = await tokenRes.json();
-          if (tokenInfo.email && tokenInfo.email.toLowerCase() === 'ashishkushwaha88643@gmail.com') {
+        const firestoreUrl = `https://firestore.googleapis.com/v1/projects/finance-calc-by-ak/databases/(default)/documents/users/${uid}`;
+        const firestoreRes = await fetch(firestoreUrl, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (firestoreRes.ok) {
+          const docData = await firestoreRes.json();
+          const email = docData.fields?.email?.stringValue || '';
+          const role = docData.fields?.role?.stringValue || '';
+          if (email.trim().toLowerCase() === 'ashishkushwaha88643@gmail.com' || role === 'ADMIN') {
             authorized = true;
           }
         }
       } catch (e) {
-        console.error("Token verification error:", e);
+        console.error("Firestore token verification error:", e);
       }
     }
   }
