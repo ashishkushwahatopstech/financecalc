@@ -29,6 +29,7 @@ export default defineConfig(() => {
           main: path.resolve(__dirname, 'index.html'),
           loan: path.resolve(__dirname, 'loan-calculator.html'),
           emi: path.resolve(__dirname, 'emi-calculator.html'),
+          sip: path.resolve(__dirname, 'sip-calculator.html'),
           currency: path.resolve(__dirname, 'currency-converter.html'),
           tax: path.resolve(__dirname, 'tax-calculator.html'),
           salary: path.resolve(__dirname, 'salary-calculator.html'),
