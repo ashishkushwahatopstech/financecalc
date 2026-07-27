@@ -477,13 +477,13 @@ async function setupSavedCollectionsUI(user) {
       let actionUrl = item.href || item.url || '#';
 
       if (groupName === 'pages') {
-        icon = '🛠️';
+        icon = '🔗';
         subtitle = 'Calculator Tool';
       } else if (groupName === 'blogs') {
-        icon = '📰';
+        icon = '📝';
         subtitle = 'Blog Post';
       } else if (groupName === 'calculations') {
-        icon = '📊';
+        icon = '🧮';
         subtitle = item.toolName || 'Calculation';
         if (item.inputs) {
           const inputPairs = Object.entries(item.inputs)
@@ -495,11 +495,13 @@ async function setupSavedCollectionsUI(user) {
 
       return `
         <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-200/50 transition-colors gap-3 w-full animate-fade-in">
-          <a href="${actionUrl}" class="flex items-center gap-2 min-w-0 flex-1 hover:underline">
-            <span class="text-sm shrink-0">${icon}</span>
+          <a href="${actionUrl}" class="flex items-center gap-2.5 min-w-0 flex-1 hover:underline">
+            <div class="rounded-lg bg-white border border-slate-200/60 flex items-center justify-center shrink-0 shadow-3xs text-xs" style="width: 40px; height: 30px;">
+              <span>${icon}</span>
+            </div>
             <div class="min-w-0">
               <p class="text-[11px] font-extrabold text-slate-800 truncate">${escapeHTML(title)}</p>
-              <p class="text-[9px] text-slate-450 font-semibold truncate leading-none mt-0.5">${escapeHTML(subtitle)}</p>
+              <p class="text-[9px] text-slate-455 font-semibold truncate leading-none mt-0.5">${escapeHTML(subtitle)}</p>
             </div>
           </a>
           <button data-id="${item.id}" data-group="${groupName}" class="btn-remove-saved-item p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Remove Bookmark">
