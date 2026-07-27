@@ -15,7 +15,7 @@ export async function onRequestGet(context) {
     'emi-calculator', 'sip-calculator', 'gst-calculator', 'ppf-fd-rd-calculator',
     'pdf-tools', 'image-compressor', 'resume-builder', 'json-formatter',
     'base64-converter', 'uuid-hash-generator', 'regex-tester', 'color-converter',
-    'markdown-editor'
+    'markdown-editor', 'youtube-tools'
   ];
 
   // If the code matches assets, static pages, or sub-folders, serve them from static assets
