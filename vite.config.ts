@@ -54,6 +54,7 @@ export default defineConfig(() => {
           base64: path.resolve(__dirname, 'base64-converter.html'),
           uuid: path.resolve(__dirname, 'uuid-hash-generator.html'),
           regex: path.resolve(__dirname, 'regex-tester.html'),
+          color: path.resolve(__dirname, 'color-converter.html'),
         },
       },
     },
