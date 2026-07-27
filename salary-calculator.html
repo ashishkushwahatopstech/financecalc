@@ -105,16 +105,19 @@
               <span class="absolute left-3 top-2.5 text-slate-400 text-sm font-medium">$</span>
               <input type="number" id="pay-amount" value="85000" min="0" step="1000" class="w-full pl-8 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
             </div>
+            <input type="range" id="pay-amount-slider" min="5000" max="500000" step="1000" value="85000" class="w-full mt-2 accent-indigo-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
           </div>
 
           <div id="hours-per-week-container" class="hidden">
             <label class="block text-xs font-semibold text-slate-700 mb-1">Hours Worked per Week</label>
             <input type="number" id="pay-hours" value="40" min="1" max="168" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+            <input type="range" id="pay-hours-slider" min="10" max="80" step="1" value="40" class="w-full mt-2 accent-indigo-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Estimated Total Tax & Deduction Rate (%)</label>
             <input type="number" id="pay-tax-pct" value="22" min="0" max="60" step="1" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
+            <input type="range" id="pay-tax-pct-slider" min="0" max="60" step="1" value="22" class="w-full mt-2 accent-indigo-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
             <span class="text-[11px] text-slate-400 mt-1 block">Includes federal, state/provincial tax, and social payroll deductions.</span>
           </div>
 
@@ -248,13 +251,43 @@
       const freq = document.getElementById('pay-freq').value;
       const lbl = document.getElementById('pay-amount-label');
       const hrsContainer = document.getElementById('hours-per-week-container');
+      const amountInput = document.getElementById('pay-amount');
+      const amountSlider = document.getElementById('pay-amount-slider');
 
       if (freq === 'hourly') {
         lbl.textContent = 'Hourly Pay Rate ($)';
         hrsContainer.classList.remove('hidden');
+        if (amountSlider) {
+          amountSlider.min = 5;
+          amountSlider.max = 200;
+          amountSlider.step = 0.5;
+        }
       } else {
         lbl.textContent = `Gross Pay (${FREQUENCIES[freq]?.label || ''}) ($)`;
         hrsContainer.classList.add('hidden');
+        if (amountSlider) {
+          if (freq === 'annually') {
+            amountSlider.min = 5000;
+            amountSlider.max = 500000;
+            amountSlider.step = 1000;
+          } else if (freq === 'monthly') {
+            amountSlider.min = 500;
+            amountSlider.max = 40000;
+            amountSlider.step = 100;
+          } else if (freq === 'semimonthly' || freq === 'biweekly') {
+            amountSlider.min = 250;
+            amountSlider.max = 20000;
+            amountSlider.step = 50;
+          } else if (freq === 'weekly') {
+            amountSlider.min = 100;
+            amountSlider.max = 10000;
+            amountSlider.step = 50;
+          }
+        }
+      }
+
+      if (amountSlider && amountInput) {
+        amountSlider.value = amountInput.value;
       }
     }
 
@@ -292,6 +325,25 @@
     ['pay-amount', 'pay-hours', 'pay-tax-pct'].forEach(id => {
       document.getElementById(id).addEventListener('input', runPaycheckCalculation);
     });
+
+    // Slider bidirectional sync helper
+    const syncSlider = (inputId, sliderId) => {
+      const input = document.getElementById(inputId);
+      const slider = document.getElementById(sliderId);
+      if (input && slider) {
+        input.addEventListener('input', () => {
+          slider.value = input.value;
+        });
+        slider.addEventListener('input', () => {
+          input.value = slider.value;
+          runPaycheckCalculation();
+        });
+      }
+    };
+
+    syncSlider('pay-amount', 'pay-amount-slider');
+    syncSlider('pay-hours', 'pay-hours-slider');
+    syncSlider('pay-tax-pct', 'pay-tax-pct-slider');
 
     document.getElementById('paycheck-form').addEventListener('submit', (e) => {
       e.preventDefault();

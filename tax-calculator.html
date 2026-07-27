@@ -103,6 +103,7 @@
               <span class="absolute left-3 top-2.5 text-slate-400 text-sm font-medium">$</span>
               <input type="number" id="tax-income" value="95000" min="0" step="1000" class="w-full pl-8 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-blue-500 focus:outline-none font-semibold text-slate-800" />
             </div>
+            <input type="range" id="tax-income-slider" min="5000" max="500000" step="1000" value="95000" class="w-full mt-2 accent-blue-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
           </div>
 
           <!-- US Specific Controls -->
@@ -140,6 +141,7 @@
               <span class="absolute left-3 top-2.5 text-slate-400 text-sm font-medium">$</span>
               <input type="number" id="tax-deduction" value="0" min="0" step="500" class="w-full pl-8 pr-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-blue-500 focus:outline-none font-semibold text-slate-800" />
             </div>
+            <input type="range" id="tax-deduction-slider" min="0" max="100000" step="500" value="0" class="w-full mt-2 accent-blue-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
           </div>
 
           <button type="submit" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg shadow-xs transition-colors cursor-pointer">
@@ -402,6 +404,24 @@
       document.getElementById(id)?.addEventListener('change', runTaxCalculation);
       document.getElementById(id)?.addEventListener('input', runTaxCalculation);
     });
+
+    // Slider bidirectional sync helper
+    const syncSlider = (inputId, sliderId) => {
+      const input = document.getElementById(inputId);
+      const slider = document.getElementById(sliderId);
+      if (input && slider) {
+        input.addEventListener('input', () => {
+          slider.value = input.value;
+        });
+        slider.addEventListener('input', () => {
+          input.value = slider.value;
+          runTaxCalculation();
+        });
+      }
+    };
+
+    syncSlider('tax-income', 'tax-income-slider');
+    syncSlider('tax-deduction', 'tax-deduction-slider');
 
     window.addEventListener('load', () => {
       initDropdowns();
