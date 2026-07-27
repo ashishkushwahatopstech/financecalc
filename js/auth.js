@@ -2261,12 +2261,21 @@ export function registerCalculationSaver(btnId, toolName, getCalcDataFn) {
 
 // Automatically initialize the global page bookmark button on DOM load
 function initPageBookmarkButton() {
-  const rawPath = window.location.pathname.split('/').pop() || 'index.html';
-  const path = rawPath.toLowerCase();
+  const fullPath = window.location.pathname.toLowerCase();
+  const rawPath = fullPath.split('/').pop() || 'index.html';
   
-  // Excluded pages
-  const excluded = ['index.html', 'profile.html', 'admin.html', 'link-stats.html', ''];
-  if (excluded.includes(path) || path.includes('blog/')) return;
+  // Excluded paths (Profile page, admin pages, blog lists, blog post readers)
+  const isExcluded = 
+    fullPath === '/' ||
+    fullPath.endsWith('/index.html') ||
+    fullPath.includes('/profile') ||
+    fullPath.includes('/admin') ||
+    fullPath.includes('/link-stats') ||
+    fullPath.includes('/blog/') ||
+    fullPath.includes('updates.html') ||
+    rawPath === '';
+
+  if (isExcluded) return;
 
   // Get current page name from document title or H1
   let pageName = document.title.split('–')[0].split('|')[0].trim();
