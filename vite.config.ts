@@ -53,6 +53,7 @@ export default defineConfig(() => {
           json: path.resolve(__dirname, 'json-formatter.html'),
           base64: path.resolve(__dirname, 'base64-converter.html'),
           uuid: path.resolve(__dirname, 'uuid-hash-generator.html'),
+          regex: path.resolve(__dirname, 'regex-tester.html'),
         },
       },
     },

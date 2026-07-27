@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Online Regex Tester — Live Regular Expression Editor & Matcher | FinCalc Tools</title>
+  <meta name="description" content="Test regular expressions in real-time. Features highlight overlays, capture group breakdowns, syntax linter error reports, and standard regex presets." />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/src/index.css" />
+  <style>
+    /* Regex match highlighting style */
+    .match-highlight {
+      background-color: rgba(99, 102, 241, 0.25);
+      border-bottom: 2px solid #6366f1;
+      border-radius: 2px;
+      color: #1e1b4b;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <a href="index.html" class="group flex items-center gap-3 font-extrabold text-slate-900 tracking-tight shrink-0 select-none hover-wiggle">
+        <div class="relative flex items-center justify-center">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-violet-600 to-indigo-800 p-0.5 shadow-md shadow-indigo-600/20 group-hover:shadow-indigo-600/30 group-hover:scale-105 transition-all duration-200">
+            <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-transparent"></div>
+              <svg class="w-5 h-5 text-indigo-400 group-hover:text-indigo-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5 leading-none">
+            <span class="text-xl font-black tracking-tight text-slate-900">Fin<span class="text-indigo-600">Calc</span></span>
+            <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200/80">SUITE</span>
+          </div>
+          <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase mt-1">Smart Financial Tools</span>
+        </div>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-5 text-xs font-semibold text-slate-600">
+        <a href="index.html" class="hover:text-indigo-600 transition-colors">Home</a>
+        <a href="loan-calculator.html" class="hover:text-indigo-600 transition-colors">Loan</a>
+        <a href="emi-calculator.html" class="hover:text-indigo-600 transition-colors">EMI</a>
+        <a href="sip-calculator.html" class="hover:text-indigo-600 transition-colors">SIP</a>
+        <a href="gst-calculator.html" class="hover:text-indigo-600 transition-colors">GST</a>
+        <a href="ppf-fd-rd-calculator.html" class="hover:text-indigo-600 transition-colors">Savings</a>
+        <a href="currency-converter.html" class="hover:text-indigo-600 transition-colors">Currency</a>
+        <a href="tax-calculator.html" class="hover:text-indigo-600 transition-colors">Tax</a>
+        <a href="salary-calculator.html" class="hover:text-indigo-600 transition-colors">Salary</a>
+        <a href="invoice-generator.html" class="hover:text-indigo-600 transition-colors">Invoice</a>
+        <a href="roi-calculator.html" class="hover:text-indigo-600 transition-colors">ROI</a>
+
+        <div class="relative group">
+          <button class="flex items-center gap-1.5 font-bold text-violet-800 bg-violet-100 px-3 py-1.5 rounded-xl border border-violet-400 shadow-2xs hover:bg-violet-200/80 transition-all">
+            <span>Utilities</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <div class="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
+            <a href="regex-tester.html" class="block px-4 py-2 text-xs font-bold text-indigo-600 bg-indigo-50/50">Regex Tester</a>
+            <a href="uuid-hash-generator.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">UUID & Hash Gen</a>
+            <a href="base64-converter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Base64 Converter</a>
+            <a href="json-formatter.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">JSON Formatter</a>
+            <a href="image-compressor.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Image Compressor</a>
+            <a href="pdf-tools.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">PDF Tools</a>
+            <a href="resume-builder.html" class="block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">Resume Builder</a>
+          </div>
+        </div>
+
+        <a id="nav-admin-link" href="admin.html" class="hidden text-amber-700 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
+      </nav>
+
+      <div id="navbar-auth-container" class="flex items-center gap-2"></div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    
+    <!-- Title Section -->
+    <div class="mb-6">
+      <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
+        <a href="index.html" class="hover:text-indigo-600">Home</a> &rsaquo;
+        <span>Regex Tester</span>
+      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Regular Expression Tester</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">Test and debug regular expressions in real-time with capturing groups and match lists.</p>
+    </div>
+
+    <!-- Presets Toolbar -->
+    <div class="mb-6 flex flex-wrap items-center gap-2 bg-white p-3.5 border border-slate-200 rounded-2xl shadow-2xs">
+      <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Presets Library:</span>
+      <button class="btn-preset px-3 py-1 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-800 text-[10px] font-bold rounded-xl transition-all cursor-pointer" data-pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" data-flags="g" data-text="john.doe@company.com or sales@test.org are valid emails. invalid: john@com.">Email Address</button>
+      <button class="btn-preset px-3 py-1 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-800 text-[10px] font-bold rounded-xl transition-all cursor-pointer" data-pattern="\d{4}-\d{2}-\d{2}" data-flags="g" data-text="Today's date is 2026-07-27, tomorrow is 2026-07-28.">YYYY-MM-DD Date</button>
+      <button class="btn-preset px-3 py-1 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-800 text-[10px] font-bold rounded-xl transition-all cursor-pointer" data-pattern="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)" data-flags="g" data-text="Check https://utilitiescalc.pages.dev/ or http://example.com for info.">URL Address</button>
+      <button class="btn-preset px-3 py-1 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-800 text-[10px] font-bold rounded-xl transition-all cursor-pointer" data-pattern="\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b" data-flags="g" data-text="Gateway IP: 192.168.1.1, server IP: 10.0.0.12.">IP Address (IPv4)</button>
+    </div>
+
+    <!-- Status Banner -->
+    <div id="status-banner" class="mb-6 p-4 rounded-xl border flex items-center gap-3 bg-slate-50 border-slate-200 text-slate-650">
+      <span id="status-icon" class="text-xl">💡</span>
+      <div class="text-xs font-semibold">
+        <p id="status-text">Enter pattern parameters to run real-time matches.</p>
+      </div>
+    </div>
+
+    <!-- Interactive Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+      
+      <!-- LHS: Inputs Panel -->
+      <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Regex Input Box -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Regular Expression</span>
+            <span class="text-[10px] text-slate-400 font-bold">JavaScript syntax</span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center gap-3">
+            <div class="relative flex-grow w-full">
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-mono text-xs">/</span>
+              <input type="text" id="regex-pattern" placeholder="Enter regex pattern... (e.g. [0-9]+)" class="w-full pl-6 pr-6 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono text-xs text-indigo-800" />
+              <span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-mono text-xs">/</span>
+            </div>
+            
+            <!-- Flags selector -->
+            <div class="flex items-center gap-2 border border-slate-200 bg-slate-50 px-3 py-2 rounded-xl text-xs font-bold text-slate-700 select-none">
+              <label class="flex items-center gap-1 cursor-pointer" title="Global match">
+                <input type="checkbox" id="flag-g" checked class="w-3.5 h-3.5 text-indigo-600 rounded border-slate-350" />
+                <span>g</span>
+              </label>
+              <label class="flex items-center gap-1 cursor-pointer" title="Case insensitive">
+                <input type="checkbox" id="flag-i" class="w-3.5 h-3.5 text-indigo-600 rounded border-slate-350" />
+                <span>i</span>
+              </label>
+              <label class="flex items-center gap-1 cursor-pointer" title="Multiline">
+                <input type="checkbox" id="flag-m" class="w-3.5 h-3.5 text-indigo-600 rounded border-slate-350" />
+                <span>m</span>
+              </label>
+              <label class="flex items-center gap-1 cursor-pointer" title="Dotall (dot matches newline)">
+                <input type="checkbox" id="flag-s" class="w-3.5 h-3.5 text-indigo-600 rounded border-slate-350" />
+                <span>s</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Text Input and Highlighter -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col min-h-[380px]">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between shrink-0">
+            <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Test Text String</span>
+            <div class="flex p-0.5 bg-slate-100 rounded-lg gap-0.5">
+              <button id="tab-editor" class="px-3 py-1 text-[10px] font-bold rounded-md bg-white text-slate-800 shadow-3xs cursor-pointer">Editor</button>
+              <button id="tab-highlights" class="px-3 py-1 text-[10px] font-semibold rounded-md text-slate-500 hover:text-slate-900 cursor-pointer">Highlight View</button>
+            </div>
+          </div>
+
+          <!-- Plain Input Area -->
+          <div id="editor-container" class="flex-grow relative">
+            <textarea id="test-text-input" placeholder="Type test text strings here..." class="w-full h-full min-h-[300px] p-4 font-mono text-xs text-slate-800 bg-slate-50/50 border-0 focus:ring-0 focus:outline-none resize-none leading-relaxed"></textarea>
+          </div>
+
+          <!-- Colored Render Area -->
+          <div id="highlight-container" class="hidden flex-grow p-4 min-h-[300px] overflow-auto bg-slate-950 rounded-b-2xl font-mono text-xs leading-relaxed text-slate-250 select-text whitespace-pre-wrap break-all"></div>
+        </div>
+
+      </div>
+
+      <!-- RHS: Matches Panel -->
+      <div class="lg:col-span-1 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col min-h-[400px]">
+        <div class="p-4 border-b border-slate-100 flex items-center justify-between shrink-0">
+          <span class="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Match Captures</span>
+          <span id="match-counter" class="px-2 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-750 text-[10px] font-extrabold rounded-md">0 matches</span>
+        </div>
+        <div class="flex-grow overflow-auto p-4 space-y-3">
+          <div id="captures-list" class="space-y-2 text-xs font-semibold text-slate-650">
+            <p class="text-[11px] text-slate-400 italic">Matches and capture groups will render here automatically...</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SEO Content Section -->
+    <article class="max-w-4xl mx-auto mt-12 bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
+      <h2 class="text-lg font-extrabold text-slate-900">Why Use Our Client-Side Regex Tester?</h2>
+      <p>
+        Regular Expressions (Regex) are core patterns used by developers to validate inputs, parse text dumps, or extract substrings from database streams. Writing regex is notoriously error-prone, which is why testing your patterns against sample strings in real-time is crucial.
+      </p>
+      <p>
+        Our <strong>Regex Tester</strong> computes matches instantly on every key entry. You can view matches highlighted inline, or check capturing groups separately in the sidebar. All computations are run locally using the standard browser `RegExp` execution thread, keeping your logs and sensitive strings secure from external servers.
+      </p>
+    </article>
+
+    <!-- Promo Blog Links -->
+    <div id="promo-ads" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-10"></div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-16 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <div class="flex items-center gap-2 font-bold text-white text-sm mb-3">
+            <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-900 font-bold">
+              <svg class="w-4 h-4 text-slate-900 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </div>
+            FinCalc Tools
+          </div>
+          <p class="text-slate-400 text-xs leading-relaxed">
+            Free professional online financial calculators and client-side developer utilities.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Calculators</h4>
+          <ul class="space-y-2">
+            <li><a href="loan-calculator.html" class="hover:text-emerald-400 transition-colors">Loan Calculator</a></li>
+            <li><a href="currency-converter.html" class="hover:text-emerald-400 transition-colors">Currency Converter</a></li>
+            <li><a href="tax-calculator.html" class="hover:text-emerald-400 transition-colors">Tax Calculator</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Quick Utilities</h4>
+          <ul class="space-y-2">
+            <li><a href="regex-tester.html" class="hover:text-emerald-400 transition-colors">Regex Tester</a></li>
+            <li><a href="uuid-hash-generator.html" class="hover:text-emerald-400 transition-colors">UUID & Hash Gen</a></li>
+            <li><a href="base64-converter.html" class="hover:text-emerald-400 transition-colors">Base64 Converter</a></li>
+            <li><a href="json-formatter.html" class="hover:text-emerald-400 transition-colors">JSON Formatter</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-200 mb-3">Account</h4>
+          <ul class="space-y-2">
+            <li><a href="profile.html" class="hover:text-emerald-400 transition-colors">User Profile</a></li>
+            <li class="footer-admin-link hidden"><a href="admin.html" class="hover:text-emerald-400 transition-colors">Admin Dashboard</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="pt-6 border-t border-slate-800 text-center text-slate-500 text-[11px] leading-relaxed max-w-4xl mx-auto">
+        <p class="font-semibold text-slate-400 mb-1">Financial & Legal Disclaimer</p>
+        <p>
+          These tools provide estimates for informational purposes only and do not constitute financial, legal, or tax advice.
+        </p>
+        <p class="mt-4 text-slate-600">
+          © <script>document.write(new Date().getFullYear())</script> FinCalc Tools. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/auth.js"></script>
+  <script type="module" src="/js/blog-promo.js"></script>
+
+  <script type="module">
+    import { trackToolUsage } from '/js/analytics.js';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Track usage
+      trackToolUsage('regex-tester');
+
+      const patternInput = document.getElementById('regex-pattern');
+      const testTextInput = document.getElementById('test-text-input');
+      const highlightContainer = document.getElementById('highlight-container');
+      const capturesList = document.getElementById('captures-list');
+      const matchCounter = document.getElementById('match-counter');
+      
+      const banner = document.getElementById('status-banner');
+      const bannerIcon = document.getElementById('status-icon');
+      const bannerText = document.getElementById('status-text');
+
+      const flagG = document.getElementById('flag-g');
+      const flagI = document.getElementById('flag-i');
+      const flagM = document.getElementById('flag-m');
+      const flagS = document.getElementById('flag-s');
+
+      const tabEditor = document.getElementById('tab-editor');
+      const tabHighlights = document.getElementById('tab-highlights');
+      const editorContainer = document.getElementById('editor-container');
+
+      // Preset triggers
+      document.querySelectorAll('.btn-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+          patternInput.value = btn.getAttribute('data-pattern');
+          testTextInput.value = btn.getAttribute('data-text');
+          
+          const flags = btn.getAttribute('data-flags') || '';
+          flagG.checked = flags.includes('g');
+          flagI.checked = flags.includes('i');
+          flagM.checked = flags.includes('m');
+          flagS.checked = flags.includes('s');
+
+          runRegexTest();
+        });
+      });
+
+      // Tabs triggers
+      tabEditor.addEventListener('click', () => switchTab('editor'));
+      tabHighlights.addEventListener('click', () => switchTab('highlights'));
+
+      function switchTab(tab) {
+        if (tab === 'editor') {
+          tabEditor.className = 'px-3 py-1 text-[10px] font-bold rounded-md bg-white text-slate-800 shadow-3xs cursor-pointer';
+          tabHighlights.className = 'px-3 py-1 text-[10px] font-semibold rounded-md text-slate-500 hover:text-slate-900 cursor-pointer';
+          editorContainer.classList.remove('hidden');
+          highlightContainer.classList.add('hidden');
+        } else {
+          tabHighlights.className = 'px-3 py-1 text-[10px] font-bold rounded-md bg-white text-slate-800 shadow-3xs cursor-pointer';
+          tabEditor.className = 'px-3 py-1 text-[10px] font-semibold rounded-md text-slate-500 hover:text-slate-900 cursor-pointer';
+          editorContainer.classList.add('hidden');
+          highlightContainer.classList.remove('hidden');
+        }
+      }
+
+      // Input changes
+      patternInput.addEventListener('input', runRegexTest);
+      testTextInput.addEventListener('input', runRegexTest);
+      flagG.addEventListener('change', runRegexTest);
+      flagI.addEventListener('change', runRegexTest);
+      flagM.addEventListener('change', runRegexTest);
+      flagS.addEventListener('change', runRegexTest);
+
+      function updateBanner(status, text) {
+        banner.className = 'mb-6 p-4 rounded-xl border flex items-center gap-3 transition-all duration-200';
+        if (status === 'success') {
+          banner.classList.add('bg-emerald-50', 'border-emerald-200', 'text-emerald-800');
+          bannerIcon.textContent = '✅';
+        } else if (status === 'error') {
+          banner.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-800');
+          bannerIcon.textContent = '❌';
+        } else {
+          banner.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-650');
+          bannerIcon.textContent = '💡';
+        }
+        bannerText.textContent = text;
+      }
+
+      function escapeHtml(text) {
+        return text.replace(/&/g, '&amp;')
+                   .replace(/</g, '&lt;')
+                   .replace(/>/g, '&gt;')
+                   .replace(/"/g, '&quot;')
+                   .replace(/'/g, '&#039;');
+      }
+
+      function runRegexTest() {
+        const pattern = patternInput.value;
+        const text = testTextInput.value;
+
+        if (!pattern) {
+          highlightContainer.innerHTML = escapeHtml(text);
+          capturesList.innerHTML = '<p class="text-[11px] text-slate-400 italic">No regular expression pattern entered.</p>';
+          matchCounter.textContent = '0 matches';
+          updateBanner('neutral', 'Enter a regular expression pattern to test.');
+          return;
+        }
+
+        // Build flags
+        let flags = '';
+        if (flagG.checked) flags += 'g';
+        if (flagI.checked) flags += 'i';
+        if (flagM.checked) flags += 'm';
+        if (flagS.checked) flags += 's';
+
+        try {
+          const regex = new RegExp(pattern, flags);
+          updateBanner('success', `Valid expression: /${pattern}/${flags}`);
+
+          // Extract captures & matches
+          let matches = [];
+          
+          if (flags.includes('g')) {
+            let match;
+            let safetyVal = 0;
+            // Exec loop for global regex
+            while ((match = regex.exec(text)) !== null) {
+              matches.push(match);
+              if (match.index === regex.lastIndex) {
+                regex.lastIndex++; // Prevent infinite loop for zero-width matches
+              }
+              safetyVal++;
+              if (safetyVal > 2000) break; // Avoid freezing browser
+            }
+          } else {
+            const match = regex.exec(text);
+            if (match) matches.push(match);
+          }
+
+          matchCounter.textContent = `${matches.length} ${matches.length === 1 ? 'match' : 'matches'}`;
+
+          // Highlight render
+          if (matches.length > 0) {
+            let highlightedHtml = '';
+            let lastIndex = 0;
+
+            // Highlight loop
+            matches.forEach(m => {
+              const startIdx = m.index;
+              const endIdx = startIdx + m[0].length;
+              
+              highlightedHtml += escapeHtml(text.substring(lastIndex, startIdx));
+              highlightedHtml += `<mark class="match-highlight">${escapeHtml(m[0])}</mark>`;
+              lastIndex = endIdx;
+            });
+
+            highlightedHtml += escapeHtml(text.substring(lastIndex));
+            highlightContainer.innerHTML = highlightedHtml;
+
+            // Render Captures list
+            let listHtml = '';
+            matches.forEach((m, mIdx) => {
+              listHtml += `
+                <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-extrabold text-indigo-700">Match #${mIdx + 1}</span>
+                    <span class="text-[9px] text-slate-450 font-bold">Pos: ${m.index} - ${m.index + m[0].length}</span>
+                  </div>
+                  <div class="font-mono text-xs text-slate-800 p-1.5 bg-white border border-slate-100 rounded break-all select-all">
+                    "${m[0]}"
+                  </div>
+              `;
+
+              // Show capture groups if any
+              if (m.length > 1) {
+                listHtml += `<div class="pt-1.5 space-y-1 border-t border-slate-100 mt-1.5">`;
+                for (let gIdx = 1; gIdx < m.length; gIdx++) {
+                  listHtml += `
+                    <div class="flex items-start gap-1.5 text-[10px] text-slate-600 font-semibold leading-relaxed">
+                      <span class="text-indigo-500 font-extrabold">Group ${gIdx}:</span>
+                      <span class="font-mono bg-indigo-50 px-1 border border-indigo-100 rounded break-all select-all">${m[gIdx] !== undefined ? `"${m[gIdx]}"` : 'undefined'}</span>
+                    </div>
+                  `;
+                }
+                listHtml += `</div>`;
+              }
+
+              listHtml += `</div>`;
+            });
+            capturesList.innerHTML = listHtml;
+
+          } else {
+            highlightContainer.innerHTML = escapeHtml(text);
+            capturesList.innerHTML = '<p class="text-[11px] text-slate-400 italic">No matches found in the test text.</p>';
+          }
+
+        } catch (err) {
+          highlightContainer.innerHTML = escapeHtml(text);
+          capturesList.innerHTML = `<p class="text-[11px] text-rose-500 font-bold">Regex Error: ${err.message}</p>`;
+          matchCounter.textContent = '0 matches';
+          updateBanner('error', `Invalid Expression: ${err.message}`);
+        }
+      }
+
+      // Initialize with email template
+      patternInput.value = '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$';
+      testTextInput.value = 'john.doe@company.com or sales@test.org are valid emails. invalid: john@com.';
+      flagG.checked = true;
+      runRegexTest();
+    });
+  </script>
+</body>
+</html>
