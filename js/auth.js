@@ -1072,7 +1072,20 @@ function updateNavbarUI(user) {
           </a>
         </div>
 
-        <!-- 1. Loans & Savings -->
+        <!-- 1. Productivity -->
+        <div class="overflow-hidden">
+          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-2 py-2.5 text-xs font-bold text-slate-850 hover:bg-slate-100/60 rounded-xl transition-colors cursor-pointer" data-target="drawer-productivity">
+            <span class="flex items-center gap-2.5">
+              <span class="text-sm">⚡</span> Productivity
+            </span>
+            <svg class="toggle-arrow w-3.5 h-3.5 text-slate-400 transition-transform duration-200" style="transform: rotate(90deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+          <div id="drawer-productivity" class="pl-3 pr-1 py-1 space-y-0.5 border-l border-slate-200/80 ml-4">
+            ${buildGroupHtml(productivityGroup)}
+          </div>
+        </div>
+
+        <!-- 2. Loans & Savings -->
         <div class="overflow-hidden">
           <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-2 py-2.5 text-xs font-bold text-slate-850 hover:bg-slate-100/60 rounded-xl transition-colors cursor-pointer" data-target="drawer-loans-savings">
             <span class="flex items-center gap-2.5">
@@ -1082,19 +1095,6 @@ function updateNavbarUI(user) {
           </button>
           <div id="drawer-loans-savings" class="pl-3 pr-1 py-1 space-y-0.5 border-l border-slate-200/80 ml-4">
             ${buildGroupHtml(loansSavingsGroup)}
-          </div>
-        </div>
-
-        <!-- 2. Tax & Salary -->
-        <div class="overflow-hidden">
-          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-2 py-2.5 text-xs font-bold text-slate-850 hover:bg-slate-100/60 rounded-xl transition-colors cursor-pointer" data-target="drawer-tax-salary">
-            <span class="flex items-center gap-2.5">
-              <span class="text-sm">💸</span> Tax & Salary
-            </span>
-            <svg class="toggle-arrow w-3.5 h-3.5 text-slate-400 transition-transform duration-200" style="transform: rotate(90deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-          </button>
-          <div id="drawer-tax-salary" class="pl-3 pr-1 py-1 space-y-0.5 border-l border-slate-200/80 ml-4">
-            ${buildGroupHtml(taxSalaryGroup)}
           </div>
         </div>
 
@@ -1124,16 +1124,16 @@ function updateNavbarUI(user) {
           </div>
         </div>
 
-        <!-- 5. Productivity -->
+        <!-- 5. Tax & Salary -->
         <div class="overflow-hidden">
-          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-2 py-2.5 text-xs font-bold text-slate-850 hover:bg-slate-100/60 rounded-xl transition-colors cursor-pointer" data-target="drawer-productivity">
+          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-2 py-2.5 text-xs font-bold text-slate-850 hover:bg-slate-100/60 rounded-xl transition-colors cursor-pointer" data-target="drawer-tax-salary">
             <span class="flex items-center gap-2.5">
-              <span class="text-sm">⚡</span> Productivity
+              <span class="text-sm">💸</span> Tax & Salary
             </span>
             <svg class="toggle-arrow w-3.5 h-3.5 text-slate-400 transition-transform duration-200" style="transform: rotate(90deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
           </button>
-          <div id="drawer-productivity" class="pl-3 pr-1 py-1 space-y-0.5 border-l border-slate-200/80 ml-4">
-            ${buildGroupHtml(productivityGroup)}
+          <div id="drawer-tax-salary" class="pl-3 pr-1 py-1 space-y-0.5 border-l border-slate-200/80 ml-4">
+            ${buildGroupHtml(taxSalaryGroup)}
           </div>
         </div>
       </div>
