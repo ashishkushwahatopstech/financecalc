@@ -1651,8 +1651,9 @@ async function loadShortenerStats(uid, token = '') {
           ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-100">${expiryDate} (Expired)</span>`
           : `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-50 text-slate-600 border border-slate-100">${expiryDate}</span>`;
 
-        const safeOriginalUrl = (link.original_url.startsWith('http://') || link.original_url.startsWith('https://'))
-          ? link.original_url
+        const originalUrlStr = link.original_url || '';
+        const safeOriginalUrl = (originalUrlStr.startsWith('http://') || originalUrlStr.startsWith('https://'))
+          ? originalUrlStr
           : '#';
 
         const isActive = link.active !== 0;
