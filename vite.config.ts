@@ -56,6 +56,7 @@ export default defineConfig(() => {
           regex: path.resolve(__dirname, 'regex-tester.html'),
           color: path.resolve(__dirname, 'color-converter.html'),
           markdown: path.resolve(__dirname, 'markdown-editor.html'),
+          youtube: path.resolve(__dirname, 'youtube-tools.html'),
         },
       },
     },
