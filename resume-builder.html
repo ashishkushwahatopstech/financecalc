@@ -9,6 +9,21 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="/src/index.css" />
   <style>
+    /* Custom thin scrollbar for editor panel */
+    .scrollbar-thin::-webkit-scrollbar {
+      width: 4px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 2px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
     /* Print Styles to extract PDF exactly */
     @media print {
       @page {
@@ -22,7 +37,7 @@
       body * {
         visibility: hidden;
       }
-      header, footer, #editor-panel, #promo-ads, #page-header-title {
+      header, footer, #editor-panel, #right-settings-panel, #promo-ads, #page-header-title {
         display: none !important;
       }
       #resume-preview-wrapper, #resume-preview-wrapper * {
@@ -75,6 +90,8 @@
         <a href="loan-calculator.html" class="hover:text-indigo-600 transition-colors">Loan</a>
         <a href="emi-calculator.html" class="hover:text-indigo-600 transition-colors">EMI</a>
         <a href="sip-calculator.html" class="hover:text-indigo-600 transition-colors">SIP</a>
+        <a href="gst-calculator.html" class="hover:text-indigo-600 transition-colors">GST</a>
+        <a href="ppf-fd-rd-calculator.html" class="hover:text-indigo-600 transition-colors">Savings</a>
         <a href="currency-converter.html" class="hover:text-indigo-600 transition-colors">Currency</a>
         <a href="tax-calculator.html" class="hover:text-indigo-600 transition-colors">Tax</a>
         <a href="salary-calculator.html" class="hover:text-indigo-600 transition-colors">Salary</a>
@@ -112,37 +129,20 @@
         <a href="index.html" class="hover:text-indigo-600">Home</a> &rsaquo;
         <span>Resume Builder</span>
       </div>
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Professional Resume Builder</h1>
-          <p class="text-xs sm:text-sm text-slate-500 mt-1">Create, style, and download elegant resumes. Data is processed locally in the browser.</p>
-        </div>
-        
-        <!-- Controls Top -->
-        <div class="flex items-center gap-3">
-          <select id="resume-template" class="px-3.5 py-2 text-xs font-bold bg-white border border-slate-200 rounded-xl focus:outline-none cursor-pointer">
-            <option value="modern" selected>Modern Indigo Layout</option>
-            <option value="professional">Professional Serif Layout</option>
-            <option value="minimalist">Minimalist Sans Layout</option>
-          </select>
-          <button id="btn-print" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            <span>Download PDF</span>
-          </button>
-        </div>
-      </div>
+      <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900">Professional Resume Builder</h1>
+      <p class="text-xs sm:text-sm text-slate-500 mt-1">Create, style, and download elegant resumes. Data is processed locally in the browser.</p>
     </div>
 
-    <!-- Workspace Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <!-- Workspace Grid: Three Columns Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
-      <!-- Editor Panel -->
-      <div id="editor-panel" class="lg:col-span-5 space-y-6">
+      <!-- 1. LEFT COLUMN: Details Editor Panel (col-span-4) -->
+      <div id="editor-panel" class="lg:col-span-4 space-y-6 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto scrollbar-thin pr-1 pb-8">
         
         <!-- Personal Info -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
           <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">Personal Details</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 gap-3">
             <div>
               <label class="block text-[10px] font-bold text-slate-500 uppercase">Full Name</label>
               <input type="text" id="in-name" value="Alex Morgan" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
@@ -168,21 +168,9 @@
               <input type="text" id="in-link" value="linkedin.com/in/alexmorgan" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
             </div>
           </div>
-          <div class="flex items-center gap-2 py-1">
-            <input type="checkbox" id="in-clickable" checked class="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4 cursor-pointer" />
-            <label for="in-clickable" class="text-xs font-semibold text-slate-700 cursor-pointer select-none">Make contact links & project URLs clickable (Hyperlinks)</label>
-          </div>
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase">Professional Summary</label>
             <textarea id="in-summary" rows="3" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800">Results-driven software engineer with 5+ years of experience building scalable cloud-native architectures, designing RESTful APIs, and implementing front-end frameworks.</textarea>
-          </div>
-        </div>
-
-        <!-- Section Arrangement -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-          <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">Section Arrangement Sequence</h3>
-          <div id="section-order-list" class="space-y-2">
-            <!-- Populated via JS -->
           </div>
         </div>
 
@@ -192,9 +180,8 @@
             <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Work Experience</h3>
             <button id="add-exp" type="button" class="px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-bold rounded-lg hover:bg-indigo-150 transition-colors cursor-pointer">+ Add Work</button>
           </div>
-          
           <div id="exp-fields" class="space-y-4">
-            <!-- Dynamically populated experience editor rows -->
+            <!-- Dynamic rows -->
           </div>
         </div>
 
@@ -204,9 +191,8 @@
             <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Projects</h3>
             <button id="add-proj" type="button" class="px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-bold rounded-lg hover:bg-indigo-150 transition-colors cursor-pointer">+ Add Project</button>
           </div>
-          
           <div id="proj-fields" class="space-y-4">
-            <!-- Dynamically populated projects rows -->
+            <!-- Dynamic rows -->
           </div>
         </div>
 
@@ -216,9 +202,8 @@
             <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Education</h3>
             <button id="add-edu" type="button" class="px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-bold rounded-lg hover:bg-indigo-150 transition-colors cursor-pointer">+ Add Edu</button>
           </div>
-          
           <div id="edu-fields" class="space-y-4">
-            <!-- Dynamically populated education editor rows -->
+            <!-- Dynamic rows -->
           </div>
         </div>
 
@@ -228,19 +213,59 @@
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase">Skills (Comma-separated)</label>
             <input type="text" id="in-skills" value="JavaScript, TypeScript, React, Node.js, Python, AWS, Docker, Git" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
-            <p class="text-[10px] text-slate-400 mt-1">Input skills separated by commas to format them nicely.</p>
+            <p class="text-[10px] text-slate-400 mt-1">Input skills separated by commas.</p>
           </div>
         </div>
 
       </div>
 
-      <!-- Preview Panel -->
-      <div class="lg:col-span-7">
-        <div id="resume-preview-wrapper" class="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 min-h-[840px] max-w-[800px] mx-auto overflow-hidden">
+      <!-- 2. MIDDLE COLUMN: Resume Preview Panel (col-span-5) -->
+      <div class="lg:col-span-5 flex justify-center">
+        <div id="resume-preview-wrapper" class="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 min-h-[820px] w-full max-w-[560px] lg:max-w-full overflow-hidden">
           <div id="resume-preview" class="h-full">
-            <!-- Populated via Javascript based on template selection -->
+            <!-- Dynamically populated -->
           </div>
         </div>
+      </div>
+
+      <!-- 3. RIGHT COLUMN: Settings & Sequencer (col-span-3) -->
+      <div id="right-settings-panel" class="lg:col-span-3 space-y-6 lg:sticky lg:top-20">
+        
+        <!-- Controls Card -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-5">
+          <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">Actions & Layouts</h3>
+          
+          <!-- Template Selection -->
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Select Template</label>
+            <select id="resume-template" class="w-full px-3.5 py-2 text-xs font-bold bg-slate-50 border border-slate-200 rounded-xl focus:outline-none cursor-pointer">
+              <option value="modern" selected>Modern Indigo Layout</option>
+              <option value="professional">Professional Serif Layout</option>
+              <option value="minimalist">Minimalist Sans Layout</option>
+            </select>
+          </div>
+
+          <!-- Hyperlinks Option -->
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="in-clickable" checked class="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4 cursor-pointer" />
+            <label for="in-clickable" class="text-xs font-semibold text-slate-700 cursor-pointer select-none">Clickable PDF Hyperlinks</label>
+          </div>
+
+          <!-- Download Action -->
+          <button id="btn-print" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <span>Download Resume PDF</span>
+          </button>
+        </div>
+
+        <!-- Section Arrangement -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">Section Sequence</h3>
+          <div id="section-order-list" class="space-y-2">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -567,7 +592,7 @@
         summary: () => `
           <div class="space-y-2">
             <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest pb-1 border-b border-slate-800">Professional Summary</h3>
-            <p class="text-[11px] text-slate-300 leading-relaxed">${summary}</p>
+            <p class="text-[11px] text-slate-350 leading-relaxed">${summary}</p>
           </div>`,
         skills: () => `
           <div class="space-y-2">
@@ -584,7 +609,7 @@
                 <div class="space-y-1">
                   <div class="flex items-center justify-between text-xs">
                     <span class="font-bold text-white">${exp.role}</span>
-                    <span class="text-[10px] text-slate-400">${exp.tenure}</span>
+                    <span class="text-[10px] text-slate-450">${exp.tenure}</span>
                   </div>
                   <p class="text-[10px] text-indigo-300 font-semibold">${exp.company}</p>
                   <p class="text-[10.5px] text-slate-350 leading-relaxed">${exp.desc}</p>
@@ -600,7 +625,7 @@
                 <div class="text-[11px]">
                   <div class="flex items-center justify-between font-bold text-white">
                     <span>${edu.degree}</span>
-                    <span class="text-[10px] text-slate-400">${edu.grad}</span>
+                    <span class="text-[10px] text-slate-450">${edu.grad}</span>
                   </div>
                   <p class="text-[10px] text-slate-450 mt-0.5">${edu.university}</p>
                 </div>
@@ -621,7 +646,7 @@
                   <div class="space-y-1">
                     <div class="flex items-center justify-between text-xs">
                       <span class="font-bold text-white">${projNameHtml}</span>
-                      <span class="text-[10px] text-slate-400">${proj.tenure}</span>
+                      <span class="text-[10px] text-slate-450">${proj.tenure}</span>
                     </div>
                     <p class="text-[10px] text-indigo-300 font-semibold">${proj.tech}</p>
                     <p class="text-[10.5px] text-slate-350 leading-relaxed">${proj.desc}</p>
@@ -651,7 +676,7 @@
               ${experiences.map(exp => `
                 <div class="space-y-1">
                   <div class="flex items-center justify-between text-[11.5px] font-bold">
-                    <span>${exp.role} <span class="font-normal text-slate-600">at ${exp.company}</span></span>
+                    <span>${exp.role} <span class="font-normal text-slate-650">at ${exp.company}</span></span>
                     <span class="text-[10px] font-medium text-slate-500">${exp.tenure}</span>
                   </div>
                   <p class="text-[10.5px] text-slate-700 leading-relaxed font-sans">${exp.desc}</p>
@@ -681,7 +706,7 @@
               ${projects.map(proj => {
                 const targetUrl = proj.link.startsWith('http') ? proj.link : 'https://' + proj.link;
                 const projNameHtml = makeClickable && proj.link 
-                  ? `<a href="${targetUrl}" target="_blank" class="text-indigo-650 hover:underline print:text-slate-800 font-bold">${proj.name}</a>` 
+                  ? `<a href="${targetUrl}" target="_blank" class="text-indigo-655 hover:underline print:text-slate-800 font-bold">${proj.name}</a>` 
                   : proj.name;
                 const linkLabel = proj.link ? `<p class="text-[9.5px] text-slate-500 font-sans truncate">${proj.link}</p>` : '';
                 return `
@@ -720,7 +745,7 @@
                     <span>${exp.role} &bull; ${exp.company}</span>
                     <span class="text-[9.5px] font-medium text-slate-400">${exp.tenure}</span>
                   </div>
-                  <p class="text-[10.5px] text-slate-600 leading-relaxed">${exp.desc}</p>
+                  <p class="text-[10.5px] text-slate-655 leading-relaxed">${exp.desc}</p>
                 </div>
               `).join('')}
             </div>
@@ -820,7 +845,7 @@
             <!-- Header Centered -->
             <div class="text-center space-y-2">
               <h2 class="text-2xl font-bold tracking-wide text-slate-900">${name}</h2>
-              <p class="text-xs italic font-medium text-slate-600">${title}</p>
+              <p class="text-xs italic font-medium text-slate-650">${title}</p>
               <p class="text-[10px] text-slate-500 space-x-2">
                 <span>${emailHtml}</span> &bull; 
                 <span>${phoneHtml}</span> &bull; 
