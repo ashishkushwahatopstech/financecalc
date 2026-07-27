@@ -430,22 +430,58 @@
               <span id="size-val" class="text-xs font-bold text-slate-600 w-8">48pt</span>
             </div>
           </div>
+
+          <!-- Live Watermark Preview -->
+          <div class="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+            <label class="block text-xs font-bold text-slate-700 mb-2">Live Watermark Preview</label>
+            <div class="relative w-full h-44 bg-white border border-slate-300 rounded shadow-xs overflow-hidden flex items-center justify-center select-none">
+              <!-- Mock content lines -->
+              <div class="absolute inset-x-6 top-6 space-y-2 opacity-10">
+                <div class="h-1.5 bg-slate-400 rounded w-5/6"></div>
+                <div class="h-1.5 bg-slate-400 rounded w-full"></div>
+                <div class="h-1.5 bg-slate-400 rounded w-4/6"></div>
+                <div class="h-1.5 bg-slate-400 rounded w-5/6"></div>
+                <div class="h-1.5 bg-slate-400 rounded w-3/6"></div>
+                <div class="h-1.5 bg-slate-400 rounded w-5/6"></div>
+                <div class="h-1.5 bg-slate-400 rounded w-full"></div>
+              </div>
+              <div id="preview-watermark-text" class="font-extrabold font-sans text-indigo-600/80 transition-all pointer-events-none break-all text-center px-4 z-10" style="transform: rotate(-45deg); opacity: 0.3; font-size: 24px;">CONFIDENTIAL</div>
+            </div>
+          </div>
         `;
 
         // Listeners for opacity, angle, size sliders
+        const textInput = document.getElementById('watermark-text');
         const opacitySlider = document.getElementById('watermark-opacity');
         const angleSlider = document.getElementById('watermark-angle');
         const sizeSlider = document.getElementById('watermark-size');
+        const previewText = document.getElementById('preview-watermark-text');
+
+        function updatePreview() {
+          previewText.textContent = textInput.value || ' ';
+          previewText.style.opacity = opacitySlider.value;
+          previewText.style.transform = `rotate(${angleSlider.value}deg)`;
+          // Scale size down slightly so it fits inside the preview frame elegantly
+          previewText.style.fontSize = `${Math.round(sizeSlider.value * 0.6)}px`;
+        }
+
+        textInput.addEventListener('input', updatePreview);
 
         opacitySlider.addEventListener('input', (e) => {
           document.getElementById('opacity-val').textContent = `${Math.round(e.target.value * 100)}%`;
+          updatePreview();
         });
         angleSlider.addEventListener('input', (e) => {
           document.getElementById('angle-val').textContent = `${e.target.value}°`;
+          updatePreview();
         });
         sizeSlider.addEventListener('input', (e) => {
           document.getElementById('size-val').textContent = `${e.target.value}pt`;
+          updatePreview();
         });
+
+        // Run initial load
+        updatePreview();
       }
     }
 
