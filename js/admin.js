@@ -910,6 +910,11 @@ async function setupBlogPromoManager() {
     const settings = await getBlogPromoSettings();
     if (elCount) elCount.value = settings.adCount || 3;
 
+    // Load Ads Mode radio button selection
+    const adsModeVal = settings.adsMode || 'self';
+    const adsModeRadio = document.querySelector(`input[name="ctrl-ads-mode"][value="${adsModeVal}"]`);
+    if (adsModeRadio) adsModeRadio.checked = true;
+
     if (checkboxes && checkboxes.length > 0) {
       const enabled = settings.enabledPages || ['homepage'];
       checkboxes.forEach(cb => {
@@ -931,8 +936,11 @@ async function setupBlogPromoManager() {
       }
     });
 
+    const adsModeRadio = document.querySelector('input[name="ctrl-ads-mode"]:checked');
+    const adsMode = adsModeRadio ? adsModeRadio.value : 'self';
+
     try {
-      await saveBlogPromoSettings({ adCount, enabledPages });
+      await saveBlogPromoSettings({ adCount, enabledPages, adsMode });
 
       if (elToast) {
         elToast.classList.remove('hidden');

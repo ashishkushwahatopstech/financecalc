@@ -13,7 +13,8 @@ const ONE_HOUR_MS = 60 * 60 * 1000;
  */
 export const DEFAULT_PROMO_SETTINGS = {
   adCount: 3,
-  enabledPages: ['homepage']
+  enabledPages: ['homepage'],
+  adsMode: 'self'
 };
 
 /**
@@ -67,7 +68,8 @@ export async function getBlogPromoSettings() {
         const data = docSnap.data();
         const settings = {
           adCount: typeof data.adCount === 'number' ? Math.max(1, Math.min(10, data.adCount)) : 3,
-          enabledPages: Array.isArray(data.enabledPages) ? data.enabledPages : ['homepage']
+          enabledPages: Array.isArray(data.enabledPages) ? data.enabledPages : ['homepage'],
+          adsMode: typeof data.adsMode === 'string' ? data.adsMode : 'self'
         };
         localStorage.setItem(CACHE_KEY_SETTINGS, JSON.stringify(settings));
         return settings;
@@ -84,7 +86,8 @@ export async function getBlogPromoSettings() {
       const parsed = JSON.parse(raw);
       return {
         adCount: typeof parsed.adCount === 'number' ? Math.max(1, Math.min(10, parsed.adCount)) : 3,
-        enabledPages: Array.isArray(parsed.enabledPages) ? parsed.enabledPages : ['homepage']
+        enabledPages: Array.isArray(parsed.enabledPages) ? parsed.enabledPages : ['homepage'],
+        adsMode: typeof parsed.adsMode === 'string' ? parsed.adsMode : 'self'
       };
     }
   } catch (e) {
@@ -101,6 +104,7 @@ export async function saveBlogPromoSettings(settings) {
   const cleanSettings = {
     adCount: Math.max(1, Math.min(10, Number(settings.adCount) || 3)),
     enabledPages: Array.isArray(settings.enabledPages) ? settings.enabledPages : ['homepage'],
+    adsMode: settings.adsMode || 'self',
     updatedAt: new Date().toISOString()
   };
 

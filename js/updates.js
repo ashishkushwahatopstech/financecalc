@@ -6,6 +6,7 @@
 import { fetchPublishedBlogPosts, escapeHTML } from './content-manager.js';
 import { trackDailyActivity } from './analytics.js';
 import { saveItemToCollection, removeItemFromCollection, getSavedCollections } from './auth.js';
+import { getBlogPromoSettings } from './blog-promo.js';
 
 // Local Toast Utility
 function showToast(message, type = 'success') {
@@ -125,7 +126,7 @@ async function initUpdatesPage() {
   const modalShareButtons = document.getElementById('modal-share-buttons');
   const closeBtn = document.getElementById('close-post-modal-btn');
 
-  const openModal = (post) => {
+  const openModal = async (post) => {
     if (!modal) return;
     const formattedDate = post.createdAt && post.createdAt.seconds 
       ? new Date(post.createdAt.seconds * 1000).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
@@ -144,34 +145,133 @@ async function initUpdatesPage() {
 
     const isMonetized = post.monetized === true && post.demonetizedByAdmin !== true;
     if (isMonetized) {
-      // 1. Top horizontal ad
-      const topAd = document.createElement('div');
-      topAd.id = 'modal-top-ad';
-      topAd.className = 'w-full py-3.5 bg-amber-50/50 border border-dashed border-amber-300 rounded-2xl text-center text-[10px] text-amber-800 font-extrabold tracking-wider uppercase mb-6 flex items-center justify-center gap-1.5 shadow-2xs select-none font-sans';
-      topAd.innerHTML = `⭐ ADVERTISEMENT: COMPARE TOP LENDERS & SAVE ON MORTGAGES ⭐`;
-      modalBody.parentNode.insertBefore(topAd, modalBody);
+      try {
+        const settings = await getBlogPromoSettings();
+        const adsMode = settings.adsMode || 'self';
 
-      // 2. Bottom horizontal ad
-      const bottomAd = document.createElement('div');
-      bottomAd.id = 'modal-bottom-ad';
-      bottomAd.className = 'w-full py-3.5 bg-amber-50/50 border border-dashed border-amber-300 rounded-2xl text-center text-[10px] text-amber-800 font-extrabold tracking-wider uppercase mt-6 flex items-center justify-center gap-1.5 shadow-2xs select-none font-sans';
-      bottomAd.innerHTML = `⭐ ADVERTISEMENT: EXPLORE HIGH-YIELD INVESTMENT ACCOUNT OFFERS ⭐`;
-      modalBody.parentNode.appendChild(bottomAd);
+        if (adsMode === 'self') {
+          // Fetch real posts from aktechstudio feed to act as ads
+          const res = await fetch('/api/sponsored-posts');
+          if (res.ok) {
+            const data = await res.json();
+            const sponsored = data.posts || [];
+            if (sponsored.length > 0) {
+              const ad1 = sponsored[0];
+              const ad2 = sponsored[1] || ad1;
+              const ad3 = sponsored[2] || ad1;
+              const ad4 = sponsored[3] || ad1;
 
-      // 3. Side vertical ads
-      const leftAd = document.createElement('div');
-      leftAd.id = 'modal-left-ad';
-      leftAd.className = 'hidden xl:flex flex-col items-center justify-center w-36 h-[500px] bg-slate-900/10 border border-dashed border-slate-300 text-slate-650 rounded-3xl p-3 text-center text-[10px] font-black tracking-widest uppercase shadow-2xs shrink-0 select-none font-sans';
-      leftAd.style.writingMode = 'vertical-rl';
-      leftAd.innerHTML = `⚡ SPONSORED: RUN FREE FINANCIAL HEALTH REPORTS ⚡`;
-      modal.insertBefore(leftAd, modal.firstElementChild);
+              // Render Top Ad Card
+              const topAd = document.createElement('div');
+              topAd.id = 'modal-top-ad';
+              topAd.className = 'w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl mb-6 shadow-2xs font-sans text-xs select-none';
+              topAd.innerHTML = `
+                <div class="text-[9px] font-bold text-indigo-700 uppercase tracking-widest mb-2 flex items-center justify-between">
+                  <span>📢 Sponsored Content from AK Tech Studio</span>
+                  <span class="px-1 py-0.5 rounded bg-indigo-50 border border-indigo-250 text-indigo-850 text-[8px] font-bold">AD</span>
+                </div>
+                <a href="${escapeHTML(ad1.url)}" target="_blank" class="flex gap-4 items-center hover:opacity-95 transition-opacity">
+                  ${ad1.image ? `<img src="${escapeHTML(ad1.image)}" class="w-14 h-14 rounded-xl object-cover border border-slate-100 shrink-0" />` : ''}
+                  <div class="flex-grow min-w-0">
+                    <h4 class="font-bold text-slate-800 text-[11px] line-clamp-1 mb-0.5 leading-tight">${escapeHTML(ad1.title)}</h4>
+                    <p class="text-[9.5px] text-slate-500 line-clamp-2 leading-relaxed font-medium">${escapeHTML(ad1.snippet)}</p>
+                  </div>
+                  <span class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[9px] font-bold transition-all shrink-0">Visit Article</span>
+                </a>
+              `;
+              modalBody.parentNode.insertBefore(topAd, modalBody);
 
-      const rightAd = document.createElement('div');
-      rightAd.id = 'modal-right-ad';
-      rightAd.className = 'hidden xl:flex flex-col items-center justify-center w-36 h-[500px] bg-slate-900/10 border border-dashed border-slate-300 text-slate-650 rounded-3xl p-3 text-center text-[10px] font-black tracking-widest uppercase shadow-2xs shrink-0 select-none font-sans';
-      rightAd.style.writingMode = 'vertical-rl';
-      rightAd.innerHTML = `⚡ SPONSORED: COMPARE INVOICE SYSTEMS FOR FREELANCERS ⚡`;
-      modal.appendChild(rightAd);
+              // Render Bottom Ad Card
+              const bottomAd = document.createElement('div');
+              bottomAd.id = 'modal-bottom-ad';
+              bottomAd.className = 'w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl mt-6 shadow-2xs font-sans text-xs select-none';
+              bottomAd.innerHTML = `
+                <div class="text-[9px] font-bold text-indigo-700 uppercase tracking-widest mb-2 flex items-center justify-between">
+                  <span>📢 Recommended for You</span>
+                  <span class="px-1 py-0.5 rounded bg-indigo-50 border border-indigo-255 text-indigo-850 text-[8px] font-bold">AD</span>
+                </div>
+                <a href="${escapeHTML(ad2.url)}" target="_blank" class="flex gap-4 items-center hover:opacity-95 transition-opacity">
+                  ${ad2.image ? `<img src="${escapeHTML(ad2.image)}" class="w-14 h-14 rounded-xl object-cover border border-slate-100 shrink-0" />` : ''}
+                  <div class="flex-grow min-w-0">
+                    <h4 class="font-bold text-slate-800 text-[11px] line-clamp-1 mb-0.5 leading-tight">${escapeHTML(ad2.title)}</h4>
+                    <p class="text-[9.5px] text-slate-500 line-clamp-2 leading-relaxed font-medium">${escapeHTML(ad2.snippet)}</p>
+                  </div>
+                  <span class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[9px] font-bold transition-all shrink-0">Visit Article</span>
+                </a>
+              `;
+              modalBody.parentNode.appendChild(bottomAd);
+
+              // Render Side Vertical Ad Cards
+              const leftAd = document.createElement('div');
+              leftAd.id = 'modal-left-ad';
+              leftAd.className = 'hidden xl:flex flex-col w-36 bg-slate-50 border border-slate-200 rounded-3xl p-3 shadow-2xs shrink-0 select-none font-sans';
+              leftAd.innerHTML = `
+                <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                  <span>Sponsored</span>
+                  <span class="px-1 rounded bg-indigo-100 text-indigo-800 text-[7px] font-bold">Ad</span>
+                </div>
+                <a href="${escapeHTML(ad3.url)}" target="_blank" class="flex flex-col gap-2 h-full justify-between hover:opacity-95 transition-opacity">
+                  <div>
+                    ${ad3.image ? `<img src="${escapeHTML(ad3.image)}" class="w-full h-20 rounded-xl object-cover border border-slate-100 mb-2" />` : ''}
+                    <h4 class="font-bold text-slate-800 text-[10px] line-clamp-2 leading-tight">${escapeHTML(ad3.title)}</h4>
+                    <p class="text-[9px] text-slate-500 line-clamp-3 leading-relaxed mt-1 font-medium">${escapeHTML(ad3.snippet)}</p>
+                  </div>
+                  <span class="w-full text-center py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[9px] font-bold transition-all mt-2">Read Post</span>
+                </a>
+              `;
+              modal.insertBefore(leftAd, modal.firstElementChild);
+
+              const rightAd = document.createElement('div');
+              rightAd.id = 'modal-right-ad';
+              rightAd.className = 'hidden xl:flex flex-col w-36 bg-slate-50 border border-slate-200 rounded-3xl p-3 shadow-2xs shrink-0 select-none font-sans';
+              rightAd.innerHTML = `
+                <div class="text-[8px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                  <span>Sponsored</span>
+                  <span class="px-1 rounded bg-indigo-100 text-indigo-800 text-[7px] font-bold">Ad</span>
+                </div>
+                <a href="${escapeHTML(ad4.url)}" target="_blank" class="flex flex-col gap-2 h-full justify-between hover:opacity-95 transition-opacity">
+                  <div>
+                    ${ad4.image ? `<img src="${escapeHTML(ad4.image)}" class="w-full h-20 rounded-xl object-cover border border-slate-100 mb-2" />` : ''}
+                    <h4 class="font-bold text-slate-800 text-[10px] line-clamp-2 leading-tight">${escapeHTML(ad4.title)}</h4>
+                    <p class="text-[9px] text-slate-500 line-clamp-3 leading-relaxed mt-1 font-medium">${escapeHTML(ad4.snippet)}</p>
+                  </div>
+                  <span class="w-full text-center py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[9px] font-bold transition-all mt-2">Read Post</span>
+                </a>
+              `;
+              modal.appendChild(rightAd);
+            }
+          }
+        } else {
+          // Real Google AdSense Mock Banners
+          const topAd = document.createElement('div');
+          topAd.id = 'modal-top-ad';
+          topAd.className = 'w-full py-3.5 bg-amber-50/50 border border-dashed border-amber-300 rounded-2xl text-center text-[10px] text-amber-800 font-extrabold tracking-wider uppercase mb-6 flex items-center justify-center gap-1.5 shadow-2xs select-none font-sans';
+          topAd.innerHTML = `⭐ GOOGLE ADSENSE BANNER AD UNIT (728x90) ⭐`;
+          modalBody.parentNode.insertBefore(topAd, modalBody);
+
+          const bottomAd = document.createElement('div');
+          bottomAd.id = 'modal-bottom-ad';
+          bottomAd.className = 'w-full py-3.5 bg-amber-50/50 border border-dashed border-amber-300 rounded-2xl text-center text-[10px] text-amber-800 font-extrabold tracking-wider uppercase mt-6 flex items-center justify-center gap-1.5 shadow-2xs select-none font-sans';
+          bottomAd.innerHTML = `⭐ GOOGLE ADSENSE BANNER AD UNIT (728x90) ⭐`;
+          modalBody.parentNode.appendChild(bottomAd);
+
+          const leftAd = document.createElement('div');
+          leftAd.id = 'modal-left-ad';
+          leftAd.className = 'hidden xl:flex flex-col items-center justify-center w-36 h-[500px] bg-slate-900/10 border border-dashed border-slate-300 text-slate-650 rounded-3xl p-3 text-center text-[10px] font-black tracking-widest uppercase shadow-2xs shrink-0 select-none font-sans';
+          leftAd.style.writingMode = 'vertical-rl';
+          leftAd.innerHTML = `⚡ GOOGLE ADSENSE VERTICAL BANNER (160x600) ⚡`;
+          modal.insertBefore(leftAd, modal.firstElementChild);
+
+          const rightAd = document.createElement('div');
+          rightAd.id = 'modal-right-ad';
+          rightAd.className = 'hidden xl:flex flex-col items-center justify-center w-36 h-[500px] bg-slate-900/10 border border-dashed border-slate-300 text-slate-650 rounded-3xl p-3 text-center text-[10px] font-black tracking-widest uppercase shadow-2xs shrink-0 select-none font-sans';
+          rightAd.style.writingMode = 'vertical-rl';
+          rightAd.innerHTML = `⚡ GOOGLE ADSENSE VERTICAL BANNER (160x600) ⚡`;
+          modal.appendChild(rightAd);
+        }
+      } catch (err) {
+        console.warn("Failed to load blog promo settings for ads mode:", err);
+      }
     }
 
     // Handle blog bookmarking state inside modal
