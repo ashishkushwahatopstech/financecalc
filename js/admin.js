@@ -1789,6 +1789,8 @@ async function loadShortenerStats(uid, token = '') {
  * Opens Link Geography & Click Analytics Modal for Admin
  */
 async function openLinkStatsModal(code, uid, token = '') {
+  console.log(`[openLinkStatsModal] Function called. Code: ${code}, UID: ${uid}, Token: ${token ? 'PRESENT (len: ' + token.length + ')' : 'MISSING'}`);
+  
   const modal = document.getElementById('admin-link-stats-modal');
   const codeEl = document.getElementById('modal-stats-code');
   const destEl = document.getElementById('modal-stats-dest');
@@ -1801,58 +1803,87 @@ async function openLinkStatsModal(code, uid, token = '') {
   const devicesContainer = document.getElementById('modal-stats-devices-container');
   const sourcesContainer = document.getElementById('modal-stats-sources-container');
 
-  if (!modal) return;
+  if (!modal) {
+    console.error("[openLinkStatsModal] CRITICAL ERROR: #admin-link-stats-modal element was not found in the DOM!");
+    return;
+  }
 
-  // Initialize display details with loaders
-  codeEl.textContent = code;
-  destEl.textContent = "Loading...";
-  destEl.href = "#";
-  createdEl.textContent = "Loading...";
-  expiresEl.textContent = "Loading...";
-  totalEl.textContent = "0";
+  // Initialize display details safely
+  try {
+    if (codeEl) codeEl.textContent = code;
+    if (destEl) {
+      destEl.textContent = "Loading...";
+      destEl.href = "#";
+    }
+    if (createdEl) createdEl.textContent = "Loading...";
+    if (expiresEl) expiresEl.textContent = "Loading...";
+    if (totalEl) totalEl.textContent = "0";
 
-  countriesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">Loading geography...</p>';
-  citiesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">Loading geography...</p>';
-  devicesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">Loading devices...</p>';
-  sourcesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">Loading traffic sources...</p>';
+    if (countriesContainer) countriesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">Loading geography...</p>';
+    if (citiesContainer) citiesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">Loading geography...</p>';
+    if (devicesContainer) devicesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">Loading devices...</p>';
+    if (sourcesContainer) sourcesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">Loading traffic sources...</p>';
+    
+    console.log("[openLinkStatsModal] Loading placeholders set successfully.");
+  } catch (err) {
+    console.warn("[openLinkStatsModal] Mismatch setting placeholders:", err);
+  }
 
-  // Show Modal
+  // Show Modal backdrop immediately
+  console.log("[openLinkStatsModal] Removing 'hidden' class from modal");
   modal.classList.remove('hidden');
 
   try {
-    const res = await fetch(`/api/stats/${encodeURIComponent(code)}?uid=${encodeURIComponent(uid)}&token=${encodeURIComponent(token)}`);
+    const fetchUrl = `/api/stats/${encodeURIComponent(code)}?uid=${encodeURIComponent(uid)}&token=${encodeURIComponent(token)}`;
+    console.log(`[openLinkStatsModal] Fetching analytics data from: ${fetchUrl}`);
+    
+    const res = await fetch(fetchUrl);
+    console.log(`[openLinkStatsModal] Received response with status: ${res.status}`);
+    
     const data = await res.json();
+    console.log(`[openLinkStatsModal] Response JSON data parsed:`, data);
 
-    if (!res.ok) throw new Error(data.error || 'Failed to fetch statistics.');
+    if (!res.ok) {
+      throw new Error(data.error || `HTTP error ${res.status} returned from stats endpoint.`);
+    }
 
     const link = data.link || {};
     const analytics = data.analytics || {};
 
-    // 1. Details
-    destEl.textContent = link.original_url || '';
-    destEl.href = link.original_url || '#';
-    
-    try {
-      createdEl.textContent = link.created_at ? new Date(link.created_at).toLocaleDateString() : 'Unknown';
-    } catch (e) {
-      createdEl.textContent = 'Unknown';
+    // 1. Render Link Details
+    console.log("[openLinkStatsModal] Rendering link metadata details");
+    if (destEl) {
+      destEl.textContent = link.original_url || '';
+      destEl.href = link.original_url || '#';
     }
     
     try {
-      expiresEl.textContent = link.expires_at ? new Date(link.expires_at).toLocaleDateString() : 'Permanent';
+      if (createdEl) {
+        createdEl.textContent = link.created_at ? new Date(link.created_at).toLocaleDateString() : 'Unknown';
+      }
     } catch (e) {
-      expiresEl.textContent = 'Permanent';
+      if (createdEl) createdEl.textContent = 'Unknown';
+      console.warn("[openLinkStatsModal] Failed parsing created_at timestamp:", e);
+    }
+    
+    try {
+      if (expiresEl) {
+        expiresEl.textContent = link.expires_at ? new Date(link.expires_at).toLocaleDateString() : 'Permanent';
+      }
+    } catch (e) {
+      if (expiresEl) expiresEl.textContent = 'Permanent';
+      console.warn("[openLinkStatsModal] Failed parsing expires_at timestamp:", e);
     }
 
     // 2. Geography analysis counts
+    console.log("[openLinkStatsModal] Processing geography breakdown");
     const geo = analytics.geography || [];
-    
-    // Group country stats
     const countryMap = {};
     const cityMap = {};
     let totalClicks = 0;
 
     geo.forEach(item => {
+      if (!item) return;
       const cnt = item.count || 0;
       totalClicks += cnt;
 
@@ -1863,102 +1894,122 @@ async function openLinkStatsModal(code, uid, token = '') {
       cityMap[city] = (cityMap[city] || 0) + cnt;
     });
 
-    totalEl.textContent = totalClicks.toLocaleString();
+    if (totalEl) {
+      totalEl.textContent = totalClicks.toLocaleString();
+    }
 
     // Render Countries with percentage bars
     const countries = Object.entries(countryMap)
       .map(([country, count]) => ({ country, count }))
       .sort((a, b) => b.count - a.count);
 
-    if (countries.length === 0) {
-      countriesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">No location details recorded.</p>';
-    } else {
-      countriesContainer.innerHTML = countries.map(c => {
-        const pct = totalClicks > 0 ? (c.count / totalClicks) * 100 : 0;
-        return `
-          <div class="space-y-1">
-            <div class="flex items-center justify-between font-bold text-slate-700 text-[11px]">
-              <span>${escapeHTML(c.country)}</span>
-              <span>${c.count} (${pct.toFixed(0)}%)</span>
+    if (countriesContainer) {
+      if (countries.length === 0) {
+        countriesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">No location details recorded.</p>';
+      } else {
+        countriesContainer.innerHTML = countries.map(c => {
+          const pct = totalClicks > 0 ? (c.count / totalClicks) * 100 : 0;
+          return `
+            <div class="space-y-1">
+              <div class="flex items-center justify-between font-bold text-slate-700 text-[11px]">
+                <span>${escapeHTML(c.country)}</span>
+                <span>${c.count} (${pct.toFixed(0)}%)</span>
+              </div>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-indigo-600 h-1.5 rounded-full" style="width: ${pct}%"></div>
+              </div>
             </div>
-            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-              <div class="bg-indigo-600 h-1.5 rounded-full" style="width: ${pct}%"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
+          `;
+        }).join('');
+      }
     }
 
     // Render Cities with percentage bars
+    console.log("[openLinkStatsModal] Rendering city breakdown");
     const cities = Object.entries(cityMap)
       .map(([city, count]) => ({ city, count }))
       .sort((a, b) => b.count - a.count);
 
-    if (cities.length === 0) {
-      citiesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">No city details recorded.</p>';
-    } else {
-      citiesContainer.innerHTML = cities.map(c => {
-        const pct = totalClicks > 0 ? (c.count / totalClicks) * 100 : 0;
-        return `
-          <div class="space-y-1">
-            <div class="flex items-center justify-between font-bold text-slate-700 text-[11px]">
-              <span>${escapeHTML(c.city)}</span>
-              <span>${c.count} (${pct.toFixed(0)}%)</span>
+    if (citiesContainer) {
+      if (cities.length === 0) {
+        citiesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">No city details recorded.</p>';
+      } else {
+        citiesContainer.innerHTML = cities.map(c => {
+          const pct = totalClicks > 0 ? (c.count / totalClicks) * 100 : 0;
+          return `
+            <div class="space-y-1">
+              <div class="flex items-center justify-between font-bold text-slate-700 text-[11px]">
+                <span>${escapeHTML(c.city)}</span>
+                <span>${c.count} (${pct.toFixed(0)}%)</span>
+              </div>
+              <div class="w-full bg-slate-150 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-indigo-500 h-1.5 rounded-full" style="width: ${pct}%"></div>
+              </div>
             </div>
-            <div class="w-full bg-slate-150 h-1.5 rounded-full overflow-hidden">
-              <div class="bg-indigo-500 h-1.5 rounded-full" style="width: ${pct}%"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
+          `;
+        }).join('');
+      }
     }
 
     // 3. Devices
+    console.log("[openLinkStatsModal] Rendering device breakdown");
     const devices = analytics.devices || [];
-    if (devices.length === 0) {
-      devicesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">No device details recorded.</p>';
-    } else {
-      devicesContainer.innerHTML = devices.map(d => {
-        const pct = totalClicks > 0 ? (d.count / totalClicks) * 100 : 0;
-        return `
-          <div class="space-y-1">
-            <div class="flex items-center justify-between font-bold text-slate-700 text-[11px]">
-              <span class="capitalize">${escapeHTML(d.device_type)}</span>
-              <span>${d.count} (${pct.toFixed(0)}%)</span>
+    if (devicesContainer) {
+      if (devices.length === 0) {
+        devicesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">No device details recorded.</p>';
+      } else {
+        devicesContainer.innerHTML = devices.map(d => {
+          if (!d) return '';
+          const pct = totalClicks > 0 ? (d.count / totalClicks) * 100 : 0;
+          const deviceLabel = d.device_type || 'Unknown';
+          return `
+            <div class="space-y-1">
+              <div class="flex items-center justify-between font-bold text-slate-700 text-[11px]">
+                <span class="capitalize">${escapeHTML(deviceLabel)}</span>
+                <span>${d.count} (${pct.toFixed(0)}%)</span>
+              </div>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-emerald-600 h-1.5 rounded-full" style="width: ${pct}%"></div>
+              </div>
             </div>
-            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-              <div class="bg-emerald-600 h-1.5 rounded-full" style="width: ${pct}%"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
+          `;
+        }).join('');
+      }
     }
 
     // 4. Traffic Sources / Referrers
+    console.log("[openLinkStatsModal] Rendering traffic sources breakdown");
     const referrers = analytics.referrers || [];
-    if (referrers.length === 0) {
-      sourcesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">No traffic source referrers recorded.</p>';
-    } else {
-      sourcesContainer.innerHTML = referrers.map(r => {
-        const pct = totalClicks > 0 ? (r.count / totalClicks) * 100 : 0;
-        const refLabel = r.referrer === 'direct' ? 'Direct / Bookmarks' : r.referrer;
-        return `
-          <div class="space-y-1">
-            <div class="flex items-center justify-between font-bold text-slate-700 text-[11px]">
-              <span class="truncate max-w-[150px]" title="${escapeHTML(refLabel)}">${escapeHTML(refLabel)}</span>
-              <span>${r.count} (${pct.toFixed(0)}%)</span>
+    if (sourcesContainer) {
+      if (referrers.length === 0) {
+        sourcesContainer.innerHTML = '<p class="text-slate-400 py-4 text-center">No traffic source referrers recorded.</p>';
+      } else {
+        sourcesContainer.innerHTML = referrers.map(r => {
+          if (!r) return '';
+          const pct = totalClicks > 0 ? (r.count / totalClicks) * 100 : 0;
+          const refLabel = r.referrer === 'direct' ? 'Direct / Bookmarks' : (r.referrer || 'Direct / Bookmarks');
+          return `
+            <div class="space-y-1">
+              <div class="flex items-center justify-between font-bold text-slate-700 text-[11px]">
+                <span class="truncate max-w-[150px]" title="${escapeHTML(refLabel)}">${escapeHTML(refLabel)}</span>
+                <span>${r.count} (${pct.toFixed(0)}%)</span>
+              </div>
+              <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-amber-500 h-1.5 rounded-full" style="width: ${pct}%"></div>
+              </div>
             </div>
-            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
-              <div class="bg-amber-500 h-1.5 rounded-full" style="width: ${pct}%"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
+          `;
+        }).join('');
+      }
     }
+    
+    console.log("[openLinkStatsModal] Modal UI rendering completed successfully.");
 
   } catch (err) {
-    console.error("Failed to load link statistics:", err);
-    countriesContainer.innerHTML = `<p class="text-rose-600 text-center py-4 font-semibold">${escapeHTML(err.message)}</p>`;
+    console.error("[openLinkStatsModal] Failed to load link statistics:", err);
+    if (countriesContainer) {
+      countriesContainer.innerHTML = `<p class="text-rose-600 text-center py-4 font-semibold">${escapeHTML(err.message || 'Error parsing stats response.')}</p>`;
+    }
   }
 }
 
