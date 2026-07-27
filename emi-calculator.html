@@ -100,12 +100,14 @@
               </select>
               <input type="number" id="emi-amount" value="50000" min="100" step="500" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-r-lg focus:bg-white focus:border-emerald-500 focus:outline-none font-semibold text-slate-800" />
             </div>
+            <input type="range" id="emi-amount-slider" min="1000" max="10000000" step="1000" value="50000" class="w-full mt-2 accent-emerald-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
           </div>
 
           <!-- Interest Rate -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Interest Rate (% per annum)</label>
             <input type="number" id="emi-rate" value="8.5" min="0.1" step="0.05" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-emerald-500 focus:outline-none font-semibold text-slate-800" />
+            <input type="range" id="emi-rate-slider" min="1" max="30" step="0.05" value="8.5" class="w-full mt-2 accent-emerald-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
           </div>
 
           <!-- Tenure -->
@@ -118,6 +120,7 @@
                 <option value="months">Months</option>
               </select>
             </div>
+            <input type="range" id="emi-tenure-slider" min="1" max="40" step="1" value="5" class="w-full mt-2 accent-emerald-600 h-1 bg-slate-100 rounded-lg cursor-pointer" />
           </div>
 
           <button type="submit" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs transition-colors cursor-pointer mt-2">
@@ -273,9 +276,12 @@
     const form = document.getElementById('emi-form');
     const currencySelect = document.getElementById('emi-currency');
     const amountInput = document.getElementById('emi-amount');
+    const amountSlider = document.getElementById('emi-amount-slider');
     const rateInput = document.getElementById('emi-rate');
+    const rateSlider = document.getElementById('emi-rate-slider');
     const tenureInput = document.getElementById('emi-tenure');
     const tenureTypeSelect = document.getElementById('emi-tenure-type');
+    const tenureSlider = document.getElementById('emi-tenure-slider');
 
     function formatCurrency(val, symbol) {
       return `${symbol}${Math.round(val).toLocaleString()}`;
@@ -329,12 +335,62 @@
       });
     }
 
+    // Bi-directional slider syncing
+    amountInput.addEventListener('input', (e) => {
+      amountSlider.value = e.target.value;
+    });
+    amountSlider.addEventListener('input', (e) => {
+      amountInput.value = e.target.value;
+    });
+
+    rateInput.addEventListener('input', (e) => {
+      rateSlider.value = e.target.value;
+    });
+    rateSlider.addEventListener('input', (e) => {
+      rateInput.value = e.target.value;
+    });
+
+    tenureInput.addEventListener('input', (e) => {
+      tenureSlider.value = e.target.value;
+    });
+    tenureSlider.addEventListener('input', (e) => {
+      tenureInput.value = e.target.value;
+    });
+
+    tenureTypeSelect.addEventListener('change', () => {
+      const type = tenureTypeSelect.value;
+      const val = parseFloat(tenureInput.value) || 0;
+      if (type === 'years') {
+        tenureSlider.min = "1";
+        tenureSlider.max = "40";
+        tenureSlider.step = "1";
+        if (val > 40) {
+          const yearsVal = Math.round(val / 12);
+          tenureInput.value = Math.min(40, Math.max(1, yearsVal));
+          tenureSlider.value = tenureInput.value;
+        } else {
+          tenureSlider.value = val;
+        }
+      } else {
+        tenureSlider.min = "1";
+        tenureSlider.max = "360";
+        tenureSlider.step = "1";
+        if (val <= 40) {
+          const monthsVal = Math.round(val * 12);
+          tenureInput.value = Math.min(360, Math.max(1, monthsVal));
+          tenureSlider.value = tenureInput.value;
+        } else {
+          tenureSlider.value = val;
+        }
+      }
+    });
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       runCalculation();
     });
 
-    [currencySelect, amountInput, rateInput, tenureInput, tenureTypeSelect].forEach(el => {
+    [currencySelect, amountInput, amountSlider, rateInput, rateSlider, tenureInput, tenureSlider, tenureTypeSelect].forEach(el => {
       el.addEventListener('input', runCalculation);
       el.addEventListener('change', runCalculation);
     });
