@@ -37,7 +37,7 @@
       body * {
         visibility: hidden;
       }
-      header, footer, #editor-panel, #right-settings-panel, #promo-ads, #page-header-title {
+      header, footer, #editor-panel, #right-settings-panel, #promo-ads, #page-header-title, #workspace-tabs-bar {
         display: none !important;
       }
       #resume-preview-wrapper, #resume-preview-wrapper * {
@@ -124,7 +124,7 @@
   <!-- Content -->
   <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
     
-    <div id="page-header-title" class="mb-6">
+    <div id="page-header-title" class="mb-4">
       <div class="flex items-center gap-2 text-xs text-slate-500 mb-2">
         <a href="index.html" class="hover:text-indigo-600">Home</a> &rsaquo;
         <span>Resume Builder</span>
@@ -133,16 +133,31 @@
       <p class="text-xs sm:text-sm text-slate-500 mt-1">Create, style, and download elegant resumes. Data is processed locally in the browser.</p>
     </div>
 
-    <!-- Workspace Grid: Three Columns Layout -->
+    <!-- Workspace Tabs Toggle Bar -->
+    <div id="workspace-tabs-bar" class="mb-6 flex justify-center">
+      <div class="inline-flex p-1 bg-slate-200/60 backdrop-blur rounded-2xl border border-slate-300 shadow-2xs gap-1">
+        <button id="view-tab-edit" class="view-tab-btn px-5 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer bg-white text-slate-900 shadow-2xs" data-tab="edit">
+          <span class="text-sm">📝</span> Edit Details
+        </button>
+        <button id="view-tab-preview" class="view-tab-btn px-5 py-2 text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer text-slate-600 hover:text-slate-900" data-tab="preview">
+          <span class="text-sm">👁️</span> Full Preview
+        </button>
+        <button id="view-tab-settings" class="view-tab-btn px-5 py-2 text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer text-slate-600 hover:text-slate-900" data-tab="settings">
+          <span class="text-sm">⚙️</span> Settings & Sequence
+        </button>
+      </div>
+    </div>
+
+    <!-- Workspace Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       
-      <!-- 1. LEFT COLUMN: Details Editor Panel (col-span-4) -->
-      <div id="editor-panel" class="lg:col-span-4 space-y-6 lg:max-h-[calc(100vh-12rem)] lg:overflow-y-auto scrollbar-thin pr-1 pb-8">
+      <!-- 1. LEFT COLUMN: Details Editor Panel (col-span-5) -->
+      <div id="editor-panel" class="lg:col-span-5 space-y-6 lg:max-h-[calc(100vh-14rem)] lg:overflow-y-auto scrollbar-thin pr-1 pb-8">
         
         <!-- Personal Info -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
           <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">Personal Details</h3>
-          <div class="grid grid-cols-1 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-[10px] font-bold text-slate-500 uppercase">Full Name</label>
               <input type="text" id="in-name" value="Alex Morgan" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
@@ -219,17 +234,17 @@
 
       </div>
 
-      <!-- 2. MIDDLE COLUMN: Resume Preview Panel (col-span-5) -->
-      <div class="lg:col-span-5 flex justify-center">
-        <div id="resume-preview-wrapper" class="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 min-h-[820px] w-full max-w-[560px] lg:max-w-full overflow-hidden">
+      <!-- 2. MIDDLE COLUMN: Preview Panel (col-span-7) -->
+      <div id="preview-panel" class="lg:col-span-7 flex justify-center">
+        <div id="resume-preview-wrapper" class="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 min-h-[820px] w-full max-w-[800px] overflow-hidden">
           <div id="resume-preview" class="h-full">
             <!-- Dynamically populated -->
           </div>
         </div>
       </div>
 
-      <!-- 3. RIGHT COLUMN: Settings & Sequencer (col-span-3) -->
-      <div id="right-settings-panel" class="lg:col-span-3 space-y-6 lg:sticky lg:top-20">
+      <!-- 3. RIGHT COLUMN: Settings Panel (col-span-4 - initially hidden on edit) -->
+      <div id="right-settings-panel" class="lg:col-span-4 space-y-6 lg:sticky lg:top-20 hidden">
         
         <!-- Controls Card -->
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-5">
@@ -358,6 +373,62 @@
     const eduFields = document.getElementById('edu-fields');
     const sectionOrderList = document.getElementById('section-order-list');
     const clickableCheckbox = document.getElementById('in-clickable');
+
+    // Tab buttons
+    const btnEditTab = document.getElementById('view-tab-edit');
+    const btnPreviewTab = document.getElementById('view-tab-preview');
+    const btnSettingsTab = document.getElementById('view-tab-settings');
+
+    let currentViewTab = 'edit'; // 'edit', 'preview', 'settings'
+
+    // Tab switching event handlers
+    btnEditTab.addEventListener('click', () => switchViewTab('edit'));
+    btnPreviewTab.addEventListener('click', () => switchViewTab('preview'));
+    btnSettingsTab.addEventListener('click', () => switchViewTab('settings'));
+
+    function switchViewTab(tab) {
+      currentViewTab = tab;
+
+      // Reset button highlights
+      [btnEditTab, btnPreviewTab, btnSettingsTab].forEach(btn => {
+        btn.className = 'view-tab-btn px-5 py-2 text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer text-slate-650 hover:text-slate-900';
+      });
+
+      // Highlight target button
+      const activeBtn = document.getElementById(`view-tab-${tab}`);
+      activeBtn.className = 'view-tab-btn px-5 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer bg-white text-slate-900 shadow-2xs';
+
+      const editorPanel = document.getElementById('editor-panel');
+      const previewPanel = document.getElementById('preview-panel');
+      const settingsPanel = document.getElementById('right-settings-panel');
+
+      if (tab === 'edit') {
+        editorPanel.classList.remove('hidden');
+        editorPanel.className = 'lg:col-span-5 space-y-6 lg:max-h-[calc(100vh-14rem)] lg:overflow-y-auto scrollbar-thin pr-1 pb-8';
+        
+        previewPanel.classList.remove('hidden');
+        previewPanel.className = 'lg:col-span-7 flex justify-center';
+        
+        settingsPanel.classList.add('hidden');
+      } 
+      else if (tab === 'preview') {
+        editorPanel.classList.add('hidden');
+        
+        previewPanel.classList.remove('hidden');
+        previewPanel.className = 'lg:col-span-12 flex justify-center';
+        
+        settingsPanel.classList.add('hidden');
+      } 
+      else if (tab === 'settings') {
+        editorPanel.classList.add('hidden');
+        
+        previewPanel.classList.remove('hidden');
+        previewPanel.className = 'lg:col-span-8 flex justify-center';
+        
+        settingsPanel.classList.remove('hidden');
+        settingsPanel.className = 'lg:col-span-4 space-y-6 lg:sticky lg:top-20';
+      }
+    }
 
     // Add Work Experience Row
     document.getElementById('add-exp').addEventListener('click', () => {
@@ -646,10 +717,10 @@
                   <div class="space-y-1">
                     <div class="flex items-center justify-between text-xs">
                       <span class="font-bold text-white">${projNameHtml}</span>
-                      <span class="text-[10px] text-slate-450">${proj.tenure}</span>
+                      <span class="text-[10px] text-slate-455">${proj.tenure}</span>
                     </div>
                     <p class="text-[10px] text-indigo-300 font-semibold">${proj.tech}</p>
-                    <p class="text-[10.5px] text-slate-350 leading-relaxed">${proj.desc}</p>
+                    <p class="text-[10.5px] text-slate-355 leading-relaxed">${proj.desc}</p>
                     ${makeClickable ? linkLabel : ''}
                   </div>
                 `;
@@ -676,7 +747,7 @@
               ${experiences.map(exp => `
                 <div class="space-y-1">
                   <div class="flex items-center justify-between text-[11.5px] font-bold">
-                    <span>${exp.role} <span class="font-normal text-slate-650">at ${exp.company}</span></span>
+                    <span>${exp.role} <span class="font-normal text-slate-600">at ${exp.company}</span></span>
                     <span class="text-[10px] font-medium text-slate-500">${exp.tenure}</span>
                   </div>
                   <p class="text-[10.5px] text-slate-700 leading-relaxed font-sans">${exp.desc}</p>
@@ -706,7 +777,7 @@
               ${projects.map(proj => {
                 const targetUrl = proj.link.startsWith('http') ? proj.link : 'https://' + proj.link;
                 const projNameHtml = makeClickable && proj.link 
-                  ? `<a href="${targetUrl}" target="_blank" class="text-indigo-655 hover:underline print:text-slate-800 font-bold">${proj.name}</a>` 
+                  ? `<a href="${targetUrl}" target="_blank" class="text-indigo-650 hover:underline print:text-slate-800 font-bold">${proj.name}</a>` 
                   : proj.name;
                 const linkLabel = proj.link ? `<p class="text-[9.5px] text-slate-500 font-sans truncate">${proj.link}</p>` : '';
                 return `
@@ -745,7 +816,7 @@
                     <span>${exp.role} &bull; ${exp.company}</span>
                     <span class="text-[9.5px] font-medium text-slate-400">${exp.tenure}</span>
                   </div>
-                  <p class="text-[10.5px] text-slate-655 leading-relaxed">${exp.desc}</p>
+                  <p class="text-[10.5px] text-slate-600 leading-relaxed">${exp.desc}</p>
                 </div>
               `).join('')}
             </div>
@@ -908,6 +979,9 @@
     renderEducationInputs();
     renderSectionOrder();
     updatePreview();
+    
+    // Set default initial view tab
+    switchViewTab('edit');
   </script>
 </body>
 </html>
