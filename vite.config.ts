@@ -32,6 +32,7 @@ export default defineConfig(() => {
           sip: path.resolve(__dirname, 'sip-calculator.html'),
           gst: path.resolve(__dirname, 'gst-calculator.html'),
           ppf: path.resolve(__dirname, 'ppf-fd-rd-calculator.html'),
+          pdf: path.resolve(__dirname, 'pdf-tools.html'),
           currency: path.resolve(__dirname, 'currency-converter.html'),
           tax: path.resolve(__dirname, 'tax-calculator.html'),
           salary: path.resolve(__dirname, 'salary-calculator.html'),

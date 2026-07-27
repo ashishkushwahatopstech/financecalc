@@ -1400,6 +1400,7 @@ function rebuildDesktopNavbar(user) {
                         currentPage.includes('word-counter') || 
                         currentPage.includes('unit-converter') || 
                         currentPage.includes('age-calculator') || 
+                        currentPage.includes('pdf-tools') || 
                         currentPage.includes('url-shortener') || 
                         currentPage.includes('link-stats');
 
@@ -1430,6 +1431,7 @@ function rebuildDesktopNavbar(user) {
   ];
 
   const UTILITIES_LINKS = [
+    { text: 'PDF Tools', href: 'pdf-tools.html' },
     { text: 'QR Code Generator', href: 'qr-generator.html' },
     { text: 'Password Generator', href: 'password-generator.html' },
     { text: 'Word Counter', href: 'word-counter.html' },
