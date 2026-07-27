@@ -52,6 +52,7 @@ export default defineConfig(() => {
           updates: path.resolve(__dirname, 'updates.html'),
           json: path.resolve(__dirname, 'json-formatter.html'),
           base64: path.resolve(__dirname, 'base64-converter.html'),
+          uuid: path.resolve(__dirname, 'uuid-hash-generator.html'),
         },
       },
     },
