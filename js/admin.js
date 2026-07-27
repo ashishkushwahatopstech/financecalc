@@ -17,7 +17,9 @@ import {
   query, 
   orderBy,
   doc,
-  getDoc
+  getDoc,
+  setDoc,
+  updateDoc
 } from './firebase-config.js';
 import { ADMIN_EMAIL, isAdminEmail, getCurrentUser, showToast, getLocalUserRegistry, syncUserProfile } from './auth.js';
 import { getBlogPromoSettings, saveBlogPromoSettings } from './blog-promo.js';
@@ -651,25 +653,180 @@ function setupAdminControls() {
     showToast('Downloaded full system report JSON!', 'success');
   });
 
-  // FX Margin Update Listener
-  document.getElementById('btn-save-fx-margin')?.addEventListener('click', () => {
-    const val = document.getElementById('ctrl-fx-margin')?.value || '0.0';
-    localStorage.setItem('fincalc_fx_margin', val);
-    showToast(`Updated currency exchange margin to ${val}%`, 'success');
+  // Load settings from Firestore site_settings/global
+  const loadGlobalSettings = async () => {
+    try {
+      const globalSettingsRef = doc(db, 'settings', 'global');
+      const docSnap = await getDoc(globalSettingsRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        
+        const ctrlMaintenanceMode = document.getElementById('ctrl-maintenance-mode');
+        const ctrlAllowGuestCalcs = document.getElementById('ctrl-allow-guest-calcs');
+        const ctrlEnableRateLimit = document.getElementById('ctrl-enable-rate-limit');
+        const ctrlEnableInvoicePdf = document.getElementById('ctrl-enable-invoice-pdf');
+        const ctrlFxMargin = document.getElementById('ctrl-fx-margin');
+        
+        if (ctrlMaintenanceMode) ctrlMaintenanceMode.checked = data.maintenanceMode ?? false;
+        if (ctrlAllowGuestCalcs) ctrlAllowGuestCalcs.checked = data.allowGuestCalculations ?? true;
+        if (ctrlEnableRateLimit) ctrlEnableRateLimit.checked = data.enableRateLimiting ?? true;
+        if (ctrlEnableInvoicePdf) ctrlEnableInvoicePdf.checked = data.enableInvoicePdf ?? true;
+        if (ctrlFxMargin) ctrlFxMargin.value = data.fxMargin ?? 0.0;
+        
+        // Also populate announcement inputs from same document
+        const elEnable = document.getElementById('ctrl-announcement-enable');
+        const elText = document.getElementById('ctrl-announcement-text');
+        const elTheme = document.getElementById('ctrl-announcement-theme');
+        const elLink = document.getElementById('ctrl-announcement-link');
+        
+        if (elEnable) elEnable.checked = data.announcementEnabled ?? false;
+        if (elText) elText.value = data.announcementText || '';
+        if (elTheme) elTheme.value = data.announcementTheme || 'amber';
+        if (elLink) elLink.value = data.announcementLink || '';
+      }
+    } catch (err) {
+      console.warn("Failed to load global settings in admin:", err);
+    }
+  };
+  
+  loadGlobalSettings();
+
+  // Save System Settings Listener
+  document.getElementById('btn-save-global-settings')?.addEventListener('click', async () => {
+    const btnSaveGlobal = document.getElementById('btn-save-global-settings');
+    btnSaveGlobal.disabled = true;
+    btnSaveGlobal.textContent = 'Saving...';
     
-    // Add to audit logs
-    activeAuditLogs.unshift({
-      id: 'log_' + Date.now(),
-      type: 'SYS',
-      msg: `Admin updated FX Margin spread to ${val}%`,
-      time: 'Just now'
-    });
-    renderActivityLogs();
+    const maintenanceMode = document.getElementById('ctrl-maintenance-mode')?.checked ?? false;
+    const allowGuestCalculations = document.getElementById('ctrl-allow-guest-calcs')?.checked ?? true;
+    const enableRateLimiting = document.getElementById('ctrl-enable-rate-limit')?.checked ?? true;
+    const enableInvoicePdf = document.getElementById('ctrl-enable-invoice-pdf')?.checked ?? true;
+    const fxMargin = parseFloat(document.getElementById('ctrl-fx-margin')?.value || '0.0');
+    
+    // Also save announcement banner state from controls
+    const announcementEnabled = document.getElementById('ctrl-announcement-enable')?.checked ?? false;
+    const announcementText = document.getElementById('ctrl-announcement-text')?.value.trim() || '';
+    const announcementTheme = document.getElementById('ctrl-announcement-theme')?.value || 'amber';
+    const announcementLink = document.getElementById('ctrl-announcement-link')?.value.trim() || '';
+
+    try {
+      const globalSettingsRef = doc(db, 'settings', 'global');
+      await setDoc(globalSettingsRef, {
+        maintenanceMode,
+        allowGuestCalculations,
+        enableRateLimiting,
+        enableInvoicePdf,
+        fxMargin,
+        announcementEnabled,
+        announcementText,
+        announcementTheme,
+        announcementLink
+      }, { merge: true });
+      
+      const toast = document.getElementById('global-settings-saved-toast');
+      if (toast) {
+        toast.classList.remove('hidden');
+        setTimeout(() => toast.classList.add('hidden'), 3000);
+      }
+      showToast('Global settings saved and synced successfully!', 'success');
+
+      // Add to audit logs
+      activeAuditLogs.unshift({
+        id: 'log_' + Date.now(),
+        type: 'SYS',
+        msg: `Admin saved global settings (Maintenance: ${maintenanceMode}, Guest: ${allowGuestCalculations})`,
+        time: 'Just now'
+      });
+      renderActivityLogs();
+    } catch (err) {
+      showToast('Failed to save settings: ' + err.message, 'error');
+    } finally {
+      btnSaveGlobal.disabled = false;
+      btnSaveGlobal.innerHTML = `
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        Save System Settings
+      `;
+    }
   });
+
+  // SEO Metadata Customizer
+  const seoPageSelect = document.getElementById('seo-page-select');
+  const seoTitleInput = document.getElementById('seo-title-input');
+  const seoDescriptionInput = document.getElementById('seo-description-input');
+  const seoKeywordsInput = document.getElementById('seo-keywords-input');
+  const btnSaveSeo = document.getElementById('btn-save-seo-settings');
+  const seoToast = document.getElementById('seo-settings-saved-toast');
+
+  let seoCache = {};
+
+  const loadSeoConfig = async () => {
+    try {
+      const seoRef = doc(db, 'settings', 'seo');
+      const docSnap = await getDoc(seoRef);
+      if (docSnap.exists()) {
+        seoCache = docSnap.data();
+      }
+      populateSeoFields();
+    } catch (err) {
+      console.warn("Failed to load SEO configs:", err);
+    }
+  };
+
+  const populateSeoFields = () => {
+    const page = seoPageSelect?.value || 'index.html';
+    const config = seoCache[page] || { title: '', description: '', keywords: '' };
+    if (seoTitleInput) seoTitleInput.value = config.title || '';
+    if (seoDescriptionInput) seoDescriptionInput.value = config.description || '';
+    if (seoKeywordsInput) seoKeywordsInput.value = config.keywords || '';
+  };
+
+  seoPageSelect?.addEventListener('change', populateSeoFields);
+
+  btnSaveSeo?.addEventListener('click', async () => {
+    btnSaveSeo.disabled = true;
+    btnSaveSeo.textContent = 'Saving...';
+    
+    const page = seoPageSelect?.value || 'index.html';
+    const title = seoTitleInput?.value.trim() || '';
+    const description = seoDescriptionInput?.value.trim() || '';
+    const keywords = seoKeywordsInput?.value.trim() || '';
+
+    seoCache[page] = { title, description, keywords };
+
+    try {
+      const seoRef = doc(db, 'settings', 'seo');
+      await setDoc(seoRef, seoCache, { merge: true });
+
+      if (seoToast) {
+        seoToast.classList.remove('hidden');
+        setTimeout(() => seoToast.classList.add('hidden'), 3000);
+      }
+
+      showToast(`SEO overrides saved for ${page}!`, 'success');
+
+      activeAuditLogs.unshift({
+        id: 'log_' + Date.now(),
+        type: 'SYS',
+        msg: `Admin updated SEO Meta Tags for page: ${page}`,
+        time: 'Just now'
+      });
+      renderActivityLogs();
+    } catch (err) {
+      showToast('Failed to save SEO config: ' + err.message, 'error');
+    } finally {
+      btnSaveSeo.disabled = false;
+      btnSaveSeo.innerHTML = `
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        Save SEO Overrides
+      `;
+    }
+  });
+
+  loadSeoConfig();
 }
 
 /**
- * Handles Broadcast Announcement Banner Settings
+ * Handles Broadcast Announcement Banner Settings (Synced directly with site settings)
  */
 function setupAnnouncementManager() {
   const elEnable = document.getElementById('ctrl-announcement-enable');
@@ -679,48 +836,38 @@ function setupAnnouncementManager() {
   const btnSave = document.getElementById('btn-save-announcement');
   const elToast = document.getElementById('announcement-saved-toast');
 
-  // Load current announcement from localStorage
-  try {
-    const stored = localStorage.getItem('fincalc_global_announcement');
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (elEnable) elEnable.checked = parsed.enabled ?? true;
-      if (elText) elText.value = parsed.text || '';
-      if (elTheme) elTheme.value = parsed.theme || 'amber';
-      if (elLink) elLink.value = parsed.link || '';
-    }
-  } catch (e) {
-    console.error("Error reading announcement state:", e);
-  }
-
-  btnSave?.addEventListener('click', () => {
+  btnSave?.addEventListener('click', async () => {
+    btnSave.disabled = true;
     const config = {
-      enabled: elEnable ? elEnable.checked : true,
-      text: elText ? elText.value.trim() : '',
-      theme: elTheme ? elTheme.value : 'amber',
-      link: elLink ? elLink.value.trim() : ''
+      announcementEnabled: elEnable ? elEnable.checked : false,
+      announcementText: elText ? elText.value.trim() : '',
+      announcementTheme: elTheme ? elTheme.value : 'amber',
+      announcementLink: elLink ? elLink.value.trim() : ''
     };
 
-    localStorage.setItem('fincalc_global_announcement', JSON.stringify(config));
+    try {
+      const globalSettingsRef = doc(db, 'settings', 'global');
+      await setDoc(globalSettingsRef, config, { merge: true });
 
-    // Dispatch event so active navbar/header updates
-    window.dispatchEvent(new CustomEvent('announcement-updated', { detail: config }));
+      if (elToast) {
+        elToast.classList.remove('hidden');
+        setTimeout(() => elToast.classList.add('hidden'), 3000);
+      }
 
-    if (elToast) {
-      elToast.classList.remove('hidden');
-      setTimeout(() => elToast.classList.add('hidden'), 3000);
+      showToast('Broadcast announcement saved site-wide!', 'success');
+
+      activeAuditLogs.unshift({
+        id: 'log_' + Date.now(),
+        type: 'SYS',
+        msg: `Broadcast banner updated: "${config.announcementText.substring(0, 30)}..."`,
+        time: 'Just now'
+      });
+      renderActivityLogs();
+    } catch (err) {
+      showToast('Failed to save announcement: ' + err.message, 'error');
+    } finally {
+      btnSave.disabled = false;
     }
-
-    showToast('Broadcast announcement updated site-wide!', 'success');
-
-    // Add audit log
-    activeAuditLogs.unshift({
-      id: 'log_' + Date.now(),
-      type: 'SYS',
-      msg: `Broadcast banner updated: "${config.text.substring(0, 30)}..."`,
-      time: 'Just now'
-    });
-    renderActivityLogs();
   });
 }
 
@@ -871,6 +1018,52 @@ function openUserDetailsModal(u) {
       } finally {
         limitSaveBtn.disabled = false;
         limitSaveBtn.textContent = 'Save';
+      }
+    };
+  }
+
+  // Configure Role and Status selectors & save listener
+  const roleSelect = document.getElementById('modal-user-role');
+  const statusSelect = document.getElementById('modal-user-status');
+  const roleStatusSaveBtn = document.getElementById('btn-save-user-role-status');
+
+  if (roleSelect && statusSelect && roleStatusSaveBtn) {
+    roleSelect.value = u.role || 'USER';
+    statusSelect.value = u.status || 'Active';
+
+    roleStatusSaveBtn.onclick = async () => {
+      roleStatusSaveBtn.disabled = true;
+      roleStatusSaveBtn.textContent = 'Saving Settings...';
+
+      const newRole = roleSelect.value;
+      const newStatus = statusSelect.value;
+
+      try {
+        const userRef = doc(db, 'users', u.uid);
+        await updateDoc(userRef, {
+          role: newRole,
+          status: newStatus
+        });
+
+        u.role = newRole;
+        u.status = newStatus;
+        showToast(`Successfully updated access configuration for ${u.name}!`, 'success');
+        
+        // Add to audit logs
+        activeAuditLogs.unshift({
+          id: 'log_' + Date.now(),
+          type: 'SYS',
+          msg: `Admin updated user ${u.name} (Role: ${newRole}, Status: ${newStatus})`,
+          time: 'Just now'
+        });
+        renderActivityLogs();
+        
+        mergeAndRenderUsers();
+      } catch (err) {
+        showToast('Failed to save user role/status: ' + err.message, 'error');
+      } finally {
+        roleStatusSaveBtn.disabled = false;
+        roleStatusSaveBtn.textContent = 'Save Access Settings';
       }
     };
   }

@@ -26,6 +26,10 @@ export function getBrowserFingerprint() {
  * @returns {Promise<{ allowed: boolean, message?: string }>}
  */
 export async function checkAndRecordRateLimit() {
+  if (window.globalSettings && window.globalSettings.enableRateLimiting === false) {
+    return { allowed: true };
+  }
+
   const activeUser = getCurrentUser();
   const identifier = (activeUser && activeUser.uid) ? activeUser.uid : getBrowserFingerprint();
 

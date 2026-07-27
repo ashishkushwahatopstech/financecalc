@@ -17,7 +17,8 @@ import {
   setDoc,
   updateDoc,
   serverTimestamp,
-  writeBatch
+  writeBatch,
+  onSnapshot
 } from './firebase-config.js';
 
 // =========================================================================
@@ -184,13 +185,18 @@ export async function syncUserProfile(user) {
   const photo = user.photoURL || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150';
   const role = isAdminEmail(email) ? 'ADMIN' : (user.role || 'USER');
 
-  // Check if username already exists in Firestore user doc
+  // Check if user record details exist in Firestore
   let existingUsername = user.username || null;
+  let existingStatus = 'Active';
+  let existingRole = role;
   try {
     const userRef = doc(db, 'users', uid);
     const snap = await getDoc(userRef);
-    if (snap.exists() && snap.data().username) {
-      existingUsername = snap.data().username;
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.username) existingUsername = data.username;
+      if (data.status) existingStatus = data.status;
+      if (data.role) existingRole = data.role;
     }
   } catch (err) {
     console.warn("Firestore user fetch username check error:", err);
@@ -205,8 +211,8 @@ export async function syncUserProfile(user) {
     firstLogin: user.firstLogin || new Date().toISOString(),
     lastLogin: new Date().toISOString(),
     lastActive: new Date().toISOString(),
-    role,
-    status: 'Active',
+    role: existingRole,
+    status: existingStatus,
     preferences: user.preferences || { defaultCountry: 'US', defaultCurrency: 'USD' }
   };
 
@@ -1330,67 +1336,15 @@ function renderNavbarSkeleton() {
   }
 }
 
-/**
- * Renders the Admin Broadcast Announcement Banner at the very top of any page
- */
-export function renderGlobalAnnouncement() {
-  try {
-    const raw = localStorage.getItem('fincalc_global_announcement');
-    let existingBanner = document.getElementById('global-broadcast-announcement-banner');
-
-    if (!raw) {
-      if (existingBanner) existingBanner.remove();
-      return;
-    }
-
-    const config = JSON.parse(raw);
-    if (!config || !config.enabled || !config.text) {
-      if (existingBanner) existingBanner.remove();
-      return;
-    }
-
-    if (!existingBanner) {
-      existingBanner = document.createElement('div');
-      existingBanner.id = 'global-broadcast-announcement-banner';
-      document.body.prepend(existingBanner);
-    }
-
-    const themeBg = config.theme === 'indigo' ? 'bg-indigo-600 text-white' :
-                    config.theme === 'emerald' ? 'bg-emerald-600 text-white' :
-                    config.theme === 'rose' ? 'bg-rose-600 text-white' :
-                    'bg-amber-500 text-slate-950 font-semibold';
-
-    existingBanner.className = `${themeBg} px-4 py-2 text-xs text-center flex items-center justify-center gap-2 transition-all shadow-sm z-50 relative`;
-    existingBanner.innerHTML = `
-      <span class="inline-block w-2 h-2 rounded-full bg-current animate-ping"></span>
-      <span>${config.text}</span>
-      ${config.link ? `<a href="${config.link}" class="underline font-bold hover:opacity-80 ml-1">Learn More &rarr;</a>` : ''}
-      <button id="btn-dismiss-announcement" class="ml-4 opacity-70 hover:opacity-100 p-0.5" title="Dismiss">
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-      </button>
-    `;
-
-    document.getElementById('btn-dismiss-announcement')?.addEventListener('click', () => {
-      existingBanner.remove();
-    });
-  } catch (e) {
-    console.error("Failed rendering broadcast banner:", e);
-  }
-}
-
-window.addEventListener('announcement-updated', renderGlobalAnnouncement);
-
-// Show skeleton & announcement immediately on script load
+// Show skeleton immediately on script load
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     renderNavbarSkeleton();
-    renderGlobalAnnouncement();
     rebuildDesktopNavbar(currentUserData);
     rebuildGlobalFooter(currentUserData);
   });
 } else {
   renderNavbarSkeleton();
-  renderGlobalAnnouncement();
   rebuildDesktopNavbar(currentUserData);
   rebuildGlobalFooter(currentUserData);
 }
@@ -1402,6 +1356,7 @@ onAuthStateChanged(auth, async (user) => {
     await syncUserProfile(user);
     updateNavbarUI(user);
     window.dispatchEvent(new CustomEvent('auth-state-changed', { detail: { user, isAdmin: isAdminEmail(user.email) } }));
+    enforceGlobalSettings();
   } else {
     // Check if demo user is active
     const demoUser = getCurrentUser();
@@ -1409,13 +1364,325 @@ onAuthStateChanged(auth, async (user) => {
       currentUserData = demoUser;
       updateNavbarUI(demoUser);
       window.dispatchEvent(new CustomEvent('auth-state-changed', { detail: { user: demoUser, isAdmin: isAdminEmail(demoUser.email) } }));
+      enforceGlobalSettings();
     } else {
       currentUserData = null;
       updateNavbarUI(null);
       window.dispatchEvent(new CustomEvent('auth-state-changed', { detail: { user: null, isAdmin: false } }));
+      enforceGlobalSettings();
     }
   }
 });
+
+// Global settings cache
+let globalSettings = {
+  maintenanceMode: false,
+  allowGuestCalculations: true,
+  enableRateLimiting: true,
+  enableInvoicePdf: true,
+  fxMargin: 0.0
+};
+
+// Start listening to settings in real-time
+export function initSettingsListener() {
+  try {
+    const globalSettingsRef = doc(db, 'settings', 'global');
+    onSnapshot(globalSettingsRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        globalSettings = {
+          maintenanceMode: data.maintenanceMode ?? false,
+          allowGuestCalculations: data.allowGuestCalculations ?? true,
+          enableRateLimiting: data.enableRateLimiting ?? true,
+          enableInvoicePdf: data.enableInvoicePdf ?? true,
+          fxMargin: parseFloat(data.fxMargin || 0.0),
+          announcementEnabled: data.announcementEnabled ?? false,
+          announcementText: data.announcementText || '',
+          announcementTheme: data.announcementTheme || 'amber',
+          announcementLink: data.announcementLink || ''
+        };
+        // Update local storage fallback as well
+        localStorage.setItem('fincalc_global_settings', JSON.stringify(globalSettings));
+      } else {
+        // Fallback default setting document if it doesn't exist
+        globalSettings = {
+          maintenanceMode: false,
+          allowGuestCalculations: true,
+          enableRateLimiting: true,
+          enableInvoicePdf: true,
+          fxMargin: 0.0
+        };
+      }
+      
+      // Save global configuration reference
+      window.globalSettings = globalSettings;
+      
+      // Enforce settings immediately on layout
+      enforceGlobalSettings();
+    }, (err) => {
+      console.warn("Firestore settings listener error (falling back to local cache):", err);
+      loadLocalSettingsFallback();
+    });
+  } catch (err) {
+    console.warn("Settings init error:", err);
+    loadLocalSettingsFallback();
+  }
+
+  // Also listen to SEO settings document
+  try {
+    const seoRef = doc(db, 'settings', 'seo');
+    onSnapshot(seoRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const seoData = docSnap.data();
+        window.seoSettings = seoData;
+        enforceSeoMetadata(seoData);
+      }
+    }, (err) => {
+      console.warn("Firestore SEO settings listener error:", err);
+    });
+  } catch (err) {
+    console.warn("SEO listener init error:", err);
+  }
+}
+
+function loadLocalSettingsFallback() {
+  try {
+    const cached = localStorage.getItem('fincalc_global_settings');
+    if (cached) {
+      globalSettings = JSON.parse(cached);
+      window.globalSettings = globalSettings;
+      enforceGlobalSettings();
+    }
+  } catch (e) {
+    console.error("Failed loading cached settings:", e);
+  }
+}
+
+export function enforceGlobalSettings() {
+  const settings = window.globalSettings || globalSettings;
+  const user = currentUserData || getCurrentUser();
+  const isAdmin = user ? isAdminEmail(user.email) : false;
+
+  const rawPath = window.location.pathname.split('/').pop() || 'index.html';
+  const currentPage = rawPath.toLowerCase();
+
+  // 1. Enforce Maintenance Mode
+  const existingMaintenance = document.getElementById('maintenance-overlay');
+  if (settings.maintenanceMode && !isAdmin) {
+    if (!existingMaintenance) {
+      const overlay = document.createElement('div');
+      overlay.id = 'maintenance-overlay';
+      overlay.className = 'fixed inset-0 z-[9999] flex flex-col items-center justify-center p-6 bg-slate-950/98 backdrop-blur-md animate-fade-in text-white text-center';
+      overlay.innerHTML = `
+        <div class="max-w-md p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/10 opacity-50 pointer-events-none"></div>
+          <div class="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto mb-6 border border-amber-500/20 animate-pulse">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white mb-2">System Under Maintenance</h1>
+          <p class="text-xs text-slate-400 leading-relaxed mb-6 font-medium">
+            We are upgrading our calculator suite with new algorithms and performance improvements. Standard tools will be back online shortly. Thank you for your patience!
+          </p>
+          <div class="flex flex-col gap-2">
+            <button id="btn-maintenance-admin-login" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 font-extrabold text-xs rounded-xl transition-all shadow-xs cursor-pointer">
+              Sign in as Administrator
+            </button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      document.getElementById('btn-maintenance-admin-login')?.addEventListener('click', () => {
+        loginWithGoogle();
+      });
+    }
+  } else {
+    existingMaintenance?.remove();
+  }
+
+  // 2. Enforce Suspended/Banned User
+  const existingBan = document.getElementById('ban-overlay');
+  if (user && user.status === 'Suspended') {
+    if (!existingBan) {
+      const overlay = document.createElement('div');
+      overlay.id = 'ban-overlay';
+      overlay.className = 'fixed inset-0 z-[10000] flex flex-col items-center justify-center p-6 bg-slate-950 text-white text-center';
+      overlay.innerHTML = `
+        <div class="max-w-md p-8 rounded-3xl bg-slate-900/60 border border-red-500/20 shadow-2xl backdrop-blur-xl">
+          <div class="w-16 h-16 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-6 border border-red-500/20">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+          </div>
+          <h1 class="text-xl font-black tracking-tight text-white mb-2">Account Suspended</h1>
+          <p class="text-xs text-slate-400 leading-relaxed mb-6 font-medium">
+            Your account has been suspended by the Administrator due to a policy violation or abnormal activity. If you believe this is an error, please contact support.
+          </p>
+          <button id="btn-ban-logout" class="px-5 py-2.5 bg-red-650 hover:bg-red-700 active:scale-95 text-white font-extrabold text-xs rounded-xl transition-all shadow-xs cursor-pointer">
+            Sign Out
+          </button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      
+      document.getElementById('btn-ban-logout')?.addEventListener('click', async () => {
+        await logoutUser();
+        window.location.reload();
+      });
+    }
+  } else {
+    existingBan?.remove();
+  }
+
+  // 3. Enforce Guest Calculations Lock (only standard tools, not homepage, about, contact, updates, profile, admin, stats, links)
+  const nonCalculatorPages = [
+    'index.html', 'about.html', 'contact.html', 'updates.html', 
+    'profile.html', 'admin.html', 'link-stats.html', 'disclaimer.html',
+    'terms-of-service.html', 'privacy-policy.html'
+  ];
+  const isCalculatorPage = !nonCalculatorPages.includes(currentPage);
+  const existingLock = document.getElementById('login-lock-overlay');
+  
+  if (!settings.allowGuestCalculations && !user && isCalculatorPage) {
+    if (!existingLock) {
+      const overlay = document.createElement('div');
+      overlay.id = 'login-lock-overlay';
+      overlay.className = 'fixed inset-0 z-[999] flex flex-col items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md animate-fade-in text-white text-center';
+      overlay.innerHTML = `
+        <div class="max-w-md p-8 rounded-3xl bg-slate-900/60 border border-slate-800/80 shadow-2xl backdrop-blur-xl relative overflow-hidden animate-scale-up">
+          <div class="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-transparent to-indigo-500/10 opacity-50 pointer-events-none"></div>
+          <div class="w-16 h-16 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          </div>
+          <h1 class="text-xl font-black tracking-tight text-white mb-2">Registration Required</h1>
+          <p class="text-xs text-slate-400 leading-relaxed mb-6 font-medium">
+            This professional calculator is reserved for registered users. Create a free account or sign in to save calculations, customize subtotal preferences, and export PDF reports.
+          </p>
+          <button id="btn-lock-google-login" class="w-full py-2.5 bg-white text-slate-900 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-95 transition-transform hover:bg-slate-50">
+            <svg class="w-4.5 h-4.5 shrink-0" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Sign in with Google</span>
+          </button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      document.getElementById('btn-lock-google-login')?.addEventListener('click', () => {
+        loginWithGoogle();
+      });
+    }
+  } else {
+    existingLock?.remove();
+  }
+
+  // 4. Enforce PDF Invoice Export Disable
+  if (currentPage === 'invoice-generator.html') {
+    const btnPdf = document.getElementById('btn-download-pdf');
+    const btnPrint = document.getElementById('btn-print-invoice');
+    
+    if (btnPdf && btnPrint) {
+      if (!settings.enableInvoicePdf) {
+        btnPdf.classList.add('opacity-50', 'cursor-not-allowed');
+        btnPrint.classList.add('opacity-50', 'cursor-not-allowed');
+        
+        btnPdf.title = 'PDF Generation is disabled by the Administrator.';
+        btnPrint.title = 'Printing is disabled by the Administrator.';
+
+        // Prevent print/download events
+        btnPdf.onclick = (e) => {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          showToast('PDF Generation is temporarily disabled by the Administrator.', 'error');
+        };
+        btnPrint.onclick = (e) => {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          showToast('Printing is temporarily disabled by the Administrator.', 'error');
+        };
+      } else {
+        // Reset properties
+        btnPdf.classList.remove('opacity-50', 'cursor-not-allowed');
+        btnPrint.classList.remove('opacity-50', 'cursor-not-allowed');
+        btnPdf.removeAttribute('title');
+        btnPrint.removeAttribute('title');
+        btnPdf.onclick = null;
+        btnPrint.onclick = null;
+      }
+    }
+  }
+
+  // 5. Enforce dynamic announcement bar
+  renderAnnouncementsBannerDynamic(settings);
+}
+
+function enforceSeoMetadata(seoData) {
+  const rawPath = window.location.pathname.split('/').pop() || 'index.html';
+  const currentPage = rawPath.toLowerCase();
+  
+  if (seoData && seoData[currentPage]) {
+    const config = seoData[currentPage];
+    if (config.title) {
+      document.title = config.title;
+    }
+    if (config.description) {
+      let descMeta = document.querySelector('meta[name="description"]');
+      if (!descMeta) {
+        descMeta = document.createElement('meta');
+        descMeta.name = 'description';
+        document.head.appendChild(descMeta);
+      }
+      descMeta.setAttribute('content', config.description);
+    }
+    if (config.keywords) {
+      let keywordsMeta = document.querySelector('meta[name="keywords"]');
+      if (!keywordsMeta) {
+        keywordsMeta = document.createElement('meta');
+        keywordsMeta.name = 'keywords';
+        document.head.appendChild(keywordsMeta);
+      }
+      keywordsMeta.setAttribute('content', config.keywords);
+    }
+  }
+}
+
+function renderAnnouncementsBannerDynamic(settings) {
+  let existingBanner = document.getElementById('global-broadcast-announcement-banner');
+
+  if (!settings.announcementEnabled || !settings.announcementText) {
+    if (existingBanner) existingBanner.remove();
+    return;
+  }
+
+  if (!existingBanner) {
+    existingBanner = document.createElement('div');
+    existingBanner.id = 'global-broadcast-announcement-banner';
+    document.body.prepend(existingBanner);
+  }
+
+  const themeBg = settings.announcementTheme === 'indigo' ? 'bg-indigo-600 text-white' :
+                  settings.announcementTheme === 'emerald' ? 'bg-emerald-600 text-white' :
+                  settings.announcementTheme === 'rose' ? 'bg-rose-600 text-white' :
+                  'bg-amber-500 text-slate-950 font-semibold';
+
+  existingBanner.className = `${themeBg} px-4 py-2 text-xs text-center flex items-center justify-center gap-2 transition-all shadow-sm z-50 relative`;
+  existingBanner.innerHTML = `
+    <span class="inline-block w-2 h-2 rounded-full bg-current animate-ping animate-pulse-slow"></span>
+    <span>${settings.announcementText}</span>
+    ${settings.announcementLink ? `<a href="${settings.announcementLink}" class="underline font-bold hover:opacity-80 ml-1">Learn More &rarr;</a>` : ''}
+    <button id="btn-dismiss-announcement" class="ml-4 opacity-70 hover:opacity-100 p-0.5" title="Dismiss">
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+  `;
+
+  document.getElementById('btn-dismiss-announcement')?.addEventListener('click', () => {
+    existingBanner.remove();
+  });
+}
+
+// Start listening immediately
+initSettingsListener();
 
 /**
  * Rebuilds the footer dynamically across all pages to match index.html

@@ -711,61 +711,168 @@
         </div>
       </div>
 
-      <!-- System Operational Toggles & Margin Control -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-          <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Feature Flags & Guest Controls</h3>
-          
-          <div class="space-y-3 text-xs">
-            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-              <div>
-                <div class="font-bold text-slate-800">Guest Calculations</div>
-                <div class="text-slate-500 text-[11px]">Allow unauthenticated guests to use all calculators</div>
-              </div>
-              <input type="checkbox" class="w-4 h-4 text-amber-600 rounded" checked disabled />
-            </div>
-
-            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-              <div>
-                <div class="font-bold text-slate-800">PDF Invoice Export Engine</div>
-                <div class="text-slate-500 text-[11px]">Browser window print & PDF formatting</div>
-              </div>
-              <input type="checkbox" class="w-4 h-4 text-amber-600 rounded" checked disabled />
-            </div>
-
-            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
-              <div>
-                <div class="font-bold text-slate-800">Live Exchange Rates Sync</div>
-                <div class="text-slate-500 text-[11px]">Automated 12-hour Currency API refresh</div>
-              </div>
-              <input type="checkbox" class="w-4 h-4 text-amber-600 rounded" checked disabled />
-            </div>
+      <!-- Global Site Configuration & Operations Control Center -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              Global Operational Settings & Configuration
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Control site-wide operation modes, guest logins, rate limiting, and core margins.</p>
           </div>
+          <span class="text-xs font-bold bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200">System Controller</span>
         </div>
 
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-          <h3 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-3">Global Currency Rate Spread / Margin</h3>
-          
-          <div class="space-y-3 text-xs">
-            <p class="text-slate-500">Adjust the administrative exchange fee / markup added to raw FX quotes.</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+          <!-- Column 1: Feature Flags & Controls -->
+          <div class="space-y-3">
+            <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Site Access Toggles</h4>
+            
+            <!-- Maintenance Mode Switch -->
+            <div class="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-100 transition-colors">
+              <div>
+                <div class="font-bold text-slate-800 flex items-center gap-1.5">
+                  <span>🚧 Scheduled Maintenance Mode</span>
+                </div>
+                <div class="text-slate-500 text-[10px] mt-0.5">Block standard visitors with a maintenance landing notice</div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="ctrl-maintenance-mode" class="sr-only peer" />
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+              </label>
+            </div>
+            
+            <!-- Guest Calculations Switch -->
+            <div class="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-100 transition-colors">
+              <div>
+                <div class="font-bold text-slate-800 flex items-center gap-1.5">
+                  <span>👤 Allow Guest Calculations</span>
+                </div>
+                <div class="text-slate-500 text-[10px] mt-0.5">Allow unauthenticated standard guests to use all calculators</div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="ctrl-allow-guest-calcs" class="sr-only peer" checked />
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-350 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+              </label>
+            </div>
+
+            <!-- Rate Limiting Switch -->
+            <div class="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-100 transition-colors">
+              <div>
+                <div class="font-bold text-slate-800 flex items-center gap-1.5">
+                  <span>🛡️ Enable Anti-Spam Rate Limits</span>
+                </div>
+                <div class="text-slate-500 text-[10px] mt-0.5">Throttle calculation submissions (max 5 per 10 mins per user/IP)</div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="ctrl-enable-rate-limit" class="sr-only peer" checked />
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+              </label>
+            </div>
+
+            <!-- PDF Invoice Export Switch -->
+            <div class="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-100 transition-colors">
+              <div>
+                <div class="font-bold text-slate-800 flex items-center gap-1.5">
+                  <span>📄 Enable PDF Invoice Export Engine</span>
+                </div>
+                <div class="text-slate-500 text-[10px] mt-0.5">Allow users to export generated invoices to PDF files and print them</div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="ctrl-enable-invoice-pdf" class="sr-only peer" checked />
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Column 2: FX Margin -->
+          <div class="space-y-4">
+            <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Currency Converter FX Markup</h4>
+            <p class="text-slate-500 leading-relaxed text-[11px]">Adjust the administrative exchange fee / markup added to raw FX quotes during currency conversions.</p>
             
             <div>
               <label class="block font-bold text-slate-700 mb-1">Default FX Margin (% Spread):</label>
-              <div class="flex gap-2">
-                <input type="number" id="ctrl-fx-margin" value="0.0" step="0.1" min="0" max="5" class="w-32 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-amber-500" />
-                <button id="btn-save-fx-margin" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-colors cursor-pointer">
-                  Update Margin
-                </button>
-              </div>
+              <input type="number" id="ctrl-fx-margin" value="0.0" step="0.1" min="0" max="5" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-emerald-500" />
             </div>
 
-            <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-[11px] leading-relaxed">
+            <div class="p-3.5 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-[11px] leading-relaxed">
               <strong>Note:</strong> Setting a 0% spread uses raw ECB / Interbank market rates directly for currency calculations.
             </div>
           </div>
         </div>
 
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+          <span id="global-settings-saved-toast" class="text-xs text-emerald-600 font-bold hidden">✓ Global settings updated successfully!</span>
+          <button id="btn-save-global-settings" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-all shadow-xs cursor-pointer ml-auto flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            Save System Settings
+          </button>
+        </div>
+      </div>
+
+      <!-- SEO Metadata Customizer -->
+      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <svg class="w-5 h-5 text-indigo-650" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              SEO Metadata Customizer
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Customize browser titles, search engine descriptions, and keywords for individual pages in real time.</p>
+          </div>
+          <span class="text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full border border-indigo-200">SEO Manager</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Select Page to Customize:</label>
+            <select id="seo-page-select" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-900 focus:outline-none focus:border-indigo-600 cursor-pointer">
+              <option value="index.html">Homepage (index.html)</option>
+              <option value="loan-calculator.html">Loan Calculator</option>
+              <option value="emi-calculator.html">EMI Calculator</option>
+              <option value="sip-calculator.html">SIP Calculator</option>
+              <option value="ppf-fd-rd-calculator.html">PPF/FD/RD Calculator</option>
+              <option value="currency-converter.html">Currency Converter</option>
+              <option value="tax-calculator.html">Tax Calculator</option>
+              <option value="salary-calculator.html">Salary Calculator</option>
+              <option value="roi-calculator.html">ROI Calculator</option>
+              <option value="invoice-generator.html">Invoice Generator</option>
+              <option value="pdf-tools.html">PDF Tools</option>
+              <option value="image-compressor.html">Image Compressor</option>
+              <option value="resume-builder.html">Resume Builder</option>
+              <option value="qr-generator.html">QR Code Generator</option>
+              <option value="password-generator.html">Password Generator</option>
+              <option value="word-counter.html">Word Counter</option>
+              <option value="unit-converter.html">Unit Converter</option>
+              <option value="age-calculator.html">Age Calculator</option>
+              <option value="updates.html">Updates / Blog</option>
+            </select>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label class="block font-bold text-slate-700 mb-1">Browser Tab Title:</label>
+            <input type="text" id="seo-title-input" placeholder="e.g. Loan Calculator - Compute Amortization Schedule" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:outline-none focus:border-indigo-650" />
+          </div>
+        </div>
+
+        <div class="text-xs space-y-1">
+          <label class="block font-bold text-slate-700">Meta Search Description:</label>
+          <textarea id="seo-description-input" rows="3" placeholder="Describe the page content for Google search results (typically 150-160 characters)..." class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:outline-none focus:border-indigo-650 leading-relaxed"></textarea>
+        </div>
+
+        <div class="text-xs space-y-1">
+          <label class="block font-bold text-slate-700">Meta Keywords (comma separated):</label>
+          <input type="text" id="seo-keywords-input" placeholder="e.g. calculator, loan, interest, amortization, emi" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-900 focus:outline-none focus:border-indigo-650" />
+        </div>
+
+        <div class="pt-2 flex items-center justify-between border-t border-slate-100">
+          <span id="seo-settings-saved-toast" class="text-xs text-emerald-600 font-bold hidden">✓ SEO overrides saved successfully!</span>
+          <button id="btn-save-seo-settings" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-xs cursor-pointer ml-auto flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            Save SEO Overrides
+          </button>
+        </div>
       </div>
 
     </div>
@@ -901,6 +1008,30 @@
                 </select>
                 <button id="btn-save-user-blog-limit" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition-colors cursor-pointer">
                   Save
+                </button>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="font-bold text-slate-800 mb-1">Role & Account Status Configuration:</h4>
+            <div class="p-3 bg-slate-50 rounded-xl space-y-3">
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-slate-650">User Access Role:</span>
+                <select id="modal-user-role" class="px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-800 focus:outline-none cursor-pointer">
+                  <option value="USER">Standard User</option>
+                  <option value="ADMIN">Administrator</option>
+                </select>
+              </div>
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-slate-650">Account Status:</span>
+                <select id="modal-user-status" class="px-2 py-1 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-800 focus:outline-none cursor-pointer">
+                  <option value="Active">🟢 Active</option>
+                  <option value="Suspended">🔴 Suspended</option>
+                </select>
+              </div>
+              <div class="flex justify-end pt-1">
+                <button id="btn-save-user-role-status" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition-colors cursor-pointer flex items-center gap-1">
+                  Save Access Settings
                 </button>
               </div>
             </div>
