@@ -913,7 +913,7 @@ function updateNavbarUI(user) {
   // Render Desktop Mega Menu Navigation Bar dynamically
   const desktopNav = document.querySelector('header nav');
   if (desktopNav) {
-    desktopNav.className = "hidden lg:flex items-center gap-4 text-xs font-semibold text-slate-600";
+    desktopNav.className = "hidden lg:flex items-center gap-3 text-xs font-semibold text-slate-600";
     
     const buildCardGridHtml = (items) => {
       return items.map(t => {
