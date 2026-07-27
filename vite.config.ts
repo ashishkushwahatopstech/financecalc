@@ -55,6 +55,7 @@ export default defineConfig(() => {
           uuid: path.resolve(__dirname, 'uuid-hash-generator.html'),
           regex: path.resolve(__dirname, 'regex-tester.html'),
           color: path.resolve(__dirname, 'color-converter.html'),
+          markdown: path.resolve(__dirname, 'markdown-editor.html'),
         },
       },
     },
