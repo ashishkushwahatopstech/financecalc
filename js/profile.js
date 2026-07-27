@@ -494,19 +494,25 @@ async function setupSavedCollectionsUI(user) {
       }
 
       return `
-        <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-200/50 transition-colors gap-3 w-full animate-fade-in">
-          <a href="${actionUrl}" class="flex items-center gap-2.5 min-w-0 flex-1 hover:underline">
-            <div class="rounded-lg bg-white border border-slate-200/60 flex items-center justify-center shrink-0 shadow-3xs text-xs" style="width: 40px; height: 30px;">
-              <span>${icon}</span>
+        <div class="group relative flex flex-col justify-between p-3 bg-slate-50 hover:bg-slate-100/80 rounded-2xl border border-slate-200/50 aspect-[4/3] cursor-pointer min-w-0 overflow-hidden hover:scale-[1.02] hover:shadow-3xs transition-all duration-300 animate-fade-in">
+          <!-- Absolute Delete Button -->
+          <button data-id="${item.id}" data-group="${groupName}" class="btn-remove-saved-item absolute top-2 right-2 p-1.5 bg-white/95 hover:bg-rose-50 text-slate-450 hover:text-rose-600 rounded-lg shadow-3xs border border-slate-200/40 transition-colors cursor-pointer z-10" title="Remove Bookmark">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+          </button>
+
+          <!-- Card Content Link -->
+          <a href="${actionUrl}" class="flex flex-col justify-between h-full min-w-0 flex-1">
+            <!-- Icon Box -->
+            <div class="w-8 h-8 rounded-xl bg-white border border-slate-200/60 flex items-center justify-center shadow-3xs shrink-0 transition-transform group-hover:scale-105 duration-300">
+              <span class="text-sm">${icon}</span>
             </div>
-            <div class="min-w-0">
-              <p class="text-[11px] font-extrabold text-slate-800 truncate">${escapeHTML(title)}</p>
-              <p class="text-[9px] text-slate-455 font-semibold truncate leading-none mt-0.5">${escapeHTML(subtitle)}</p>
+            
+            <!-- Details stacked at bottom -->
+            <div class="min-w-0 space-y-0.5 mt-2">
+              <h4 class="text-[11px] font-black text-slate-800 tracking-tight line-clamp-2 leading-snug group-hover:text-emerald-700 transition-colors">${escapeHTML(title)}</h4>
+              <p class="text-[8px] font-bold text-slate-455 uppercase tracking-wider leading-none truncate">${escapeHTML(subtitle)}</p>
             </div>
           </a>
-          <button data-id="${item.id}" data-group="${groupName}" class="btn-remove-saved-item p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Remove Bookmark">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-          </button>
         </div>
       `;
     }).join('');
