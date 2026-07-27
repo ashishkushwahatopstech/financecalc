@@ -233,12 +233,12 @@ function renderUserBlogPostsList(container, user) {
     const shareUrl = `${window.location.origin}/blog/${post.id}-${slugify(post.title)}`;
 
     return `
-      <div class="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div class="flex gap-3 items-start overflow-hidden">
+      <div class="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 w-full min-w-0 overflow-hidden">
+        <div class="flex gap-3 items-start min-w-0 w-full sm:w-auto flex-1">
           ${hasImage ? `
             <img src="${escapeHTML(post.featuredImage)}" class="w-14 h-14 rounded-lg object-cover border border-slate-200 shrink-0" onerror="this.remove()" />
           ` : ''}
-          <div class="space-y-1 min-w-0">
+          <div class="space-y-1 min-w-0 flex-1">
             <div class="flex items-center gap-1.5 flex-wrap">
               <span class="px-2 py-0.5 rounded text-[9px] font-bold ${isPublic ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-slate-100 text-slate-600'}">
                 ${isPublic ? 'Public' : 'Private'}
@@ -248,12 +248,12 @@ function renderUserBlogPostsList(container, user) {
               </span>
               <span class="text-slate-400 text-[10px]">${dateStr}</span>
             </div>
-            <h4 class="font-bold text-slate-900 text-xs sm:text-sm tracking-tight truncate max-w-sm sm:max-w-md">${escapeHTML(post.title)}</h4>
-            <p class="text-slate-500 text-[11px] line-clamp-1 leading-relaxed">${escapeHTML(post.body)}</p>
+            <h4 class="font-bold text-slate-900 text-xs sm:text-sm tracking-tight truncate w-full">${escapeHTML(post.title)}</h4>
+            <p class="text-slate-500 text-[11px] line-clamp-1 leading-relaxed w-full">${escapeHTML(post.body)}</p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+        <div class="flex items-center gap-2 shrink-0 self-stretch sm:self-auto justify-end">
           ${isPublic && isPublished ? `
             <button data-share-url="${escapeHTML(shareUrl)}" class="btn-share-post-link p-2 bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 rounded-xl transition-colors cursor-pointer border border-slate-200" title="Copy article share link">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 10.742l5.064-2.532m0 0A3 3 0 1015.347 4.9a3 3 0 00-1.6 3.31M8.684 13.258l5.064 2.532m0 0A3 3 0 1015.347 19.1a3 3 0 00-1.6-3.31"></path></svg>
