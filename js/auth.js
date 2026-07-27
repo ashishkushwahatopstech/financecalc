@@ -841,86 +841,100 @@ function updateNavbarUI(user) {
     const path = rawPath.toLowerCase();
     const isHome = path === '' || path === 'index.html';
 
-    const mainTools = [
-      { name: 'Home', href: 'index.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>' },
-      { name: 'Loan / Mortgage Calculator', href: 'loan-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>' },
-      { name: 'Currency Converter', href: 'currency-converter.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>' },
-      { name: 'Income Tax Calculator', href: 'tax-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>' },
-      { name: 'Salary & Paycheck', href: 'salary-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>' },
-      { name: 'Invoice Generator', href: 'invoice-generator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>' },
-      { name: 'ROI & Investment', href: 'roi-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>' },
-      { name: 'URL Shortener', href: 'url-shortener.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>' },
-      { name: 'Blog', href: 'updates.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>' }
+    const isPageActive = (href) => {
+      return (href === 'index.html' && isHome) || (path === href.toLowerCase());
+    };
+
+    const financialGroup = [
+      { name: 'Home', href: 'index.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>' },
+      { name: 'Loan & Mortgage', href: 'loan-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>' },
+      { name: 'EMI Calculator', href: 'emi-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>' },
+      { name: 'SIP Calculator', href: 'sip-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>' },
+      { name: 'Savings (PPF/FD/RD)', href: 'ppf-fd-rd-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>' },
+      { name: 'Currency Converter', href: 'currency-converter.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>' },
+      { name: 'Income Tax', href: 'tax-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>' },
+      { name: 'Salary Calculator', href: 'salary-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>' },
+      { name: 'ROI Calculator', href: 'roi-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>' }
     ];
 
-    const utilityTools = [
-      { name: 'QR Code Generator', href: 'qr-generator.html', badge: 'PNG', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>' },
-      { name: 'Password Generator', href: 'password-generator.html', badge: 'Secure', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 0121 9z"></path>' },
-      { name: 'Word Counter', href: 'word-counter.html', badge: 'Stats', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>' },
-      { name: 'Unit Converter', href: 'unit-converter.html', badge: 'Units', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 18h12l3-18H3zm3 4h12M9 14h6"></path>' },
-      { name: 'Age Calculator', href: 'age-calculator.html', badge: 'Exact', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>' }
+    const businessGroup = [
+      { name: 'Invoice Generator', href: 'invoice-generator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>' },
+      { name: 'PDF Utilities', href: 'pdf-tools.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>' },
+      { name: 'Image Compressor', href: 'image-compressor.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>' },
+      { name: 'Resume Builder', href: 'resume-builder.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>' }
     ];
 
-    const mainLinks = mainTools.map(t => {
-      const active = (t.href === 'index.html' && isHome) || (path === t.href);
-      return `
-        <a href="${t.href}" class="flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-xl transition-all ${
-          active 
-            ? 'bg-emerald-50 text-emerald-800 font-bold border border-emerald-200/80 shadow-2xs' 
-            : 'text-slate-700 hover:bg-slate-100/80 hover:text-slate-900'
-        }">
-          <div class="flex items-center gap-2.5">
-            <svg class="w-4 h-4 ${active ? 'text-emerald-600' : 'text-slate-400'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">${t.icon}</svg>
-            <span>${t.name}</span>
-          </div>
-          ${active ? '<span class="w-2 h-2 rounded-full bg-emerald-500"></span>' : ''}
-        </a>
-      `;
-    }).join('');
+    const utilitiesGroup = [
+      { name: 'URL Shortener', href: 'url-shortener.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>' },
+      { name: 'QR Code Generator', href: 'qr-generator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>' },
+      { name: 'Password Generator', href: 'password-generator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 0121 9z"></path>' },
+      { name: 'Word Counter', href: 'word-counter.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>' },
+      { name: 'Unit Converter', href: 'unit-converter.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 6l3 18h12l3-18H3zm3 4h12M9 14h6"></path>' },
+      { name: 'Age Calculator', href: 'age-calculator.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>' },
+      { name: 'Blog Updates', href: 'updates.html', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>' }
+    ];
 
-    const utilLinks = utilityTools.map(t => {
-      const active = path === t.href;
-      return `
-        <a href="${t.href}" class="flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-xl transition-all ${
-          active 
-            ? 'bg-indigo-50 text-indigo-900 font-bold border border-indigo-200/80 shadow-2xs' 
-            : 'text-slate-700 hover:bg-indigo-100/50 hover:text-indigo-950'
-        }">
-          <div class="flex items-center gap-2.5">
-            <svg class="w-4 h-4 ${active ? 'text-indigo-600' : 'text-indigo-500'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">${t.icon}</svg>
-            <span>${t.name}</span>
-          </div>
-          <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${
+    const hasActiveFinancial = financialGroup.some(t => isPageActive(t.href));
+    const hasActiveBusiness = businessGroup.some(t => isPageActive(t.href));
+    const hasActiveUtilities = utilitiesGroup.some(t => isPageActive(t.href));
+
+    const buildGroupHtml = (items) => {
+      return items.map(t => {
+        const active = isPageActive(t.href);
+        return `
+          <a href="${t.href}" class="flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-xl transition-all ${
             active 
-              ? 'bg-indigo-600 text-white' 
-              : 'bg-indigo-100 text-indigo-700'
-          }">${t.badge}</span>
-        </a>
-      `;
-    }).join('');
+              ? 'bg-indigo-50 text-indigo-900 font-bold border border-indigo-200/80 shadow-2xs' 
+              : 'text-slate-700 hover:bg-slate-100/80 hover:text-slate-900'
+          }">
+            <div class="flex items-center gap-2.5">
+              <svg class="w-4 h-4 shrink-0 ${active ? 'text-indigo-600' : 'text-slate-400'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">${t.icon}</svg>
+              <span>${t.name}</span>
+            </div>
+            ${active ? '<span class="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>' : ''}
+          </a>
+        `;
+      }).join('');
+    };
 
     return `
-      <div class="space-y-4">
-        <div>
-          <p class="px-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Financial Tools</span>
-            <span class="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-bold">6 Tools</span>
-          </p>
-          <div class="space-y-1">
-            ${mainLinks}
+      <div class="space-y-3">
+        <!-- 1. Financial Tools Group -->
+        <div class="border border-slate-150 rounded-2xl overflow-hidden bg-slate-50/50">
+          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-4 py-3 text-xs font-extrabold text-slate-800 hover:bg-slate-100/50 transition-colors cursor-pointer" data-target="drawer-financial">
+            <span class="flex items-center gap-2">
+              <span>📈</span> Financial Calculators
+            </span>
+            <svg class="toggle-arrow w-4.5 h-4.5 text-slate-400 transition-transform duration-200" style="transform: rotate(${hasActiveFinancial ? 90 : 0}deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+          <div id="drawer-financial" class="px-2 pb-2 space-y-1 bg-white border-t border-slate-100 ${hasActiveFinancial ? '' : 'hidden'}">
+            ${buildGroupHtml(financialGroup)}
           </div>
         </div>
 
-        <div class="pt-3 border-t border-slate-100">
-          <div class="px-2 text-[10px] font-extrabold text-indigo-600 uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span class="flex items-center gap-1">
-              <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-              Quick Utilities
+        <!-- 2. Business Tools Group -->
+        <div class="border border-slate-150 rounded-2xl overflow-hidden bg-slate-50/50">
+          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-4 py-3 text-xs font-extrabold text-slate-800 hover:bg-slate-100/50 transition-colors cursor-pointer" data-target="drawer-business">
+            <span class="flex items-center gap-2">
+              <span>💼</span> Business & Documents
             </span>
-            <span class="text-[9px] bg-indigo-100 text-indigo-800 px-1.5 py-0.5 rounded font-bold border border-indigo-200/60">5 Utilities</span>
+            <svg class="toggle-arrow w-4.5 h-4.5 text-slate-400 transition-transform duration-200" style="transform: rotate(${hasActiveBusiness ? 90 : 0}deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+          <div id="drawer-business" class="px-2 pb-2 space-y-1 bg-white border-t border-slate-100 ${hasActiveBusiness ? '' : 'hidden'}">
+            ${buildGroupHtml(businessGroup)}
           </div>
-          <div class="space-y-1 bg-indigo-50/40 p-1.5 rounded-2xl border border-indigo-100/80">
-            ${utilLinks}
+        </div>
+
+        <!-- 3. Utilities Group -->
+        <div class="border border-slate-150 rounded-2xl overflow-hidden bg-slate-50/50">
+          <button type="button" class="drawer-group-toggle w-full flex items-center justify-between px-4 py-3 text-xs font-extrabold text-slate-800 hover:bg-slate-100/50 transition-colors cursor-pointer" data-target="drawer-utilities">
+            <span class="flex items-center gap-2">
+              <span>🛠️</span> Productivity Utilities
+            </span>
+            <svg class="toggle-arrow w-4.5 h-4.5 text-slate-400 transition-transform duration-200" style="transform: rotate(${hasActiveUtilities ? 90 : 0}deg);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+          <div id="drawer-utilities" class="px-2 pb-2 space-y-1 bg-white border-t border-slate-100 ${hasActiveUtilities ? '' : 'hidden'}">
+            ${buildGroupHtml(utilitiesGroup)}
           </div>
         </div>
       </div>
@@ -999,9 +1013,7 @@ function updateNavbarUI(user) {
 
     <!-- Mobile Navigation Toggle Button (< lg) -->
     <button id="btn-mobile-menu-toggle" aria-label="Toggle Menu" class="lg:hidden flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-colors cursor-pointer active:scale-95 text-xs font-bold">
-      <svg class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-      </svg>
+      <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
       <span>Menu</span>
     </button>
   `;
@@ -1009,7 +1021,7 @@ function updateNavbarUI(user) {
   // Create Left/Mobile Slide-In Drawer & Backdrop for Mobile (< lg)
   const backdrop = document.createElement('div');
   backdrop.id = 'user-left-drawer-backdrop';
-  backdrop.className = 'fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden opacity-0 transition-opacity duration-300 lg:hidden';
+  backdrop.className = 'fixed inset-0 bg-slate-900/60 z-40 transition-opacity duration-300 hidden opacity-0 lg:hidden';
 
   const drawer = document.createElement('aside');
   drawer.id = 'user-left-drawer';
@@ -1020,15 +1032,12 @@ function updateNavbarUI(user) {
       <!-- Header -->
       <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 shrink-0">
         <div class="flex items-center gap-3">
-          <div class="p-[2.5px] rounded-full shadow-xs" style="background: conic-gradient(from 315deg, #EA4335 0deg 90deg, #4285F4 90deg 180deg, #34A853 180deg 270deg, #FBBC05 270deg 360deg);">
-            <img src="${userPhoto}" alt="${userName}" class="w-10 h-10 rounded-full object-cover border-2 border-white" />
+          <div class="p-[1.5px] rounded-full" style="background: conic-gradient(from 315deg, #EA4335 0deg 90deg, #4285F4 90deg 180deg, #34A853 180deg 270deg, #FBBC05 270deg 360deg);">
+            <img src="${userPhoto}" alt="${userName}" class="w-8 h-8 rounded-full object-cover border-2 border-white" />
           </div>
           <div class="overflow-hidden">
-            <h4 class="text-xs font-bold text-slate-900 truncate flex items-center gap-1.5">
-              ${userName}
-              ${isAdmin ? `<span class="bg-amber-100 text-amber-800 text-[9px] font-black px-1.5 py-0.5 rounded border border-amber-300">ADMIN</span>` : ''}
-            </h4>
-            <p class="text-[11px] text-slate-500 truncate">${user.email}</p>
+            <p class="text-xs font-bold text-slate-900 truncate leading-tight">${userName}</p>
+            <p class="text-[10px] text-slate-500 truncate mt-0.5">${user.email}</p>
           </div>
         </div>
         <button id="close-left-drawer-btn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/60 transition-colors cursor-pointer">
@@ -1038,31 +1047,24 @@ function updateNavbarUI(user) {
 
       <!-- Scrollable Body -->
       <div class="p-4 space-y-4 flex-1 overflow-y-auto">
+        <!-- Shortcuts inside Drawer -->
         <div>
-          <p class="px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Account</p>
-          
-          <div class="space-y-1">
-            <a href="profile.html" class="flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-colors">
-              <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-              My Profile & Preferences
+          <p class="px-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2">My Shortcuts</p>
+          <div class="grid grid-cols-2 gap-2">
+            <a href="profile.html" class="flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 rounded-xl transition-all border border-slate-200/80 text-center gap-1.5 cursor-pointer">
+              <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              <span class="text-[10px] font-bold">My Profile</span>
             </a>
-
-            <a href="link-stats.html" class="flex items-center gap-3 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 rounded-xl transition-colors">
-              <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 00-2 2h-2a2 2 0 00-2-2z"></path></svg>
-              My Short Links & Stats
+            <a href="link-stats.html" class="flex flex-col items-center justify-center p-3 bg-slate-50 hover:bg-indigo-50 text-slate-700 hover:text-indigo-700 rounded-xl transition-all border border-slate-200/80 text-center gap-1.5 cursor-pointer">
+              <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 00-2 2h-2a2 2 0 00-2-2z"></path></svg>
+              <span class="text-[10px] font-bold">My URLs</span>
             </a>
-
             ${isAdmin ? `
-              <a href="admin.html" class="flex items-center gap-3 px-3 py-2 text-xs font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100 rounded-xl transition-colors border border-amber-200">
+              <a href="admin.html" class="col-span-2 flex items-center justify-center gap-2 p-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs rounded-xl transition-colors border border-amber-200">
                 <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                 Admin Dashboard
               </a>
             ` : ''}
-
-            <button id="btn-logout-account-link" class="w-full flex items-center gap-3 px-3 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer text-left">
-              <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-              Sign Out
-            </button>
           </div>
         </div>
 
@@ -1097,7 +1099,7 @@ function updateNavbarUI(user) {
         <!-- Google Sign-In inside Drawer -->
         <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-4 rounded-2xl text-white text-center shadow-sm">
           <p class="text-xs font-bold mb-1">Account Sign-In</p>
-          <p class="text-[11px] text-slate-300 mb-3">Sync calculations & invoices across devices</p>
+          <p class="text-[11px] text-slate-350 mb-3">Sync calculations & invoices across devices</p>
           <button id="btn-drawer-google-login" class="w-full py-2.5 bg-white text-slate-900 rounded-xl text-xs font-bold flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-95 transition-transform">
             <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -1118,6 +1120,22 @@ function updateNavbarUI(user) {
 
   document.body.appendChild(backdrop);
   document.body.appendChild(drawer);
+
+  // Group toggles inside the drawer
+  drawer.querySelectorAll('.drawer-group-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-target');
+      const targetEl = drawer.querySelector(`#${targetId}`);
+      const arrow = btn.querySelector('.toggle-arrow');
+      if (targetEl.classList.contains('hidden')) {
+        targetEl.classList.remove('hidden');
+        if (arrow) arrow.style.transform = 'rotate(90deg)';
+      } else {
+        targetEl.classList.add('hidden');
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+      }
+    });
+  });
 
   // Toggle Left/Mobile Drawer Functions
   const openMobileDrawer = () => {
