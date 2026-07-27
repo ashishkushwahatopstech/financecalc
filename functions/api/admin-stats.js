@@ -50,9 +50,10 @@ export async function onRequestGet(context) {
   }
 
   try {
-    // Ensure 'active' and 'monetized' columns exist in D1 SQLite schema
+    // Ensure 'active', 'monetized' and 'demonetized_by_admin' columns exist in D1 SQLite schema
     await d1.prepare('ALTER TABLE links ADD COLUMN active INTEGER DEFAULT 1').run().catch(e => {});
     await d1.prepare('ALTER TABLE links ADD COLUMN monetized INTEGER DEFAULT 0').run().catch(e => {});
+    await d1.prepare('ALTER TABLE links ADD COLUMN demonetized_by_admin INTEGER DEFAULT 0').run().catch(e => {});
 
     // 1. Total links count
     const stmtTotalLinks = d1.prepare('SELECT COUNT(*) AS count FROM links');
@@ -69,10 +70,11 @@ export async function onRequestGet(context) {
         l.created_at, 
         l.monetized,
         l.active,
+        l.demonetized_by_admin,
         COUNT(c.id) AS click_count
       FROM links l
       LEFT JOIN clicks c ON l.short_code = c.short_code
-      GROUP BY l.short_code, l.original_url, l.uid, l.created_at, l.monetized, l.active
+      GROUP BY l.short_code, l.original_url, l.uid, l.created_at, l.monetized, l.active, l.demonetized_by_admin
       ORDER BY click_count DESC
       LIMIT 10
     `);

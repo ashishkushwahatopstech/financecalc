@@ -323,6 +323,18 @@ function openBlogModal(user, post = null) {
   const postStatus = document.getElementById('blog-post-status');
   const postPublished = document.getElementById('blog-post-published');
 
+  const monetizeCheck = document.getElementById('blog-post-monetized');
+  const demonetizeBlock = document.getElementById('blog-demonetize-request-block');
+  const reqBtn = document.getElementById('btn-submit-blog-monetize-request');
+  const reqReason = document.getElementById('blog-monetize-request-reason');
+
+  if (monetizeCheck && demonetizeBlock) {
+    demonetizeBlock.classList.add('hidden');
+    monetizeCheck.disabled = false;
+    monetizeCheck.checked = false;
+    if (reqReason) reqReason.value = '';
+  }
+
   if (post) {
     titleVal.innerHTML = `<svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> Edit Article`;
     editId.value = post.id;
@@ -331,6 +343,51 @@ function openBlogModal(user, post = null) {
     postBody.value = post.body;
     postStatus.value = post.status || 'public';
     postPublished.value = post.published ? 'true' : 'false';
+
+    if (monetizeCheck && demonetizeBlock) {
+      const isDemonetizedByAdmin = post.demonetizedByAdmin === true;
+      const isMonetized = post.monetized === true;
+
+      if (isDemonetizedByAdmin) {
+        monetizeCheck.disabled = true;
+        demonetizeBlock.classList.remove('hidden');
+
+        if (reqBtn) {
+          reqBtn.onclick = async () => {
+            const reasonVal = reqReason.value.trim();
+            if (!reasonVal) {
+              showToast('Please enter a reason for the activation request.', 'error');
+              return;
+            }
+            reqBtn.disabled = true;
+            reqBtn.textContent = '...';
+
+            try {
+              const { db, collection, addDoc, serverTimestamp } = await import('./firebase-config.js');
+              await addDoc(collection(db, 'monetization_requests'), {
+                type: 'blog',
+                postId: post.id,
+                uid: user.uid,
+                userEmail: user.email,
+                reason: reasonVal,
+                status: 'PENDING',
+                createdAt: serverTimestamp()
+              });
+              showToast('Activation request submitted successfully!', 'success');
+              reqReason.value = '';
+            } catch (err) {
+              console.error("Failed to submit request:", err);
+              showToast('Failed to submit request.', 'error');
+            } finally {
+              reqBtn.disabled = false;
+              reqBtn.textContent = 'Request';
+            }
+          };
+        }
+      } else {
+        monetizeCheck.checked = isMonetized;
+      }
+    }
   } else {
     titleVal.innerHTML = `<svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg> Write New Article`;
     form.reset();
@@ -382,6 +439,10 @@ function setupBlogManagerUI(user) {
         return;
       }
 
+      const monetizeChecked = document.getElementById('blog-post-monetized')?.checked || false;
+      const existingPost = editId ? userBlogPostsCache.find(p => p.id === editId) : null;
+      const demonetizedByAdmin = existingPost ? (existingPost.demonetizedByAdmin === true) : false;
+
       // Generate a 6-digit number ID for new posts
       const postId = editId || String(Math.floor(100000 + Math.random() * 900000));
 
@@ -392,6 +453,8 @@ function setupBlogManagerUI(user) {
         body,
         status,
         published,
+        monetized: demonetizedByAdmin ? false : monetizeChecked,
+        demonetizedByAdmin,
         authorUid: user.uid,
         createdBy: user.email,
         authorName: user.displayName || user.name || 'FinCalc User',

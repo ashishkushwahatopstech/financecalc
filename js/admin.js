@@ -90,6 +90,7 @@ function checkAndInitAdmin(user) {
       console.warn("Failed to get ID token:", e);
     }
     loadShortenerStats(user.uid, token);
+    initMonetizationTickets(user.uid, token);
   };
   initStats();
 
@@ -136,7 +137,8 @@ function initTabNavigation() {
     { btnId: 'admin-tab-btn-analytics', panelId: 'admin-tab-content-analytics' },
     { btnId: 'admin-tab-btn-controls', panelId: 'admin-tab-content-controls' },
     { btnId: 'admin-tab-btn-logs', panelId: 'admin-tab-content-logs' },
-    { btnId: 'admin-tab-btn-shortener', panelId: 'admin-tab-content-shortener' }
+    { btnId: 'admin-tab-btn-shortener', panelId: 'admin-tab-content-shortener' },
+    { btnId: 'admin-tab-btn-tickets', panelId: 'admin-tab-content-tickets' }
   ];
 
   tabs.forEach(tab => {
@@ -1392,9 +1394,23 @@ function setupContentManagerUI() {
       
       const visibilitySelect = isBlog
         ? `
-          <select data-visibility-id="${item.id}" class="select-visibility px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50/50 text-indigo-800 border border-indigo-200 focus:outline-none cursor-pointer">
+          <select data-visibility-id="${item.id}" class="select-visibility px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50/50 text-indigo-800 border border-indigo-200 focus:outline-none cursor-pointer font-sans">
             <option value="public" ${visibility === 'public' ? 'selected' : ''}>👁️ Public</option>
             <option value="private" ${visibility === 'private' ? 'selected' : ''}>🔒 Private</option>
+          </select>
+        `
+        : '';
+
+      const monetizeSelect = isBlog
+        ? `
+          <select data-monetize-id="${item.id}" class="select-blog-monetize px-2 py-0.5 rounded text-[10px] font-bold ${
+            item.demonetizedByAdmin === true 
+              ? 'bg-rose-50 text-rose-700 border border-rose-250' 
+              : (item.monetized === true ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-600 border border-slate-200')
+          } focus:outline-none cursor-pointer font-sans">
+            <option value="monetized" ${item.monetized === true && item.demonetizedByAdmin !== true ? 'selected' : ''}>💵 Monetized</option>
+            <option value="demonetized" ${item.demonetizedByAdmin === true ? 'selected' : ''}>🔴 Demonetized</option>
+            <option value="none" ${item.monetized !== true && item.demonetizedByAdmin !== true ? 'selected' : ''}>⚪ Standard</option>
           </select>
         `
         : '';
@@ -1410,6 +1426,7 @@ function setupContentManagerUI() {
                 ${isPublished ? 'Published' : 'Draft'}
               </span>
               ${visibilitySelect}
+              ${monetizeSelect}
               ${isLocalOnly ? `
                 <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200" title="This content is only saved locally in your browser. Tap 'Sync to Cloud' to make it public.">
                   Local Cache Only
@@ -1445,6 +1462,31 @@ function setupContentManagerUI() {
     }).join('');
 
     // Attach Edit / Delete / Sync / Visibility change listeners
+    container.querySelectorAll('.select-blog-monetize').forEach(select => {
+      select.addEventListener('change', async (e) => {
+        const id = e.target.dataset.monetizeId;
+        const val = e.target.value;
+        let updateFields = {};
+        if (val === 'monetized') {
+          updateFields = { monetized: true, demonetizedByAdmin: false };
+        } else if (val === 'demonetized') {
+          updateFields = { monetized: false, demonetizedByAdmin: true };
+        } else {
+          updateFields = { monetized: false, demonetizedByAdmin: false };
+        }
+        
+        try {
+          const { db, doc, updateDoc } = await import('./firebase-config.js');
+          await updateDoc(doc(db, 'blog_posts', id), updateFields);
+          showToast(`Monetization status updated successfully!`, 'success');
+          loadContentList();
+        } catch (err) {
+          console.error("Failed to update blog monetization:", err);
+          showToast("Failed to update status.", "error");
+        }
+      });
+    });
+
     container.querySelectorAll('.select-visibility').forEach(select => {
       select.addEventListener('change', async (e) => {
         const id = e.target.dataset.visibilityId;
@@ -1669,10 +1711,16 @@ async function loadShortenerStats(uid, token = '') {
         `;
 
         const isMonetized = link.monetized === 1;
+        const isDemonetizedByAdmin = link.demonetized_by_admin === 1;
         const monetizationSelect = `
-          <select data-link-code="${link.short_code}" class="select-link-monetized px-2 py-0.5 rounded text-[10px] font-bold ${isMonetized ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-600 border border-slate-200'} focus:outline-none cursor-pointer">
-            <option value="1" ${isMonetized ? 'selected' : ''}>Monetized</option>
-            <option value="0" ${!isMonetized ? 'selected' : ''}>Demonetized</option>
+          <select data-link-code="${link.short_code}" class="select-link-monetized px-2 py-0.5 rounded text-[10px] font-bold ${
+            isDemonetizedByAdmin 
+              ? 'bg-rose-50 text-rose-700 border border-rose-250' 
+              : (isMonetized ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' : 'bg-slate-100 text-slate-600 border border-slate-200')
+          } focus:outline-none cursor-pointer">
+            <option value="monetized" ${isMonetized && !isDemonetizedByAdmin ? 'selected' : ''}>💵 Monetized</option>
+            <option value="demonetized" ${isDemonetizedByAdmin ? 'selected' : ''}>🔴 Demonetized</option>
+            <option value="standard" ${!isMonetized && !isDemonetizedByAdmin ? 'selected' : ''}>⚪ Standard (No ads)</option>
           </select>
         `;
 
@@ -1738,13 +1786,26 @@ async function loadShortenerStats(uid, token = '') {
       tableBody.querySelectorAll('.select-link-monetized').forEach(select => {
         select.addEventListener('change', async (e) => {
           const shortCode = e.target.dataset.linkCode;
-          const monetized = parseInt(e.target.value);
+          const val = e.target.value;
+          
+          let monetized = 0;
+          let demonetizedByAdmin = 0;
+          if (val === 'monetized') {
+            monetized = 1;
+            demonetizedByAdmin = 0;
+          } else if (val === 'demonetized') {
+            monetized = 0;
+            demonetizedByAdmin = 1;
+          } else {
+            monetized = 0;
+            demonetizedByAdmin = 0;
+          }
           
           try {
             const res = await fetch('/api/toggle-link', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ shortCode, monetized, uid, token })
+              body: JSON.stringify({ shortCode, monetized, demonetizedByAdmin, uid, token })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || 'Failed to update monetization status.');
@@ -1754,8 +1815,7 @@ async function loadShortenerStats(uid, token = '') {
           } catch (err) {
             console.error("Failed to toggle monetization:", err);
             showToast(err.message || 'Failed to toggle monetization.', 'error');
-            // Revert state
-            e.target.value = monetized === 1 ? '0' : '1';
+            loadShortenerStats(uid, token);
           }
         });
       });
@@ -2118,6 +2178,129 @@ async function autoSyncLocalContent() {
   } catch (err) {
     console.warn('[AutoSync] Unsynced local content upload note:', err.message);
   }
+}
+
+// Real-time monetization request tickets stream
+function initMonetizationTickets(uid, token) {
+  const tableBody = document.getElementById('tickets-table-body');
+  const countBadge = document.getElementById('tab-tickets-count');
+  if (!tableBody) return;
+
+  const q = query(collection(db, 'monetization_requests'), orderBy('createdAt', 'desc'));
+  
+  onSnapshot(q, (snapshot) => {
+    const docs = [];
+    let pendingCount = 0;
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      docs.push({ id: docSnap.id, ...data });
+      if (data.status === 'PENDING') {
+        pendingCount++;
+      }
+    });
+
+    if (countBadge) countBadge.textContent = pendingCount.toString();
+
+    if (docs.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="7" class="py-8 text-center text-slate-400">No monetization requests or tickets have been submitted yet.</td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = docs.map(t => {
+      const dateStr = t.createdAt && t.createdAt.seconds 
+        ? new Date(t.createdAt.seconds * 1000).toLocaleDateString()
+        : 'Just now';
+      
+      const typeBadge = t.type === 'blog'
+        ? `<span class="px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200 text-[9px] font-bold">Blog Article</span>`
+        : `<span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-bold">Shortened URL</span>`;
+      
+      const statusBadge = t.status === 'PENDING'
+        ? `<span class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 text-[9px] font-bold">Pending</span>`
+        : (t.status === 'APPROVED'
+            ? `<span class="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-bold">Approved</span>`
+            : `<span class="px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 text-[9px] font-bold">Rejected</span>`);
+
+      const targetLabel = t.type === 'blog' ? `Post: ${t.postId}` : `/${t.shortCode}`;
+      const actionHtml = t.status === 'PENDING'
+        ? `
+          <div class="flex items-center justify-end gap-1.5">
+            <button data-ticket-id="${t.id}" data-action="approve" class="btn-ticket-action px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[9px] font-bold cursor-pointer">
+              Approve
+            </button>
+            <button data-ticket-id="${t.id}" data-action="reject" class="btn-ticket-action px-2 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-[9px] font-bold cursor-pointer">
+              Reject
+            </button>
+          </div>
+        `
+        : `<span class="text-[10px] text-slate-400 font-medium italic">Closed</span>`;
+
+      return `
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="py-3 px-3">${typeBadge}</td>
+          <td class="py-3 px-3 font-bold text-slate-800">${escapeHTML(targetLabel)}</td>
+          <td class="py-3 px-3 text-slate-650 font-semibold">${escapeHTML(t.userEmail || 'User')}</td>
+          <td class="py-3 px-3 max-w-xs truncate text-slate-600 font-medium" title="${escapeHTML(t.reason)}">${escapeHTML(t.reason)}</td>
+          <td class="py-3 px-3 text-slate-450">${dateStr}</td>
+          <td class="py-3 px-3">${statusBadge}</td>
+          <td class="py-3 px-3 text-right">${actionHtml}</td>
+        </tr>
+      `;
+    }).join('');
+
+    // Attach Approve / Reject listeners
+    tableBody.querySelectorAll('.btn-ticket-action').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const ticketId = btn.dataset.ticketId;
+        const action = btn.dataset.action;
+        const ticket = docs.find(x => x.id === ticketId);
+        if (!ticket) return;
+
+        try {
+          const status = action === 'approve' ? 'APPROVED' : 'REJECTED';
+          // 1. Update ticket in Firestore
+          await updateDoc(doc(db, 'monetization_requests', ticketId), { status });
+          
+          // 2. Perform the update on the target entity
+          if (ticket.type === 'blog') {
+            const monetizedVal = (action === 'approve');
+            const demonetizedVal = (action === 'reject');
+            await updateDoc(doc(db, 'blog_posts', ticket.postId), {
+              monetized: monetizedVal,
+              demonetizedByAdmin: demonetizedVal
+            });
+          } else {
+            const monetizedVal = (action === 'approve') ? 1 : 0;
+            const demonetizedVal = (action === 'reject') ? 1 : 0;
+            const toggleRes = await fetch('/api/toggle-link', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                shortCode: ticket.shortCode,
+                monetized: monetizedVal,
+                demonetizedByAdmin: demonetizedVal,
+                uid,
+                token
+              })
+            });
+            if (!toggleRes.ok) {
+              const toggleErr = await toggleRes.json();
+              throw new Error(toggleErr.error || 'Failed to update short link status');
+            }
+          }
+
+          showToast(`Request ${action}d successfully!`, 'success');
+        } catch (err) {
+          console.error("Failed to process ticket action:", err);
+          showToast(err.message || 'Error processing request.', 'error');
+        }
+      });
+    });
+  });
 }
 
 

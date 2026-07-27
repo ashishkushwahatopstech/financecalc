@@ -136,6 +136,44 @@ async function initUpdatesPage() {
     modalDate.textContent = `Published on ${formattedDate} by ${post.createdBy || 'Member'}`;
     modalBody.textContent = post.body;
 
+    // Clean up existing ads
+    document.getElementById('modal-top-ad')?.remove();
+    document.getElementById('modal-bottom-ad')?.remove();
+    document.getElementById('modal-left-ad')?.remove();
+    document.getElementById('modal-right-ad')?.remove();
+
+    const isMonetized = post.monetized === true && post.demonetizedByAdmin !== true;
+    if (isMonetized) {
+      // 1. Top horizontal ad
+      const topAd = document.createElement('div');
+      topAd.id = 'modal-top-ad';
+      topAd.className = 'w-full py-3.5 bg-amber-50/50 border border-dashed border-amber-300 rounded-2xl text-center text-[10px] text-amber-800 font-extrabold tracking-wider uppercase mb-6 flex items-center justify-center gap-1.5 shadow-2xs select-none font-sans';
+      topAd.innerHTML = `⭐ ADVERTISEMENT: COMPARE TOP LENDERS & SAVE ON MORTGAGES ⭐`;
+      modalBody.parentNode.insertBefore(topAd, modalBody);
+
+      // 2. Bottom horizontal ad
+      const bottomAd = document.createElement('div');
+      bottomAd.id = 'modal-bottom-ad';
+      bottomAd.className = 'w-full py-3.5 bg-amber-50/50 border border-dashed border-amber-300 rounded-2xl text-center text-[10px] text-amber-800 font-extrabold tracking-wider uppercase mt-6 flex items-center justify-center gap-1.5 shadow-2xs select-none font-sans';
+      bottomAd.innerHTML = `⭐ ADVERTISEMENT: EXPLORE HIGH-YIELD INVESTMENT ACCOUNT OFFERS ⭐`;
+      modalBody.parentNode.appendChild(bottomAd);
+
+      // 3. Side vertical ads
+      const leftAd = document.createElement('div');
+      leftAd.id = 'modal-left-ad';
+      leftAd.className = 'hidden xl:flex flex-col items-center justify-center w-36 h-[500px] bg-slate-900/10 border border-dashed border-slate-300 text-slate-650 rounded-3xl p-3 text-center text-[10px] font-black tracking-widest uppercase shadow-2xs shrink-0 select-none font-sans';
+      leftAd.style.writingMode = 'vertical-rl';
+      leftAd.innerHTML = `⚡ SPONSORED: RUN FREE FINANCIAL HEALTH REPORTS ⚡`;
+      modal.insertBefore(leftAd, modal.firstElementChild);
+
+      const rightAd = document.createElement('div');
+      rightAd.id = 'modal-right-ad';
+      rightAd.className = 'hidden xl:flex flex-col items-center justify-center w-36 h-[500px] bg-slate-900/10 border border-dashed border-slate-300 text-slate-650 rounded-3xl p-3 text-center text-[10px] font-black tracking-widest uppercase shadow-2xs shrink-0 select-none font-sans';
+      rightAd.style.writingMode = 'vertical-rl';
+      rightAd.innerHTML = `⚡ SPONSORED: COMPARE INVOICE SYSTEMS FOR FREELANCERS ⚡`;
+      modal.appendChild(rightAd);
+    }
+
     // Handle blog bookmarking state inside modal
     const btnSaveBlog = document.getElementById('btn-modal-save-blog');
     if (btnSaveBlog) {
@@ -261,6 +299,10 @@ async function initUpdatesPage() {
     modalContent?.classList.add('scale-95');
     setTimeout(() => {
       modal.classList.add('hidden');
+      document.getElementById('modal-top-ad')?.remove();
+      document.getElementById('modal-bottom-ad')?.remove();
+      document.getElementById('modal-left-ad')?.remove();
+      document.getElementById('modal-right-ad')?.remove();
     }, 200);
   };
 

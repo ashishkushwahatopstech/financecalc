@@ -282,6 +282,30 @@
           </div>
         </div>
  
+        <!-- Monetization Options -->
+        <div id="blog-monetize-wrapper" class="p-3.5 bg-slate-50 border border-slate-200/60 rounded-xl space-y-2">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <p class="font-bold text-slate-800">Monetize Article</p>
+              <p class="text-[10px] text-slate-500">Show Google AdSense ads on this blog post.</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer font-sans">
+              <input type="checkbox" id="blog-post-monetized" class="sr-only peer">
+              <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+            </label>
+          </div>
+          <!-- Request Ticket block for blog posts if admin demonetized -->
+          <div id="blog-demonetize-request-block" class="hidden mt-2 p-2.5 bg-rose-50/50 border border-rose-100 rounded-lg space-y-2">
+            <p class="text-[10px] text-rose-700 font-bold leading-tight">
+              ⚠️ Demonetized by Administrator. Standard activation is blocked.
+            </p>
+            <div class="flex gap-2 font-sans">
+              <input type="text" id="blog-monetize-request-reason" placeholder="Explain why you want to re-enable ads..." class="flex-grow px-2 py-1 bg-white border border-rose-200 rounded text-[10px] focus:outline-none" />
+              <button type="button" id="btn-submit-blog-monetize-request" class="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-[10px] font-bold shadow-xs cursor-pointer">Request</button>
+            </div>
+          </div>
+        </div>
+ 
         <div class="pt-3 border-t border-slate-100 flex justify-end gap-2">
           <button type="button" id="btn-cancel-post" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl transition-all cursor-pointer">
             Cancel

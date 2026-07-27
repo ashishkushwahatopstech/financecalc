@@ -160,6 +160,33 @@
             </div>
           </div>
 
+          <!-- Monetization Options Card -->
+          <div id="selected-monetize-card" class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs space-y-4">
+            <div class="flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+              <div>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5 leading-none">
+                  <span>💵 Link Monetization</span>
+                </h3>
+                <p class="text-[10px] text-slate-500 mt-1">If enabled, visitors will view a 5-second transition page with sponsored blog ads before redirection.</p>
+              </div>
+              <div id="selected-monetize-control" class="shrink-0">
+                <!-- Will be dynamically populated with either a toggle or an Admin Block banner -->
+              </div>
+            </div>
+            <!-- Request/Ticket Section (hidden unless demonetized by admin) -->
+            <div id="demonetize-request-section" class="hidden mt-2.5 p-3.5 bg-rose-50/50 border border-rose-100 rounded-xl space-y-2.5">
+              <p class="text-[10px] text-rose-700 font-bold flex items-center gap-1 leading-tight">
+                ⚠️ This link has been demonetized by the administrator. Direct monetization toggling is blocked.
+              </p>
+              <div class="flex gap-2">
+                <input type="text" id="monetize-request-reason" placeholder="Write reason or notes to request re-activation..." class="flex-grow px-3 py-1.5 bg-white border border-rose-200 rounded-lg text-[10px] focus:outline-none focus:ring-1 focus:ring-rose-300 font-medium" />
+                <button id="btn-submit-monetize-request" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-[10px] font-bold shadow-xs transition-colors cursor-pointer shrink-0">
+                  Submit Request
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- Total Click Counters -->
           <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs relative overflow-hidden">
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">Traffic Trend Over Time</h3>
@@ -247,7 +274,7 @@
   <!-- Stats Dashboard Controller -->
   <script type="module">
     import { getCurrentUser, showToast } from '/js/auth.js';
-    import { auth } from '/js/firebase-config.js';
+    import { auth, db, collection, addDoc, serverTimestamp } from '/js/firebase-config.js';
 
     document.addEventListener('DOMContentLoaded', () => {
       let activeUser = null;
@@ -537,6 +564,98 @@
             showToast('Short URL copied to clipboard!', 'success');
           });
         };
+
+        // Render Monetization control elements
+        const monetizeControl = document.getElementById('selected-monetize-control');
+        const reqSection = document.getElementById('demonetize-request-section');
+        const btnSubmitReq = document.getElementById('btn-submit-monetize-request');
+        const reqReason = document.getElementById('monetize-request-reason');
+
+        if (monetizeControl && reqSection) {
+          reqSection.classList.add('hidden');
+          reqReason.value = '';
+
+          const isDemonetizedByAdmin = link.demonetized_by_admin === 1;
+          const isMonetized = link.monetized === 1;
+
+          if (isDemonetizedByAdmin) {
+            monetizeControl.innerHTML = `
+              <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold font-sans">🔴 Demonetized</span>
+            `;
+            reqSection.classList.remove('hidden');
+
+            btnSubmitReq.onclick = async () => {
+              const reasonText = reqReason.value.trim();
+              if (!reasonText) {
+                showToast('Please enter a reason for the activation request.', 'error');
+                return;
+              }
+              btnSubmitReq.disabled = true;
+              btnSubmitReq.textContent = 'Submitting...';
+
+              try {
+                await addDoc(collection(db, 'monetization_requests'), {
+                  type: 'shortener',
+                  shortCode: link.short_code,
+                  uid: activeUser.uid,
+                  userEmail: activeUser.email || '',
+                  reason: reasonText,
+                  status: 'PENDING',
+                  createdAt: serverTimestamp()
+                });
+                showToast('Activation request submitted successfully!', 'success');
+                reqReason.value = '';
+              } catch (err) {
+                console.error("Failed to submit request:", err);
+                showToast('Failed to submit request. Please try again.', 'error');
+              } finally {
+                btnSubmitReq.disabled = false;
+                btnSubmitReq.textContent = 'Submit Request';
+              }
+            };
+          } else {
+            monetizeControl.innerHTML = `
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="monetize-status-toggle" class="sr-only peer" ${isMonetized ? 'checked' : ''}>
+                <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+              </label>
+            `;
+
+            const toggle = document.getElementById('monetize-status-toggle');
+            if (toggle) {
+              toggle.onchange = async () => {
+                const targetMonetized = toggle.checked ? 1 : 0;
+                let token = '';
+                try {
+                  if (auth.currentUser) {
+                    token = await auth.currentUser.getIdToken();
+                  }
+                } catch (e) {}
+
+                try {
+                  const res = await fetch('/api/toggle-link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      shortCode: link.short_code,
+                      monetized: targetMonetized,
+                      uid: activeUser.uid,
+                      token
+                    })
+                  });
+                  const resData = await res.json();
+                  if (!res.ok) throw new Error(resData.error || 'Failed to update monetization status');
+
+                  showToast(targetMonetized === 1 ? 'Monetization enabled!' : 'Monetization disabled.', 'success');
+                  link.monetized = targetMonetized; // Update local state
+                } catch (err) {
+                  showToast(err.message || 'Error updating monetization.', 'error');
+                  toggle.checked = !toggle.checked; // Revert
+                }
+              };
+            }
+          }
+        }
 
         // Delete Action
         btnDeleteSelected.onclick = async () => {
