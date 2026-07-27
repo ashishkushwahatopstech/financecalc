@@ -168,9 +168,21 @@
               <input type="text" id="in-link" value="linkedin.com/in/alexmorgan" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800" />
             </div>
           </div>
+          <div class="flex items-center gap-2 py-1">
+            <input type="checkbox" id="in-clickable" checked class="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4 cursor-pointer" />
+            <label for="in-clickable" class="text-xs font-semibold text-slate-700 cursor-pointer select-none">Make contact links & project URLs clickable (Hyperlinks)</label>
+          </div>
           <div>
             <label class="block text-[10px] font-bold text-slate-500 uppercase">Professional Summary</label>
             <textarea id="in-summary" rows="3" class="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:border-indigo-500 focus:outline-none font-semibold text-slate-800">Results-driven software engineer with 5+ years of experience building scalable cloud-native architectures, designing RESTful APIs, and implementing front-end frameworks.</textarea>
+          </div>
+        </div>
+
+        <!-- Section Arrangement -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider pb-3 border-b border-slate-100">Section Arrangement Sequence</h3>
+          <div id="section-order-list" class="space-y-2">
+            <!-- Populated via JS -->
           </div>
         </div>
 
@@ -183,6 +195,18 @@
           
           <div id="exp-fields" class="space-y-4">
             <!-- Dynamically populated experience editor rows -->
+          </div>
+        </div>
+
+        <!-- Projects List -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h3 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider">Projects</h3>
+            <button id="add-proj" type="button" class="px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-bold rounded-lg hover:bg-indigo-150 transition-colors cursor-pointer">+ Add Project</button>
+          </div>
+          
+          <div id="proj-fields" class="space-y-4">
+            <!-- Dynamically populated projects rows -->
           </div>
         </div>
 
@@ -285,10 +309,16 @@
   <script type="module" src="/js/auth.js"></script>
   <script type="module" src="/js/blog-promo.js"></script>
   <script>
-    // Initial Dynamic lists values
+    // Initial data lists values
+    let sectionOrder = ['summary', 'skills', 'experience', 'projects', 'education'];
+
     let experiences = [
       { role: 'Senior Engineer', company: 'Google Cloud Corp', tenure: '2023 - Present', desc: 'Designed high-availability microservices serving 10M+ daily active requests. Led team of 4 engineers deploying Docker structures.' },
       { role: 'Software Engineer', company: 'Stripe Payments Ltd', tenure: '2021 - 2023', desc: 'Maintained core merchant payout workflows. Reduced database loading latencies by 35% through query indices optimizing.' }
+    ];
+
+    let projects = [
+      { name: 'Portfolio Website', tech: 'React, Node.js, AWS', tenure: '2024', desc: 'Built a sleek personal portfolio displaying coding achievements and analytics trackers.', link: 'https://alexdev.com' }
     ];
 
     let educations = [
@@ -299,12 +329,22 @@
     const templateSelect = document.getElementById('resume-template');
     const previewContainer = document.getElementById('resume-preview');
     const expFields = document.getElementById('exp-fields');
+    const projFields = document.getElementById('proj-fields');
     const eduFields = document.getElementById('edu-fields');
+    const sectionOrderList = document.getElementById('section-order-list');
+    const clickableCheckbox = document.getElementById('in-clickable');
 
     // Add Work Experience Row
     document.getElementById('add-exp').addEventListener('click', () => {
       experiences.push({ role: 'Job Title', company: 'Company Name', tenure: '2023 - Present', desc: 'Summary of contributions.' });
       renderExperienceInputs();
+      updatePreview();
+    });
+
+    // Add Project Row
+    document.getElementById('add-proj').addEventListener('click', () => {
+      projects.push({ name: 'Project Title', tech: 'Tech Stack', tenure: '2024', desc: 'Brief description of project goals.', link: 'https://github.com' });
+      renderProjectInputs();
       updatePreview();
     });
 
@@ -349,6 +389,44 @@
       });
     }
 
+    function renderProjectInputs() {
+      projFields.innerHTML = '';
+      projects.forEach((proj, idx) => {
+        const div = document.createElement('div');
+        div.className = 'p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 relative';
+        div.innerHTML = `
+          <button onclick="window.removeProj(${idx})" class="absolute top-2 right-2 text-rose-500 hover:bg-rose-50 p-1 rounded border border-rose-100 cursor-pointer">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400">Project Name</label>
+              <input type="text" value="${proj.name}" oninput="window.updateProjField(${idx}, 'name', this.value)" class="w-full px-2.5 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none font-semibold text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400">Tech Stack</label>
+              <input type="text" value="${proj.tech}" oninput="window.updateProjField(${idx}, 'tech', this.value)" class="w-full px-2.5 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none font-semibold text-slate-800" />
+            </div>
+          </div>
+          <div class="grid grid-cols-1 gap-2">
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400">Date Range / Tenure</label>
+              <input type="text" value="${proj.tenure}" oninput="window.updateProjField(${idx}, 'tenure', this.value)" class="w-full px-2.5 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none font-semibold text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400">Live URL Deployed Link</label>
+              <input type="text" value="${proj.link}" oninput="window.updateProjField(${idx}, 'link', this.value)" class="w-full px-2.5 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none font-semibold text-slate-800" />
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400">Description</label>
+              <textarea rows="2" oninput="window.updateProjField(${idx}, 'desc', this.value)" class="w-full px-2.5 py-1 text-xs bg-white border border-slate-200 rounded focus:outline-none font-semibold text-slate-800">${proj.desc}</textarea>
+            </div>
+          </div>
+        `;
+        projFields.appendChild(div);
+      });
+    }
+
     function renderEducationInputs() {
       eduFields.innerHTML = '';
       educations.forEach((edu, idx) => {
@@ -377,6 +455,35 @@
       });
     }
 
+    function renderSectionOrder() {
+      sectionOrderList.innerHTML = '';
+      sectionOrder.forEach((sec, idx) => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center justify-between p-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-semibold text-slate-700';
+        
+        const friendlyName = {
+          summary: 'Summary',
+          skills: 'Skills',
+          experience: 'Work History',
+          education: 'Education',
+          projects: 'Projects'
+        }[sec];
+
+        div.innerHTML = `
+          <span>${friendlyName}</span>
+          <div class="flex items-center gap-1">
+            <button onclick="window.moveSection(${idx}, -1)" type="button" class="p-1 hover:text-indigo-600 hover:bg-white rounded border border-slate-200 cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"></path></svg>
+            </button>
+            <button onclick="window.moveSection(${idx}, 1)" type="button" class="p-1 hover:text-indigo-600 hover:bg-white rounded border border-slate-200 cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+            </button>
+          </div>
+        `;
+        sectionOrderList.appendChild(div);
+      });
+    }
+
     // Global Handlers
     window.removeExp = (idx) => {
       experiences.splice(idx, 1);
@@ -389,6 +496,17 @@
       updatePreview();
     };
 
+    window.removeProj = (idx) => {
+      projects.splice(idx, 1);
+      renderProjectInputs();
+      updatePreview();
+    };
+
+    window.updateProjField = (idx, field, value) => {
+      projects[idx][field] = value;
+      updatePreview();
+    };
+
     window.removeEdu = (idx) => {
       educations.splice(idx, 1);
       renderEducationInputs();
@@ -397,6 +515,16 @@
 
     window.updateEduField = (idx, field, value) => {
       educations[idx][field] = value;
+      updatePreview();
+    };
+
+    window.moveSection = (idx, dir) => {
+      const target = idx + dir;
+      if (target < 0 || target >= sectionOrder.length) return;
+      const temp = sectionOrder[idx];
+      sectionOrder[idx] = sectionOrder[target];
+      sectionOrder[target] = temp;
+      renderSectionOrder();
       updatePreview();
     };
 
@@ -413,13 +541,241 @@
       const skillsStr = document.getElementById('in-skills').value || '';
       
       const skillsList = skillsStr.split(',').map(s => s.trim()).filter(Boolean);
+      const makeClickable = clickableCheckbox.checked;
+
+      // Contact detail generators with optional hyperlinks
+      let emailHtml = email;
+      let phoneHtml = phone;
+      let linkHtml = link;
+
+      if (makeClickable) {
+        if (email) {
+          emailHtml = `<a href="mailto:${email}" class="hover:underline text-indigo-400 print:text-slate-900">${email}</a>`;
+        }
+        if (phone) {
+          const digits = phone.replace(/[^\d+]/g, '');
+          phoneHtml = `<a href="tel:${digits}" class="hover:underline text-indigo-400 print:text-slate-900">${phone}</a>`;
+        }
+        if (link) {
+          const targetUrl = link.startsWith('http') ? link : 'https://' + link;
+          linkHtml = `<a href="${targetUrl}" target="_blank" class="hover:underline text-indigo-400 print:text-slate-900">${link}</a>`;
+        }
+      }
+
+      // Dynamic Section Generators
+      const modernGenerators = {
+        summary: () => `
+          <div class="space-y-2">
+            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest pb-1 border-b border-slate-800">Professional Summary</h3>
+            <p class="text-[11px] text-slate-300 leading-relaxed">${summary}</p>
+          </div>`,
+        skills: () => `
+          <div class="space-y-2">
+            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest pb-1 border-b border-slate-800">Skills</h3>
+            <div class="flex flex-wrap gap-1.5">
+              ${skillsList.map(skill => `<span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-semibold text-slate-200">${skill}</span>`).join('')}
+            </div>
+          </div>`,
+        experience: () => `
+          <div class="space-y-4">
+            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest pb-1 border-b border-slate-800">Experience</h3>
+            <div class="space-y-4">
+              ${experiences.map(exp => `
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-white">${exp.role}</span>
+                    <span class="text-[10px] text-slate-400">${exp.tenure}</span>
+                  </div>
+                  <p class="text-[10px] text-indigo-300 font-semibold">${exp.company}</p>
+                  <p class="text-[10.5px] text-slate-350 leading-relaxed">${exp.desc}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>`,
+        education: () => `
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest pb-1 border-b border-slate-800">Education</h3>
+            <div class="space-y-3">
+              ${educations.map(edu => `
+                <div class="text-[11px]">
+                  <div class="flex items-center justify-between font-bold text-white">
+                    <span>${edu.degree}</span>
+                    <span class="text-[10px] text-slate-400">${edu.grad}</span>
+                  </div>
+                  <p class="text-[10px] text-slate-450 mt-0.5">${edu.university}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>`,
+        projects: () => `
+          <div class="space-y-4">
+            <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest pb-1 border-b border-slate-800">Projects</h3>
+            <div class="space-y-4">
+              ${projects.map(proj => {
+                const targetUrl = proj.link.startsWith('http') ? proj.link : 'https://' + proj.link;
+                const projNameHtml = makeClickable && proj.link 
+                  ? `<a href="${targetUrl}" target="_blank" class="text-indigo-400 hover:underline font-bold">${proj.name}</a>` 
+                  : proj.name;
+                const linkLabel = proj.link ? `<p class="text-[9.5px] text-indigo-300/80 truncate">${proj.link}</p>` : '';
+                return `
+                  <div class="space-y-1">
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="font-bold text-white">${projNameHtml}</span>
+                      <span class="text-[10px] text-slate-400">${proj.tenure}</span>
+                    </div>
+                    <p class="text-[10px] text-indigo-300 font-semibold">${proj.tech}</p>
+                    <p class="text-[10.5px] text-slate-350 leading-relaxed">${proj.desc}</p>
+                    ${makeClickable ? linkLabel : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>`
+      };
+
+      const professionalGenerators = {
+        summary: () => `
+          <div class="space-y-1.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Professional Summary</h3>
+            <p class="text-[11px] text-slate-700 leading-relaxed font-sans">${summary}</p>
+          </div>`,
+        skills: () => `
+          <div class="space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Core Competencies</h3>
+            <p class="text-[10.5px] text-slate-700 leading-relaxed font-sans">${skillsList.join(', ')}</p>
+          </div>`,
+        experience: () => `
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Work History</h3>
+            <div class="space-y-4">
+              ${experiences.map(exp => `
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between text-[11.5px] font-bold">
+                    <span>${exp.role} <span class="font-normal text-slate-600">at ${exp.company}</span></span>
+                    <span class="text-[10px] font-medium text-slate-500">${exp.tenure}</span>
+                  </div>
+                  <p class="text-[10.5px] text-slate-700 leading-relaxed font-sans">${exp.desc}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>`,
+        education: () => `
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Education</h3>
+            <div class="space-y-3">
+              ${educations.map(edu => `
+                <div class="text-[11px] font-sans">
+                  <div class="flex items-center justify-between font-bold text-slate-800">
+                    <span>${edu.degree}</span>
+                    <span class="text-[10px] text-slate-500 font-medium">${edu.grad}</span>
+                  </div>
+                  <p class="text-[10px] text-slate-500 mt-0.5">${edu.university}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>`,
+        projects: () => `
+          <div class="space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Key Projects</h3>
+            <div class="space-y-4">
+              ${projects.map(proj => {
+                const targetUrl = proj.link.startsWith('http') ? proj.link : 'https://' + proj.link;
+                const projNameHtml = makeClickable && proj.link 
+                  ? `<a href="${targetUrl}" target="_blank" class="text-indigo-650 hover:underline print:text-slate-800 font-bold">${proj.name}</a>` 
+                  : proj.name;
+                const linkLabel = proj.link ? `<p class="text-[9.5px] text-slate-500 font-sans truncate">${proj.link}</p>` : '';
+                return `
+                  <div class="space-y-1">
+                    <div class="flex items-center justify-between text-[11.5px] font-bold">
+                      <span>${projNameHtml} <span class="font-normal text-slate-600">(${proj.tech})</span></span>
+                      <span class="text-[10px] font-medium text-slate-500">${proj.tenure}</span>
+                    </div>
+                    <p class="text-[10.5px] text-slate-700 leading-relaxed font-sans">${proj.desc}</p>
+                    ${makeClickable ? linkLabel : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>`
+      };
+
+      const minimalistGenerators = {
+        summary: () => `
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">About Me</div>
+            <div class="col-span-9 text-[11px] text-slate-650 leading-relaxed">${summary}</div>
+          </div>`,
+        skills: () => `
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Expertise</div>
+            <div class="col-span-9 text-[11px] text-slate-650 leading-relaxed">${skillsList.join(' &bull; ')}</div>
+          </div>`,
+        experience: () => `
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Experience</div>
+            <div class="col-span-9 space-y-4">
+              ${experiences.map(exp => `
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between text-[11px] font-bold text-slate-900">
+                    <span>${exp.role} &bull; ${exp.company}</span>
+                    <span class="text-[9.5px] font-medium text-slate-400">${exp.tenure}</span>
+                  </div>
+                  <p class="text-[10.5px] text-slate-600 leading-relaxed">${exp.desc}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>`,
+        education: () => `
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Education</div>
+            <div class="col-span-9 space-y-3">
+              ${educations.map(edu => `
+                <div class="text-[11px]">
+                  <div class="flex items-center justify-between font-bold text-slate-900">
+                    <span>${edu.degree}</span>
+                    <span class="text-[9.5px] font-medium text-slate-400">${edu.grad}</span>
+                  </div>
+                  <p class="text-[10px] text-slate-500 mt-0.5">${edu.university}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>`,
+        projects: () => `
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Projects</div>
+            <div class="col-span-9 space-y-4">
+              ${projects.map(proj => {
+                const targetUrl = proj.link.startsWith('http') ? proj.link : 'https://' + proj.link;
+                const projNameHtml = makeClickable && proj.link 
+                  ? `<a href="${targetUrl}" target="_blank" class="text-indigo-600 hover:underline print:text-slate-800 font-bold">${proj.name}</a>` 
+                  : proj.name;
+                const linkLabel = proj.link ? `<p class="text-[9.5px] text-slate-400 truncate">${proj.link}</p>` : '';
+                return `
+                  <div class="space-y-1">
+                    <div class="flex items-center justify-between text-[11px] font-bold text-slate-900">
+                      <span>${projNameHtml} &bull; ${proj.tech}</span>
+                      <span class="text-[9.5px] font-medium text-slate-400">${proj.tenure}</span>
+                    </div>
+                    <p class="text-[10.5px] text-slate-600 leading-relaxed">${proj.desc}</p>
+                    ${makeClickable ? linkLabel : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>`
+      };
 
       let html = '';
 
       if (template === 'modern') {
+        // Construct ordered Right column main sections
+        const rightSectionsHtml = sectionOrder
+          .map(sec => modernGenerators[sec]())
+          .join('');
+
         html = `
           <div class="grid grid-cols-12 h-full min-h-[780px] bg-slate-900 text-slate-100">
-            <!-- Sidebar (Personal & Skills) -->
+            <!-- Sidebar (Personal Info & Contacts) -->
             <div class="col-span-4 bg-slate-950 p-6 space-y-6">
               <div class="space-y-1">
                 <h2 class="text-lg font-black text-indigo-400 leading-tight">${name}</h2>
@@ -430,11 +786,11 @@
               <div class="space-y-2 text-[10px] text-slate-350">
                 <div class="flex items-center gap-1.5">
                   <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                  <span class="truncate">${email}</span>
+                  <span class="truncate">${emailHtml}</span>
                 </div>
                 <div class="flex items-center gap-1.5">
                   <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                  <span>${phone}</span>
+                  <span>${phoneHtml}</span>
                 </div>
                 <div class="flex items-center gap-1.5">
                   <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
@@ -442,64 +798,23 @@
                 </div>
                 <div class="flex items-center gap-1.5">
                   <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-                  <span class="truncate">${link}</span>
-                </div>
-              </div>
-
-              <!-- Skills -->
-              <div class="space-y-3">
-                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest border-b border-slate-800 pb-1">Skills</h3>
-                <div class="flex flex-wrap gap-1.5">
-                  ${skillsList.map(skill => `<span class="px-2 py-0.5 rounded bg-slate-800 text-[10px] font-semibold text-slate-200">${skill}</span>`).join('')}
+                  <span class="truncate">${linkHtml}</span>
                 </div>
               </div>
             </div>
 
-            <!-- Main Content -->
+            <!-- Main Content Right column (Dynamically Ordered) -->
             <div class="col-span-8 p-6 space-y-6 bg-slate-900">
-              <!-- Summary -->
-              <div class="space-y-2">
-                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest pb-1 border-b border-slate-800">Professional Summary</h3>
-                <p class="text-[11px] text-slate-300 leading-relaxed">${summary}</p>
-              </div>
-
-              <!-- Work Experience -->
-              <div class="space-y-4">
-                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest pb-1 border-b border-slate-800">Experience</h3>
-                <div class="space-y-4">
-                  ${experiences.map(exp => `
-                    <div class="space-y-1">
-                      <div class="flex items-center justify-between text-xs">
-                        <span class="font-bold text-white">${exp.role}</span>
-                        <span class="text-[10px] text-slate-400">${exp.tenure}</span>
-                      </div>
-                      <p class="text-[10px] text-indigo-300 font-semibold">${exp.company}</p>
-                      <p class="text-[10.5px] text-slate-350 leading-relaxed">${exp.desc}</p>
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
-
-              <!-- Education -->
-              <div class="space-y-3">
-                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest pb-1 border-b border-slate-800">Education</h3>
-                <div class="space-y-3">
-                  ${educations.map(edu => `
-                    <div class="text-[11px]">
-                      <div class="flex items-center justify-between font-bold text-white">
-                        <span>${edu.degree}</span>
-                        <span class="text-[10px] text-slate-400">${edu.grad}</span>
-                      </div>
-                      <p class="text-[10px] text-slate-400 mt-0.5">${edu.university}</p>
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
+              ${rightSectionsHtml}
             </div>
           </div>
         `;
       } 
       else if (template === 'professional') {
+        const sectionsHtml = sectionOrder
+          .map(sec => professionalGenerators[sec]())
+          .join('');
+
         html = `
           <div class="p-6 space-y-6 text-slate-900 bg-white" style="font-family: Georgia, serif;">
             <!-- Header Centered -->
@@ -507,62 +822,23 @@
               <h2 class="text-2xl font-bold tracking-wide text-slate-900">${name}</h2>
               <p class="text-xs italic font-medium text-slate-600">${title}</p>
               <p class="text-[10px] text-slate-500 space-x-2">
-                <span>${email}</span> &bull; 
-                <span>${phone}</span> &bull; 
+                <span>${emailHtml}</span> &bull; 
+                <span>${phoneHtml}</span> &bull; 
                 <span>${loc}</span> &bull; 
-                <span>${link}</span>
+                <span>${linkHtml}</span>
               </p>
             </div>
 
-            <!-- Summary -->
-            <div class="space-y-1.5">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Professional Summary</h3>
-              <p class="text-[11px] text-slate-700 leading-relaxed font-sans">${summary}</p>
-            </div>
-
-            <!-- Experience -->
-            <div class="space-y-3">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Work History</h3>
-              <div class="space-y-4">
-                ${experiences.map(exp => `
-                  <div class="space-y-1">
-                    <div class="flex items-center justify-between text-[11.5px] font-bold">
-                      <span>${exp.role} <span class="font-normal text-slate-600">at ${exp.company}</span></span>
-                      <span class="text-[10px] font-medium text-slate-500">${exp.tenure}</span>
-                    </div>
-                    <p class="text-[10.5px] text-slate-700 leading-relaxed font-sans">${exp.desc}</p>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-
-            <!-- Education -->
-            <div class="space-y-3">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Education</h3>
-              <div class="space-y-3">
-                ${educations.map(edu => `
-                  <div class="text-[11px] font-sans">
-                    <div class="flex items-center justify-between font-bold text-slate-800">
-                      <span>${edu.degree}</span>
-                      <span class="text-[10px] text-slate-500 font-medium">${edu.grad}</span>
-                    </div>
-                    <p class="text-[10px] text-slate-500 mt-0.5">${edu.university}</p>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-
-            <!-- Skills -->
-            <div class="space-y-2">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-800 border-b border-slate-300 pb-0.5">Core Competencies</h3>
-              <p class="text-[10.5px] text-slate-700 leading-relaxed font-sans">
-                ${skillsList.join(', ')}
-              </p>
-            </div>
+            <!-- Ordered sections -->
+            ${sectionsHtml}
           </div>
         `;
       } 
       else if (template === 'minimalist') {
+        const sectionsHtml = sectionOrder
+          .map(sec => minimalistGenerators[sec]())
+          .join('');
+
         html = `
           <div class="p-6 space-y-6 text-slate-800 bg-white" style="font-family: Arial, sans-serif;">
             <!-- Simple Left-Align Header -->
@@ -572,58 +848,15 @@
                 <p class="text-xs font-semibold text-slate-500">${title}</p>
               </div>
               <div class="text-right text-[10px] text-slate-500 space-y-0.5">
-                <p>${email}</p>
-                <p>${phone}</p>
+                <p>${emailHtml}</p>
+                <p>${phoneHtml}</p>
                 <p>${loc}</p>
-                <p>${link}</p>
+                <p>${linkHtml}</p>
               </div>
             </div>
 
-            <!-- Summary -->
-            <div class="grid grid-cols-12 gap-4">
-              <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">About Me</div>
-              <div class="col-span-9 text-[11px] text-slate-650 leading-relaxed">${summary}</div>
-            </div>
-
-            <!-- Experience -->
-            <div class="grid grid-cols-12 gap-4">
-              <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Experience</div>
-              <div class="col-span-9 space-y-4">
-                ${experiences.map(exp => `
-                  <div class="space-y-1">
-                    <div class="flex items-center justify-between text-[11px] font-bold text-slate-900">
-                      <span>${exp.role} &bull; ${exp.company}</span>
-                      <span class="text-[9.5px] font-medium text-slate-400">${exp.tenure}</span>
-                    </div>
-                    <p class="text-[10.5px] text-slate-600 leading-relaxed">${exp.desc}</p>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-
-            <!-- Education -->
-            <div class="grid grid-cols-12 gap-4">
-              <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Education</div>
-              <div class="col-span-9 space-y-3">
-                ${educations.map(edu => `
-                  <div class="text-[11px]">
-                    <div class="flex items-center justify-between font-bold text-slate-900">
-                      <span>${edu.degree}</span>
-                      <span class="text-[9.5px] font-medium text-slate-400">${edu.grad}</span>
-                    </div>
-                    <p class="text-[10px] text-slate-500 mt-0.5">${edu.university}</p>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-
-            <!-- Skills -->
-            <div class="grid grid-cols-12 gap-4">
-              <div class="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Expertise</div>
-              <div class="col-span-9 text-[11px] text-slate-650 leading-relaxed">
-                ${skillsList.join(' &bull; ')}
-              </div>
-            </div>
+            <!-- Ordered sections -->
+            ${sectionsHtml}
           </div>
         `;
       }
@@ -636,6 +869,7 @@
       document.getElementById(id).addEventListener('input', updatePreview);
     });
 
+    clickableCheckbox.addEventListener('change', updatePreview);
     templateSelect.addEventListener('change', updatePreview);
 
     // Print Actions
@@ -645,7 +879,9 @@
 
     // Initialize layout
     renderExperienceInputs();
+    renderProjectInputs();
     renderEducationInputs();
+    renderSectionOrder();
     updatePreview();
   </script>
 </body>
