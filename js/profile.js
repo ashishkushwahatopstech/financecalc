@@ -15,7 +15,9 @@ import {
   setDoc,
   deleteDoc,
   query,
-  where
+  where,
+  addDoc,
+  serverTimestamp
 } from './firebase-config.js';
 import { 
   getCurrentUser, 
@@ -363,7 +365,6 @@ function openBlogModal(user, post = null) {
             reqBtn.textContent = '...';
 
             try {
-              const { db, collection, addDoc, serverTimestamp } = await import('./firebase-config.js');
               await addDoc(collection(db, 'monetization_requests'), {
                 type: 'blog',
                 postId: post.id,
