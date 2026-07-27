@@ -1503,101 +1503,144 @@ function rebuildGlobalFooter(user) {
  * Dynamically rebuilds the desktop navigation bar to keep it identical across all pages.
  */
 function rebuildDesktopNavbar(user) {
-  const desktopNav = document.querySelector('header nav.hidden.lg\\:flex');
+  const desktopNav = document.querySelector('header nav.hidden.lg\\:flex') || document.querySelector('header nav');
   if (!desktopNav) return;
 
-  const currentPath = window.location.pathname;
-  const currentPage = currentPath.split('/').pop() || 'index.html';
+  desktopNav.className = "hidden lg:flex items-center gap-4 text-xs font-semibold text-slate-600";
+
+  const rawPath = window.location.pathname.split('/').pop() || 'index.html';
+  const path = rawPath.toLowerCase();
+  const isHome = path === '' || path === 'index.html';
   const isAdmin = user ? isAdminEmail(user.email) : false;
 
-  // Determine active page-specific theme color (emerald for financial, indigo for utilities)
-  const isUtilityPage = currentPage.includes('qr-generator') || 
-                        currentPage.includes('password-generator') || 
-                        currentPage.includes('word-counter') || 
-                        currentPage.includes('unit-converter') || 
-                        currentPage.includes('age-calculator') || 
-                        currentPage.includes('pdf-tools') || 
-                        currentPage.includes('image-compressor') || 
-                        currentPage.includes('resume-builder') || 
-                        currentPage.includes('url-shortener') || 
-                        currentPage.includes('link-stats');
+  const isPageActive = (href) => {
+    return (href === 'index.html' && isHome) || (path === href.toLowerCase());
+  };
 
-  const activeClass = isUtilityPage
-    ? 'text-indigo-600 font-bold bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200'
-    : 'text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200';
-
-  const hoverClass = isUtilityPage
-    ? 'hover:text-indigo-600 transition-colors'
-    : 'hover:text-emerald-600 transition-colors';
-
-  // Navigation Links requested by user:
-  // Home, Loan, Currency, Tax, Salary, Invoice, ROI, Blog, URL Shortener
-  const NAV_LINKS = [
-    { text: 'Home', href: 'index.html' },
-    { text: 'Loan', href: 'loan-calculator.html' },
-    { text: 'EMI', href: 'emi-calculator.html' },
-    { text: 'SIP', href: 'sip-calculator.html' },
-    { text: 'GST', href: 'gst-calculator.html' },
-    { text: 'Savings', href: 'ppf-fd-rd-calculator.html' },
-    { text: 'Currency', href: 'currency-converter.html' },
-    { text: 'Tax', href: 'tax-calculator.html' },
-    { text: 'Salary', href: 'salary-calculator.html' },
-    { text: 'Invoice', href: 'invoice-generator.html' },
-    { text: 'ROI', href: 'roi-calculator.html' },
-    { text: 'Blog', href: 'updates.html' },
-    { text: 'URL Shortener', href: 'url-shortener.html' }
+  const financialGroup = [
+    { name: 'Loan & Mortgage', href: 'loan-calculator.html', desc: 'Amortization schedules & costs', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>', color: 'emerald' },
+    { name: 'EMI Calculator', href: 'emi-calculator.html', desc: 'Home, car, or personal loans payments', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>', color: 'emerald' },
+    { name: 'SIP Calculator', href: 'sip-calculator.html', desc: 'Mutual funds compounding projections', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>', color: 'emerald' },
+    { name: 'Savings (PPF/FD/RD)', href: 'ppf-fd-rd-calculator.html', desc: 'Provident & deposit interest milestones', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>', color: 'emerald' },
+    { name: 'Currency Converter', href: 'currency-converter.html', desc: 'Real-time central bank exchange rates', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>', color: 'teal' },
+    { name: 'Income Tax', href: 'tax-calculator.html', desc: 'US & Canadian progressive brackets margins', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>', color: 'blue' },
+    { name: 'Salary Calculator', href: 'salary-calculator.html', desc: 'Convert gross salary to net paycheck', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>', color: 'indigo' },
+    { name: 'ROI Calculator', href: 'roi-calculator.html', desc: 'Project investment growth yields', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>', color: 'emerald' }
   ];
 
-  const UTILITIES_LINKS = [
-    { text: 'PDF Tools', href: 'pdf-tools.html' },
-    { text: 'Image Compressor', href: 'image-compressor.html' },
-    { text: 'Resume Builder', href: 'resume-builder.html' },
-    { text: 'QR Code Generator', href: 'qr-generator.html' },
-    { text: 'Password Generator', href: 'password-generator.html' },
-    { text: 'Word Counter', href: 'word-counter.html' },
-    { text: 'Unit Converter', href: 'unit-converter.html' },
-    { text: 'Age Calculator', href: 'age-calculator.html' }
+  const businessGroup = [
+    { name: 'Invoice Generator', href: 'invoice-generator.html', desc: 'Create & export professional PDF bills', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>', color: 'purple' },
+    { name: 'PDF Utilities', href: 'pdf-tools.html', desc: 'Merge, split, compress, or watermark PDFs', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>', color: 'purple' },
+    { name: 'Image Compressor', href: 'image-compressor.html', desc: 'Scale, resize, and compress image file sizes', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>', color: 'indigo' },
+    { name: 'Resume Builder', href: 'resume-builder.html', desc: 'Design & print structured PDF resumes', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>', color: 'indigo' }
   ];
 
-  let navHtml = '';
+  const utilitiesGroup = [
+    { name: 'JSON Formatter', href: 'json-formatter.html', desc: 'Validate, format, & inspect JSON trees', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>', color: 'indigo' },
+    { name: 'Base64 Converter', href: 'base64-converter.html', desc: 'Encode raw files & decode strings', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>', color: 'indigo' },
+    { name: 'UUID & Hash Gen', href: 'uuid-hash-generator.html', desc: 'Bulk secure UUIDs & md5/sha digests', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>', color: 'indigo' },
+    { name: 'Regex Tester', href: 'regex-tester.html', desc: 'Live regex matcher & group debugger', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>', color: 'indigo' },
+    { name: 'Color Converter', href: 'color-converter.html', desc: 'HEX, RGB, HSL & CMYK color swatches', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-3"></path>', color: 'indigo' },
+    { name: 'Markdown Editor', href: 'markdown-editor.html', desc: 'Markdown ↔ HTML markup compiler', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>', color: 'indigo' },
+    { name: 'URL Shortener', href: 'url-shortener.html', desc: 'Shorten links, track clicks & geos', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>', color: 'purple' },
+    { name: 'QR Code Generator', href: 'qr-generator.html', desc: 'Build scan codes for Wi-Fi & vCards', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>', color: 'indigo' },
+    { name: 'Password Generator', href: 'password-generator.html', desc: 'Build strong secure credentials keys', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 0121 9z"></path>', color: 'purple' },
+    { name: 'Word Counter', href: 'word-counter.html', desc: 'Count letters, lines & reading times', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>', color: 'teal' },
+    { name: 'Unit Converter', href: 'unit-converter.html', desc: 'Convert length, weight & volume units', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 6l3 18h12l3-18H3zm3 4h12M9 14h6"></path>', color: 'blue' },
+    { name: 'Age Calculator', href: 'age-calculator.html', desc: 'Calculate ages & birthdays countdowns', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>', color: 'amber' },
+    { name: 'Updates & Blog', href: 'updates.html', desc: 'Read announcements & updates', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>', color: 'slate' }
+  ];
 
-  // Render main links
-  NAV_LINKS.forEach(link => {
-    const isActive = currentPage === link.href || (link.href === 'updates.html' && (currentPage.includes('updates.html') || currentPath.includes('/blog/')));
-    const cls = isActive ? activeClass : hoverClass;
-    navHtml += `<a href="${link.href}" class="${cls}">${link.text}</a>\n`;
-  });
+  const hasActiveFinancial = financialGroup.some(t => isPageActive(t.href));
+  const hasActiveBusiness = businessGroup.some(t => isPageActive(t.href));
+  const hasActiveUtilities = utilitiesGroup.some(t => isPageActive(t.href));
 
-  // Render Utilities Dropdown (hover to open) with special violet pill styling to stand out
-  const isAnyUtilityActive = UTILITIES_LINKS.some(link => currentPage === link.href);
-  const utilitiesBtnClass = isAnyUtilityActive
-    ? 'flex items-center gap-1.5 font-bold text-violet-800 bg-violet-100 px-3 py-1.5 rounded-xl border border-violet-400 shadow-2xs hover:bg-violet-200/80 transition-all'
-    : 'flex items-center gap-1.5 font-bold text-violet-700 bg-violet-50 px-3 py-1.5 rounded-xl border border-violet-200/80 hover:bg-violet-100/90 hover:border-violet-300 transition-all';
+  const buildCardGridHtml = (items) => {
+    return items.map(t => {
+      const active = isPageActive(t.href);
+      const cardBg = active ? `bg-${t.color}-50 border-${t.color}-200` : 'hover:bg-slate-50 hover:border-slate-200 border-transparent';
+      const iconBg = active ? `bg-${t.color}-100 text-${t.color}-700` : `bg-${t.color}-50 text-${t.color}-600 group-hover/item:bg-${t.color}-100 transition-colors`;
+      return `
+        <a href="${t.href}" class="flex items-start gap-3 p-2.5 rounded-xl border transition-all duration-200 group/item text-left ${cardBg}">
+          <div class="w-8.5 h-8.5 rounded-lg flex items-center justify-center shrink-0 ${iconBg}">
+            <svg class="w-4.5 h-4.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">${t.icon}</svg>
+          </div>
+          <div class="min-w-0">
+            <p class="text-xs font-bold text-slate-800 transition-colors truncate">${t.name}</p>
+            <p class="text-[10px] text-slate-400 font-semibold leading-relaxed mt-0.5">${t.desc}</p>
+          </div>
+        </a>
+      `;
+    }).join('');
+  };
 
-  navHtml += `
-    <div class="relative group">
-      <button class="${utilitiesBtnClass}">
-        <span>Utilities</span>
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+  desktopNav.innerHTML = `
+    <!-- Home Link -->
+    <a href="index.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-slate-650 hover:bg-slate-100 hover:text-slate-900 transition-all font-bold ${isHome ? 'bg-slate-150 text-slate-900 border border-slate-350' : ''}">
+      <span>Home</span>
+    </a>
+
+    <!-- 1. Financial Calculators Dropdown -->
+    <div class="relative group py-2">
+      <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all cursor-pointer font-bold select-none text-xs border ${
+        hasActiveFinancial 
+          ? 'bg-emerald-50 text-emerald-800 border-emerald-200/80 shadow-3xs' 
+          : 'text-slate-650 hover:bg-slate-100 hover:text-slate-900 border-transparent'
+      }">
+        <span>📈 Financial</span>
+        <svg class="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
       </button>
-      <div class="absolute right-0 mt-1 w-52 bg-white rounded-xl shadow-xl border border-slate-200 py-2 hidden group-hover:block z-50">
-        ${UTILITIES_LINKS.map(link => {
-          const isActive = currentPage === link.href;
-          const linkCls = isActive 
-            ? 'block px-4 py-2 text-xs font-bold text-indigo-600 bg-indigo-50' 
-            : 'block px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:text-indigo-600';
-          return `<a href="${link.href}" class="${linkCls}">${link.text}</a>`;
-        }).join('\n')}
+      <!-- Dropdown container with 3px buffer bridge via pt-3 -->
+      <div class="absolute left-0 top-full pt-3 hidden group-hover:block z-50 animate-fade-in w-[640px]">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200/90 p-4 grid grid-cols-2 gap-2.5">
+          ${buildCardGridHtml(financialGroup)}
+        </div>
       </div>
     </div>
-  `;
 
-  // Render Admin Link if user is admin
-  navHtml += `
-    <a id="nav-admin-link" href="admin.html" class="${isAdmin ? '' : 'hidden'} text-amber-700 hover:text-amber-800 font-bold bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200">Admin</a>
-  `;
+    <!-- 2. Business & Documents Dropdown -->
+    <div class="relative group py-2">
+      <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all cursor-pointer font-bold select-none text-xs border ${
+        hasActiveBusiness 
+          ? 'bg-indigo-50 text-indigo-800 border-indigo-200/80 shadow-3xs' 
+          : 'text-slate-650 hover:bg-slate-100 hover:text-slate-900 border-transparent'
+      }">
+        <span>💼 Business</span>
+        <svg class="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </button>
+      <!-- Dropdown container with 3px buffer bridge via pt-3 -->
+      <div class="absolute left-[-100px] top-full pt-3 hidden group-hover:block z-50 animate-fade-in w-[540px]">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200/90 p-4 grid grid-cols-2 gap-2.5">
+          ${buildCardGridHtml(businessGroup)}
+        </div>
+      </div>
+    </div>
 
-  desktopNav.innerHTML = navHtml;
+    <!-- 3. Dev & Productivity Dropdown -->
+    <div class="relative group py-2">
+      <button class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all cursor-pointer font-bold select-none text-xs border ${
+        hasActiveUtilities 
+          ? 'bg-indigo-50 text-indigo-800 border-indigo-200/80 shadow-3xs' 
+          : 'text-slate-650 hover:bg-slate-100 hover:text-slate-900 border-transparent'
+      }">
+        <span>🛠️ Utilities</span>
+        <svg class="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </button>
+      <!-- Dropdown container with 3px buffer bridge via pt-3 -->
+      <div class="absolute right-[-250px] top-full pt-3 hidden group-hover:block z-50 animate-fade-in w-[880px]">
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200/90 p-4 grid grid-cols-3 gap-2.5">
+          ${buildCardGridHtml(utilitiesGroup)}
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Link -->
+    ${isAdmin ? `
+      <a id="nav-admin-link" href="admin.html" class="flex items-center gap-1 px-3 py-1.5 rounded-xl text-amber-700 hover:text-amber-800 font-bold bg-amber-50 hover:bg-amber-100 transition-colors border border-amber-200">
+        <span>Admin</span>
+      </a>
+    ` : ''}
+  `;
 }
 
 // Initialize global smooth scrolling with Lenis (darkroomengineering/lenis)
