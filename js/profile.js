@@ -427,149 +427,161 @@ function setupBlogManagerUI(user) {
 }
 
 async function setupSavedCollectionsUI(user) {
-  const foldersGrid = document.getElementById('collections-folders-grid');
-  const listView = document.getElementById('collections-list-view');
-  const btnBack = document.getElementById('btn-back-to-folders');
-  const elTitle = document.getElementById('saved-collections-title');
+  const listPages = document.getElementById('list-saved-pages');
+  const listBlogs = document.getElementById('list-saved-blogs');
+  const listCalcs = document.getElementById('list-saved-calculations');
+
+  const badgePages = document.getElementById('badge-saved-pages');
+  const badgeBlogs = document.getElementById('badge-saved-blogs');
+  const badgeCalcs = document.getElementById('badge-saved-calculations');
+
+  const btnPages = document.getElementById('btn-see-all-pages');
+  const btnBlogs = document.getElementById('btn-see-all-blogs');
+  const btnCalcs = document.getElementById('btn-see-all-calculations');
+
   const elSummary = document.getElementById('saved-collections-summary-text');
 
-  const countPages = document.getElementById('count-saved-pages');
-  const countBlogs = document.getElementById('count-saved-blogs');
-  const countCalcs = document.getElementById('count-saved-calculations');
-
-  const folderPages = document.getElementById('folder-pages');
-  const folderBlogs = document.getElementById('folder-blogs');
-  const folderCalcs = document.getElementById('folder-calculations');
-
-  if (!foldersGrid || !listView) return;
+  if (!listPages || !listBlogs || !listCalcs) return;
 
   const collections = await getSavedCollections();
 
-  // Update counts on folders
-  const updateCounts = () => {
-    const pagesLength = collections.pages ? collections.pages.length : 0;
-    const blogsLength = collections.blogs ? collections.blogs.length : 0;
-    const calculationsLength = collections.calculations ? collections.calculations.length : 0;
+  const isExpanded = {
+    pages: false,
+    blogs: false,
+    calculations: false
+  };
 
-    if (countPages) countPages.textContent = `${pagesLength} ${pagesLength === 1 ? 'item' : 'items'}`;
-    if (countBlogs) countBlogs.textContent = `${blogsLength} ${blogsLength === 1 ? 'item' : 'items'}`;
-    if (countCalcs) countCalcs.textContent = `${calculationsLength} ${calculationsLength === 1 ? 'item' : 'items'}`;
+  const renderGroup = (groupName, listContainer, badgeEl, btnEl) => {
+    const list = collections[groupName] || [];
     
-    const total = pagesLength + blogsLength + calculationsLength;
-    if (elSummary) elSummary.textContent = `${total} total items bookmarked`;
-  };
+    // Update badge
+    if (badgeEl) {
+      badgeEl.textContent = list.length;
+    }
 
-  updateCounts();
-
-  let activeFolder = null; // 'pages', 'blogs', 'calculations'
-
-  const showFolder = (folderName) => {
-    activeFolder = folderName;
-    foldersGrid.classList.add('hidden');
-    listView.classList.remove('hidden');
-    listView.classList.add('flex');
-    if (btnBack) btnBack.classList.remove('hidden');
-
-    let titleText = 'Saved Items';
-    if (folderName === 'pages') titleText = '🛠️ Saved Pages & Tools';
-    else if (folderName === 'blogs') titleText = '📰 Saved Blogs & Articles';
-    else if (folderName === 'calculations') titleText = '📊 Saved Calculations';
-    if (elTitle) elTitle.innerHTML = `<span>${titleText}</span>`;
-
-    renderFolderItems();
-  };
-
-  const showFoldersGrid = () => {
-    activeFolder = null;
-    foldersGrid.classList.remove('hidden');
-    listView.classList.add('hidden');
-    listView.classList.remove('flex');
-    if (btnBack) btnBack.classList.add('hidden');
-    if (elTitle) elTitle.innerHTML = `<span>🔖 My Saved Collections</span>`;
-    updateCounts();
-  };
-
-  const renderFolderItems = () => {
-    if (!activeFolder) return;
-    const list = collections[activeFolder] || [];
-
+    // Render items
     if (list.length === 0) {
-      listView.innerHTML = `
-        <div class="text-center py-8 px-4 border-2 border-dashed border-slate-100 rounded-xl w-full">
-          <p class="text-xs font-semibold text-slate-400">No saved items in this collection yet</p>
-        </div>
+      listContainer.innerHTML = `
+        <p class="text-[10px] font-semibold text-slate-400 italic py-1 pl-1">No items saved yet</p>
       `;
+      if (btnEl) btnEl.classList.add('hidden');
       return;
     }
 
-    listView.innerHTML = list.map(item => {
+    const visibleItems = isExpanded[groupName] ? list : list.slice(0, 3);
+
+    listContainer.innerHTML = visibleItems.map(item => {
       let icon = '🔖';
       let title = item.name || item.title || 'Untitled';
       let subtitle = '';
       let actionUrl = item.href || item.url || '#';
 
-      if (activeFolder === 'pages') {
+      if (groupName === 'pages') {
         icon = '🛠️';
         subtitle = 'Calculator Tool';
-      } else if (activeFolder === 'blogs') {
+      } else if (groupName === 'blogs') {
         icon = '📰';
         subtitle = 'Blog Post';
-      } else if (activeFolder === 'calculations') {
+      } else if (groupName === 'calculations') {
         icon = '📊';
         subtitle = item.toolName || 'Calculation';
         if (item.inputs) {
           const inputPairs = Object.entries(item.inputs)
             .map(([k, v]) => `${k}: ${v}`)
             .join(', ');
-          subtitle += ` (${inputPairs.length > 50 ? inputPairs.substring(0, 50) + '...' : inputPairs})`;
+          subtitle += ` (${inputPairs.length > 40 ? inputPairs.substring(0, 40) + '...' : inputPairs})`;
         }
       }
 
       return `
-        <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-200/60 transition-colors gap-3 w-full">
-          <a href="${actionUrl}" class="flex items-center gap-2.5 min-w-0 flex-1 hover:underline">
-            <span class="text-base shrink-0">${icon}</span>
+        <div class="flex items-center justify-between p-2 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-200/50 transition-colors gap-3 w-full animate-fade-in">
+          <a href="${actionUrl}" class="flex items-center gap-2 min-w-0 flex-1 hover:underline">
+            <span class="text-sm shrink-0">${icon}</span>
             <div class="min-w-0">
-              <p class="text-xs font-bold text-slate-800 truncate">${escapeHTML(title)}</p>
+              <p class="text-[11px] font-extrabold text-slate-800 truncate">${escapeHTML(title)}</p>
               <p class="text-[9px] text-slate-450 font-semibold truncate leading-none mt-0.5">${escapeHTML(subtitle)}</p>
             </div>
           </a>
-          <button data-id="${item.id}" class="btn-remove-saved-item p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Remove Bookmark">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+          <button data-id="${item.id}" data-group="${groupName}" class="btn-remove-saved-item p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Remove Bookmark">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
           </button>
         </div>
       `;
     }).join('');
 
-    // Attach remove listener
-    listView.querySelectorAll('.btn-remove-saved-item').forEach(btn => {
+    // Setup remove click listener
+    listContainer.querySelectorAll('.btn-remove-saved-item').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.preventDefault();
         e.stopPropagation();
         const id = btn.getAttribute('data-id');
-        await removeItemFromCollection(activeFolder, id);
-        collections[activeFolder] = collections[activeFolder].filter(x => x.id !== id);
-        showToast(`Removed from saved collections`, 'info');
-        renderFolderItems();
+        const group = btn.getAttribute('data-group');
+        await removeItemFromCollection(group, id);
+        collections[group] = collections[group].filter(x => x.id !== id);
+        showToast(`Removed item from collection`, 'info');
+        renderGroup(group, listContainer, badgeEl, btnEl);
+        updateSummary();
       });
     });
+
+    // Update toggle button state
+    if (btnEl) {
+      if (list.length > 3) {
+        btnEl.classList.remove('hidden');
+        if (isExpanded[groupName]) {
+          btnEl.textContent = `Show less`;
+        } else {
+          btnEl.textContent = `See all (+${list.length - 3})`;
+        }
+      } else {
+        btnEl.classList.add('hidden');
+      }
+    }
   };
 
-  // Bind click events to folders
-  if (folderPages) folderPages.addEventListener('click', () => showFolder('pages'));
-  if (folderBlogs) folderBlogs.addEventListener('click', () => showFolder('blogs'));
-  if (folderCalcs) folderCalcs.addEventListener('click', () => showFolder('calculations'));
+  const updateSummary = () => {
+    const total = (collections.pages?.length || 0) + (collections.blogs?.length || 0) + (collections.calculations?.length || 0);
+    if (elSummary) {
+      elSummary.textContent = `${total} total items saved`;
+    }
+  };
 
-  // Bind click event to back button
-  if (btnBack) btnBack.addEventListener('click', showFoldersGrid);
+  const renderAll = () => {
+    renderGroup('pages', listPages, badgePages, btnPages);
+    renderGroup('blogs', listBlogs, badgeBlogs, btnBlogs);
+    renderGroup('calculations', listCalcs, badgeCalcs, btnCalcs);
+    updateSummary();
+  };
 
-  // Listen for dynamic updates (e.g. if saved elsewhere)
+  // Bind toggle buttons
+  if (btnPages) {
+    btnPages.addEventListener('click', () => {
+      isExpanded.pages = !isExpanded.pages;
+      renderGroup('pages', listPages, badgePages, btnPages);
+    });
+  }
+  if (btnBlogs) {
+    btnBlogs.addEventListener('click', () => {
+      isExpanded.blogs = !isExpanded.blogs;
+      renderGroup('blogs', listBlogs, badgeBlogs, btnBlogs);
+    });
+  }
+  if (btnCalcs) {
+    btnCalcs.addEventListener('click', () => {
+      isExpanded.calculations = !isExpanded.calculations;
+      renderGroup('calculations', listCalcs, badgeCalcs, btnCalcs);
+    });
+  }
+
+  // Initial render
+  renderAll();
+
+  // Listen for dynamic updates
   window.addEventListener('saved-collections-updated', (e) => {
     const updated = e.detail;
     if (updated) {
       Object.assign(collections, updated);
-      updateCounts();
-      if (activeFolder) renderFolderItems();
+      renderAll();
     }
   });
 }
