@@ -26,7 +26,7 @@ export async function onRequestGet(context) {
     code === 'functions' || 
     staticPages.includes(code.toLowerCase())
   ) {
-    return env.ASSETS.fetch(request);
+    return next();
   }
 
   const d1 = env.fincalc_urlshortener;
