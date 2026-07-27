@@ -1748,9 +1748,20 @@ async function loadShortenerStats(uid, token = '') {
 
       // Attach View Stats button listener
       tableBody.querySelectorAll('.btn-view-link-stats').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
           const shortCode = btn.dataset.linkCode;
-          openLinkStatsModal(shortCode, uid, token);
+          console.log(`[AdminShortener] Stats button clicked for: ${shortCode}`);
+          
+          let dynamicToken = '';
+          try {
+            if (auth.currentUser) {
+              dynamicToken = await auth.currentUser.getIdToken();
+            }
+          } catch (e) {
+            console.warn("Failed to get fresh token for stats modal:", e);
+          }
+          
+          openLinkStatsModal(shortCode, uid, dynamicToken);
         });
       });
     }
