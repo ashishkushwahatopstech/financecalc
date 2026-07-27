@@ -202,4 +202,159 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
   }
+
+  // =========================================================================
+  // SHARED EXPORT DATA COMPONENT
+  // =========================================================================
+  function renderExportButtons(containerId, dataFetcher, filenameBase) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    container.innerHTML = `
+      <div class="flex items-center gap-2">
+        <button class="btn-export-csv px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-[10px] font-bold border border-slate-200 transition-all cursor-pointer flex items-center gap-1">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <span>CSV</span>
+        </button>
+        <button class="btn-export-json px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-[10px] font-bold border border-slate-200 transition-all cursor-pointer flex items-center gap-1">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+          <span>JSON</span>
+        </button>
+      </div>
+    `;
+
+    container.querySelector('.btn-export-csv').addEventListener('click', () => {
+      const items = dataFetcher();
+      if (items.length === 0) {
+        showToast('No items available to export.', 'error');
+        return;
+      }
+      let csvContent = '';
+      if (typeof items[0] === 'object') {
+        const headers = Object.keys(items[0]);
+        csvContent += headers.join(',') + '\n';
+        items.forEach(item => {
+          csvContent += headers.map(h => `"${String(item[h]).replace(/"/g, '""')}"`).join(',') + '\n';
+        });
+      } else {
+        csvContent += 'Tags\n';
+        items.forEach(val => {
+          csvContent += `"${String(val).replace(/"/g, '""')}"\n`;
+        });
+      }
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${filenameBase}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('CSV Exported successfully!', 'success');
+    });
+
+    container.querySelector('.btn-export-json').addEventListener('click', () => {
+      const items = dataFetcher();
+      if (items.length === 0) {
+        showToast('No items available to export.', 'error');
+        return;
+      }
+      const jsonContent = JSON.stringify(items, null, 2);
+      const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${filenameBase}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('JSON Exported successfully!', 'success');
+    });
+  }
+
+  // =========================================================================
+  // 2. TAG EXTRACTOR FRONTEND LOGIC
+  // =========================================================================
+  const btnExtractTags = document.getElementById('btn-extract-tags');
+  const inputTagsUrl = document.getElementById('tags-video-url');
+  const tagsLoader = document.getElementById('tags-loader');
+  const tagsResults = document.getElementById('tags-results');
+  const tagsCount = document.getElementById('tags-count');
+  const chipsContainer = document.getElementById('tags-chips-container');
+  const exportContainer = document.getElementById('tags-export-container');
+
+  if (btnExtractTags && inputTagsUrl) {
+    btnExtractTags.addEventListener('click', async () => {
+      const url = inputTagsUrl.value.trim();
+      const videoId = getYouTubeVideoId(url);
+
+      if (!videoId) {
+        showToast('Please enter a valid YouTube URL.', 'error');
+        return;
+      }
+
+      // Show loader, hide results
+      tagsLoader.classList.remove('hidden');
+      tagsResults.classList.add('hidden');
+
+      try {
+        const response = await fetch(`/api/youtube-tags?id=${videoId}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to extract tags.');
+        }
+
+        const tags = data.tags || [];
+        tagsCount.textContent = tags.length;
+        chipsContainer.innerHTML = '';
+
+        if (tags.length === 0) {
+          chipsContainer.innerHTML = `
+            <div class="text-xs font-semibold text-slate-400 py-2">
+              No tags or keywords are embedded in this video page.
+            </div>
+          `;
+          tagsResults.classList.remove('hidden');
+          return;
+        }
+
+        // Render Tag Chips
+        tags.forEach(tag => {
+          const chip = document.createElement('div');
+          chip.className = 'px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium text-[11px] hover:border-rose-300 hover:bg-rose-50/50 hover:text-rose-700 cursor-pointer select-none transition-all';
+          chip.textContent = tag;
+
+          // Toggle Selection State on Click
+          chip.addEventListener('click', () => {
+            chip.classList.toggle('selected');
+            if (chip.classList.contains('selected')) {
+              chip.className = 'px-3 py-1.5 rounded-xl border border-rose-300 bg-rose-50 text-rose-700 font-bold text-[11px] cursor-pointer select-none transition-all';
+            } else {
+              chip.className = 'px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 font-medium text-[11px] hover:border-rose-300 hover:bg-rose-50/50 hover:text-rose-700 cursor-pointer select-none transition-all';
+            }
+          });
+
+          chipsContainer.appendChild(chip);
+        });
+
+        // Initialize Shared Export Component for Tags
+        renderExportButtons('tags-export-container', () => {
+          const selectedChips = chipsContainer.querySelectorAll('.selected');
+          // Export selected only, or fallback to export all if none are selected
+          const targets = selectedChips.length > 0 ? selectedChips : chipsContainer.querySelectorAll('div');
+          return Array.from(targets).map(el => el.textContent);
+        }, `yt-tags-${videoId}`);
+
+        tagsResults.classList.remove('hidden');
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        tagsLoader.classList.add('hidden');
+      }
+    });
+  }
 });
