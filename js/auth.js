@@ -744,6 +744,7 @@ export function showUnauthorizedDomainModal(errorDetail = '') {
 export async function logoutUser() {
   try {
     localStorage.removeItem(DEMO_USER_KEY);
+    sessionStorage.removeItem('fincalc_user_session');
     currentUserData = null;
     await signOut(auth);
     showToast('Signed out successfully', 'info');
@@ -757,6 +758,7 @@ export async function logoutUser() {
   } catch (error) {
     console.error("Sign out error:", error);
     localStorage.removeItem(DEMO_USER_KEY);
+    sessionStorage.removeItem('fincalc_user_session');
     currentUserData = null;
     updateNavbarUI(null);
     window.dispatchEvent(new CustomEvent('auth-state-changed', { detail: { user: null, isAdmin: false } }));
@@ -1562,7 +1564,7 @@ export function enforceGlobalSettings() {
           <p class="text-xs text-slate-400 leading-relaxed mb-6 font-medium">
             Your account has been suspended by the Administrator due to a policy violation or abnormal activity. If you believe this is an error, please contact support.
           </p>
-          <button id="btn-ban-logout" class="px-5 py-2.5 bg-red-650 hover:bg-red-700 active:scale-95 text-white font-extrabold text-xs rounded-xl transition-all shadow-xs cursor-pointer">
+          <button id="btn-ban-logout" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-extrabold text-xs rounded-xl transition-all shadow-xs cursor-pointer">
             Sign Out
           </button>
         </div>
@@ -1570,6 +1572,7 @@ export function enforceGlobalSettings() {
       document.body.appendChild(overlay);
       
       document.getElementById('btn-ban-logout')?.addEventListener('click', async () => {
+        sessionStorage.removeItem('fincalc_user_session');
         await logoutUser();
         window.location.reload();
       });
