@@ -357,4 +357,120 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // =========================================================================
+  // 3. KEYWORD SUGGESTIONS FRONTEND LOGIC
+  // =========================================================================
+  const btnFetchKeywords = document.getElementById('btn-fetch-keywords');
+  const inputSeed = document.getElementById('keywords-seed');
+  const keywordsLoader = document.getElementById('keywords-loader');
+  const keywordsResults = document.getElementById('keywords-results');
+  const keywordsCount = document.getElementById('keywords-count');
+  const tableBody = document.getElementById('keywords-table-body');
+  const checkAllKeywords = document.getElementById('check-all-keywords');
+
+  if (btnFetchKeywords && inputSeed) {
+    btnFetchKeywords.addEventListener('click', async () => {
+      const seed = inputSeed.value.trim();
+      if (!seed) {
+        showToast('Please enter a seed keyword.', 'error');
+        return;
+      }
+
+      keywordsLoader.classList.remove('hidden');
+      keywordsResults.classList.add('hidden');
+
+      try {
+        const response = await fetch(`/api/youtube-keywords?q=${encodeURIComponent(seed)}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch suggestions.');
+        }
+
+        const list = data.suggestions || [];
+        keywordsCount.textContent = list.length;
+        tableBody.innerHTML = '';
+
+        if (list.length === 0) {
+          tableBody.innerHTML = `
+            <tr>
+              <td colspan="3" class="p-6 text-center text-xs font-semibold text-slate-400">
+                No search suggestions found for this phrase on YouTube. Try a simpler keyword.
+              </td>
+            </tr>
+          `;
+          keywordsResults.classList.remove('hidden');
+          return;
+        }
+
+        // Render Table Rows
+        list.forEach(kw => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50 border-b border-slate-100 transition-colors';
+          tr.innerHTML = `
+            <td class="p-3.5 text-center">
+              <input type="checkbox" name="keyword-item" class="keyword-row-checkbox w-4 h-4 text-rose-600 rounded border-slate-300 focus:ring-rose-500 cursor-pointer" checked />
+            </td>
+            <td class="p-3.5 font-bold text-slate-800 text-[11px]">${escapeHTML(kw)}</td>
+            <td class="p-3.5 text-right">
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-rose-50 text-rose-700 border border-rose-100 uppercase tracking-wide">YouTube Search</span>
+            </td>
+          `;
+
+          // Handle single row selection toggle
+          tr.querySelector('.keyword-row-checkbox').addEventListener('change', () => {
+            const allChecked = Array.from(tableBody.querySelectorAll('.keyword-row-checkbox')).every(cb => cb.checked);
+            checkAllKeywords.checked = allChecked;
+          });
+
+          tableBody.appendChild(tr);
+        });
+
+        // Sync Check-All toggle state
+        checkAllKeywords.checked = true;
+
+        // Initialize Shared Export Component for Keywords
+        renderExportButtons('keywords-export-container', () => {
+          const checkedRows = tableBody.querySelectorAll('.keyword-row-checkbox:checked');
+          // If some are selected, export only checked. Otherwise export all rows
+          const targets = checkedRows.length > 0 ? checkedRows : tableBody.querySelectorAll('.keyword-row-checkbox');
+          return Array.from(targets).map(cb => {
+            const tr = cb.closest('tr');
+            return tr.querySelector('td:nth-child(2)').textContent.trim();
+          });
+        }, `yt-keywords-${seed.replace(/\s+/g, '-')}`);
+
+        keywordsResults.classList.remove('hidden');
+      } catch (err) {
+        showToast(err.message, 'error');
+      } finally {
+        keywordsLoader.classList.add('hidden');
+      }
+    });
+
+    // Check All Checkboxes toggle
+    if (checkAllKeywords) {
+      checkAllKeywords.addEventListener('change', () => {
+        const state = checkAllKeywords.checked;
+        tableBody.querySelectorAll('.keyword-row-checkbox').forEach(cb => {
+          cb.checked = state;
+        });
+      });
+    }
+  }
+
+  // Simple HTML Escaper
+  function escapeHTML(str) {
+    if (!str) return '';
+    return str.replace(/[&<>'"]/g, 
+      tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+      }[tag] || tag)
+    );
+  }
 });
