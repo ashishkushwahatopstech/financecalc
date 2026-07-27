@@ -72,7 +72,7 @@ export const PRODUCTIVITY_GROUP = [
   { name: 'Word Counter', href: 'word-counter.html', desc: 'Count letters, lines & reading times', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>', color: 'teal' },
   { name: 'Unit Converter', href: 'unit-converter.html', desc: 'Convert length, weight & volume units', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M3 6l3 18h12l3-18H3zm3 4h12M9 14h6"></path>', color: 'blue' },
   { name: 'Age Calculator', href: 'age-calculator.html', desc: 'Calculate ages & birthdays countdowns', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>', color: 'amber' },
-  { name: 'YouTube Thumbnail Downloader', href: 'youtube-tools.html', desc: 'Download high-definition video cover images', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 10l-6 4V10l6 4zm5.7-4.3c-.7-.7-1.8-1-2.9-1H6.2c-1.1 0-2.2.3-2.9 1a3.8 3.8 0 00-1 2.9v6.8c0 1.1.3 2.2 1 2.9a4.2 4.2 0 002.9 1H17.8c1.1 0 2.2-.3 2.9-1a4 4 0 001-2.9V8.6a4.2 4.2 0 00-1-2.9z"></path>', color: 'rose' }
+  { name: 'YouTube Thumbnail Downloader', href: 'youtube-thumbnail-downloader.html', desc: 'Download high-definition video cover images', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 10l-6 4V10l6 4zm5.7-4.3c-.7-.7-1.8-1-2.9-1H6.2c-1.1 0-2.2.3-2.9 1a3.8 3.8 0 00-1 2.9v6.8c0 1.1.3 2.2 1 2.9a4.2 4.2 0 002.9 1H17.8c1.1 0 2.2-.3 2.9-1a4 4 0 001-2.9V8.6a4.2 4.2 0 00-1-2.9z"></path>', color: 'rose' }
 ];
 
 /**
