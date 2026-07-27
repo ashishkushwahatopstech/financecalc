@@ -133,6 +133,17 @@
       <!-- Calculator Results & Chart -->
       <div class="lg:col-span-7 space-y-6">
         
+        <!-- Save Calculation Panel -->
+        <div class="flex items-center justify-between gap-4 flex-wrap bg-slate-105/50 p-3.5 rounded-2xl border border-slate-200/60">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-black text-slate-800">📊 Computation Summary</span>
+          </div>
+          <button id="btn-save-calculation" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-750 hover:text-slate-950 text-xs font-bold transition-all cursor-pointer shadow-3xs hover:shadow-2xs">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+            <span class="btn-text">Save Calculation</span>
+          </button>
+        </div>
+
         <!-- Result Summary Cards -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
@@ -274,6 +285,9 @@
   <script type="module">
     import { calculateLoan, drawLoanChart } from '/js/loan-calc.js';
     import { trackToolUsage } from '/js/analytics.js';
+    import { registerCalculationSaver } from '/js/auth.js';
+
+    let calcSaver = null;
 
     function runCalculation() {
       const p = parseFloat(document.getElementById('loan-amount').value) || 0;
@@ -313,6 +327,8 @@
         `;
         tbody.appendChild(tr);
       });
+
+      if (calcSaver) calcSaver.updateState();
     }
 
     document.getElementById('loan-form').addEventListener('submit', (e) => {
@@ -342,6 +358,32 @@
     syncSlider('loan-amount', 'loan-amount-slider');
     syncSlider('loan-rate', 'loan-rate-slider');
     syncSlider('loan-extra', 'loan-extra-slider');
+
+    // Setup saved calculation hook
+    calcSaver = registerCalculationSaver('btn-save-calculation', 'Loan & Mortgage', () => {
+      const p = parseFloat(document.getElementById('loan-amount').value) || 0;
+      const rate = parseFloat(document.getElementById('loan-rate').value) || 0;
+      const years = parseInt(document.getElementById('loan-years').value) || 30;
+      const extra = parseFloat(document.getElementById('loan-extra').value) || 0;
+      
+      const resMonthly = document.getElementById('res-monthly').textContent;
+      const resCost = document.getElementById('res-cost').textContent;
+
+      if (!p || !rate) return null;
+
+      return {
+        inputs: {
+          'Principal': `$${p.toLocaleString()}`,
+          'Rate': `${rate}%`,
+          'Term': `${years} Years`,
+          'Extra Pay': `$${extra.toLocaleString()}`
+        },
+        outputs: {
+          'Monthly Payment': resMonthly,
+          'Total Cost': resCost
+        }
+      };
+    });
 
     window.addEventListener('load', runCalculation);
     window.addEventListener('resize', runCalculation);

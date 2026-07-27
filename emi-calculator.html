@@ -132,6 +132,17 @@
       <!-- Results Column -->
       <div class="lg:col-span-7 space-y-6">
         
+        <!-- Save Calculation Panel -->
+        <div class="flex items-center justify-between gap-4 flex-wrap bg-slate-105/50 p-3.5 rounded-2xl border border-slate-200/60">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-black text-slate-800">📊 Computation Summary</span>
+          </div>
+          <button id="btn-save-calculation" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-750 hover:text-slate-950 text-xs font-bold transition-all cursor-pointer shadow-3xs hover:shadow-2xs">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+            <span class="btn-text">Save Calculation</span>
+          </button>
+        </div>
+
         <!-- Summary Cards -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100">
@@ -272,6 +283,9 @@
   <script type="module">
     import { calculateEMI, drawEMIChart } from '/js/emi-calc.js';
     import { trackToolUsage } from '/js/analytics.js';
+    import { registerCalculationSaver } from '/js/auth.js';
+
+    let calcSaver = null;
 
     const form = document.getElementById('emi-form');
     const currencySelect = document.getElementById('emi-currency');
@@ -333,6 +347,8 @@
         `;
         tbody.appendChild(tr);
       });
+
+      if (calcSaver) calcSaver.updateState();
     }
 
     // Bi-directional slider syncing
@@ -393,6 +409,32 @@
     [currencySelect, amountInput, amountSlider, rateInput, rateSlider, tenureInput, tenureSlider, tenureTypeSelect].forEach(el => {
       el.addEventListener('input', runCalculation);
       el.addEventListener('change', runCalculation);
+    });
+
+    // Setup saved calculation hook
+    calcSaver = registerCalculationSaver('btn-save-calculation', 'EMI Calculator', () => {
+      const principal = parseFloat(amountInput.value) || 0;
+      const annualRate = parseFloat(rateInput.value) || 0;
+      const tenure = parseFloat(tenureInput.value) || 0;
+      const tenureType = tenureTypeSelect.value;
+      const symbol = currencySelect.value === 'INR' ? '₹' : (currencySelect.value === 'EUR' ? '€' : (currencySelect.value === 'GBP' ? '£' : '$'));
+
+      const resMonthly = document.getElementById('res-monthly').textContent;
+      const resCost = document.getElementById('res-cost').textContent;
+
+      if (!principal || !annualRate) return null;
+
+      return {
+        inputs: {
+          'Principal': `${symbol}${principal.toLocaleString()}`,
+          'Rate': `${annualRate}%`,
+          'Tenure': `${tenure} ${tenureType}`
+        },
+        outputs: {
+          'Monthly EMI': resMonthly,
+          'Total Loan Cost': resCost
+        }
+      };
     });
 
     window.addEventListener('load', runCalculation);

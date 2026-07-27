@@ -21,7 +21,9 @@ import {
   getCurrentUser, 
   showToast, 
   showUsernameModal, 
-  getLocalUserRegistry 
+  getLocalUserRegistry,
+  getSavedCollections,
+  removeItemFromCollection
 } from './auth.js';
 
 let activeUser = null;
@@ -424,6 +426,126 @@ function setupBlogManagerUI(user) {
   }
 }
 
+async function setupSavedCollectionsUI(user) {
+  const elList = document.getElementById('saved-collection-list');
+  const elCount = document.getElementById('saved-collection-count');
+  const tabPages = document.getElementById('tab-saved-pages');
+  const tabBlogs = document.getElementById('tab-saved-blogs');
+  const tabCalcs = document.getElementById('tab-saved-calcs');
+
+  if (!elList) return;
+
+  let currentTab = 'pages'; // 'pages', 'blogs', 'calculations'
+
+  const collections = await getSavedCollections();
+
+  const renderCurrentTab = () => {
+    const list = collections[currentTab] || [];
+    
+    // Set active tab styles
+    const activeClass = 'px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200/80 cursor-pointer';
+    const inactiveClass = 'px-2.5 py-1 rounded-lg bg-slate-50 text-slate-650 hover:bg-slate-100/80 border border-slate-200/50 cursor-pointer';
+    
+    if (tabPages) tabPages.className = currentTab === 'pages' ? activeClass : inactiveClass;
+    if (tabBlogs) tabBlogs.className = currentTab === 'blogs' ? activeClass : inactiveClass;
+    if (tabCalcs) tabCalcs.className = currentTab === 'calculations' ? activeClass : inactiveClass;
+
+    if (elCount) {
+      elCount.textContent = `${list.length} ${currentTab} saved`;
+    }
+
+    if (list.length === 0) {
+      elList.innerHTML = `
+        <div class="text-center py-6 px-4 border-2 border-dashed border-slate-100 rounded-xl">
+          <p class="text-[11px] font-semibold text-slate-400">No saved ${currentTab} yet</p>
+        </div>
+      `;
+      return;
+    }
+
+    elList.innerHTML = list.map(item => {
+      let icon = '🔖';
+      let title = item.name || item.title || 'Untitled';
+      let subtitle = '';
+      let actionUrl = item.href || item.url || '#';
+
+      if (currentTab === 'pages') {
+        icon = '🛠️';
+        subtitle = 'Calculator Tool';
+      } else if (currentTab === 'blogs') {
+        icon = '📰';
+        subtitle = 'Blog Post';
+      } else if (currentTab === 'calculations') {
+        icon = '📊';
+        subtitle = item.toolName || 'Calculation';
+        if (item.inputs) {
+          const inputPairs = Object.entries(item.inputs)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join(', ');
+          subtitle += ` (${inputPairs.length > 50 ? inputPairs.substring(0, 50) + '...' : inputPairs})`;
+        }
+      }
+
+      return `
+        <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100/60 rounded-xl border border-slate-200/60 transition-colors gap-3">
+          <a href="${actionUrl}" class="flex items-center gap-2.5 min-w-0 flex-1 hover:underline">
+            <span class="text-base shrink-0">${icon}</span>
+            <div class="min-w-0">
+              <p class="text-xs font-bold text-slate-800 truncate">${escapeHTML(title)}</p>
+              <p class="text-[9px] text-slate-400 font-semibold truncate leading-none mt-0.5">${escapeHTML(subtitle)}</p>
+            </div>
+          </a>
+          <button data-id="${item.id}" class="btn-remove-saved-item p-1 text-slate-450 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Remove Bookmark">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    // Attach remove listener
+    elList.querySelectorAll('.btn-remove-saved-item').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = btn.getAttribute('data-id');
+        await removeItemFromCollection(currentTab, id);
+        collections[currentTab] = collections[currentTab].filter(x => x.id !== id);
+        showToast(`Removed from saved collections`, 'info');
+        renderCurrentTab();
+      });
+    });
+  };
+
+  if (tabPages) {
+    tabPages.addEventListener('click', () => {
+      currentTab = 'pages';
+      renderCurrentTab();
+    });
+  }
+  if (tabBlogs) {
+    tabBlogs.addEventListener('click', () => {
+      currentTab = 'blogs';
+      renderCurrentTab();
+    });
+  }
+  if (tabCalcs) {
+    tabCalcs.addEventListener('click', () => {
+      currentTab = 'calculations';
+      renderCurrentTab();
+    });
+  }
+
+  renderCurrentTab();
+
+  window.addEventListener('saved-collections-updated', (e) => {
+    const updated = e.detail;
+    if (updated) {
+      Object.assign(collections, updated);
+      renderCurrentTab();
+    }
+  });
+}
+
 /* ==========================================================================
    INITIALIZATION
    ========================================================================== */
@@ -440,6 +562,7 @@ function setupProfileUser(user) {
   loadUserPreferencesAndLimits(user.uid).then(() => {
     loadUserBlogPosts(user);
     setupBlogManagerUI(user);
+    setupSavedCollectionsUI(user);
   });
   setupPreferenceListeners(user.uid);
   setupPrivateSettingsListeners(user);

@@ -2062,6 +2062,264 @@ function rebuildDesktopNavbar(user) {
   `;
 }
 
+/**
+ * Fetches all saved items in the user's collections (pages, blogs, calculations)
+ */
+export async function getSavedCollections() {
+  const user = getCurrentUser();
+  const fallbackKey = user ? `fincalc_saved_${user.uid}` : 'fincalc_saved_anonymous';
+  
+  // Local storage fetch helper
+  const getLocal = () => {
+    try {
+      const local = localStorage.getItem(fallbackKey);
+      return local ? JSON.parse(local) : { pages: [], blogs: [], calculations: [] };
+    } catch (e) {
+      return { pages: [], blogs: [], calculations: [] };
+    }
+  };
+
+  // If not logged in with real Google user (or demo user), return local
+  if (!user || user.uid.startsWith('usr_')) {
+    return getLocal();
+  }
+
+  // Real Google Auth User -> load from Firestore
+  try {
+    const userRef = doc(db, 'users', user.uid);
+    const snap = await getDoc(userRef);
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data.savedCollections) {
+        // Sync local storage with latest Firestore copy just in case
+        localStorage.setItem(fallbackKey, safeJsonStringify(data.savedCollections));
+        return data.savedCollections;
+      }
+    }
+  } catch (err) {
+    console.error("Firestore getSavedCollections error:", err);
+  }
+
+  return getLocal();
+}
+
+/**
+ * Saves a page, blog, or calculation to the user's collection
+ */
+export async function saveItemToCollection(type, item) {
+  const collections = await getSavedCollections();
+  if (!collections[type]) {
+    collections[type] = [];
+  }
+
+  // Check if already saved
+  const exists = collections[type].some(x => x.id === item.id);
+  if (exists) {
+    return { success: true, alreadySaved: true };
+  }
+
+  // Add item with saved timestamp
+  item.savedAt = Date.now();
+  collections[type].push(item);
+
+  const user = getCurrentUser();
+  const fallbackKey = user ? `fincalc_saved_${user.uid}` : 'fincalc_saved_anonymous';
+
+  // Save locally first
+  try {
+    localStorage.setItem(fallbackKey, safeJsonStringify(collections));
+  } catch (e) {
+    console.error("Local save error:", e);
+  }
+
+  // Sync to Firestore if authenticated Google user
+  if (user && !user.uid.startsWith('usr_')) {
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        savedCollections: collections
+      });
+    } catch (err) {
+      console.error("Firestore saveItemToCollection sync error:", err);
+    }
+  }
+
+  // Dispatch custom event to notify profile page
+  window.dispatchEvent(new CustomEvent('saved-collections-updated', { detail: collections }));
+  return { success: true, alreadySaved: false };
+}
+
+/**
+ * Removes an item from the user's collection
+ */
+export async function removeItemFromCollection(type, itemId) {
+  const collections = await getSavedCollections();
+  if (!collections[type]) return { success: false };
+
+  collections[type] = collections[type].filter(x => x.id !== itemId);
+
+  const user = getCurrentUser();
+  const fallbackKey = user ? `fincalc_saved_${user.uid}` : 'fincalc_saved_anonymous';
+
+  // Update local storage
+  try {
+    localStorage.setItem(fallbackKey, safeJsonStringify(collections));
+  } catch (e) {
+    console.error("Local save error:", e);
+  }
+
+  // Sync to Firestore if authenticated Google user
+  if (user && !user.uid.startsWith('usr_')) {
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      await updateDoc(userRef, {
+        savedCollections: collections
+      });
+    } catch (err) {
+      console.error("Firestore removeItemFromCollection sync error:", err);
+    }
+  }
+
+  // Dispatch custom event to notify profile page
+  window.dispatchEvent(new CustomEvent('saved-collections-updated', { detail: collections }));
+  return { success: true };
+}
+
+/**
+ * Global helper to attach calculation saving to any results panel
+ */
+export function registerCalculationSaver(btnId, toolName, getCalcDataFn) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return null;
+
+  const updateBtnState = async (id) => {
+    const collections = await getSavedCollections();
+    const isSaved = collections.calculations.some(c => c.id === id);
+    const svg = btn.querySelector('svg');
+    const textSpan = btn.querySelector('.btn-text');
+    if (!svg || !textSpan) return;
+
+    if (isSaved) {
+      btn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs font-bold transition-all cursor-pointer';
+      svg.setAttribute('fill', 'currentColor');
+      textSpan.textContent = 'Saved to Profile';
+    } else {
+      btn.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-750 hover:text-slate-950 text-xs font-bold transition-all cursor-pointer shadow-3xs';
+      svg.setAttribute('fill', 'none');
+      textSpan.textContent = 'Save Calculation';
+    }
+  };
+
+  const getCalcId = (data) => {
+    const serialized = JSON.stringify(data.inputs);
+    let hash = 0;
+    for (let i = 0; i < serialized.length; i++) {
+      hash = (hash << 5) - hash + serialized.charCodeAt(i);
+      hash |= 0;
+    }
+    return `${toolName.toLowerCase().replace(/\s+/g, '-')}-${Math.abs(hash)}`;
+  };
+
+  btn.addEventListener('click', async () => {
+    const data = getCalcDataFn();
+    if (!data) return;
+
+    const calcId = getCalcId(data);
+    const collections = await getSavedCollections();
+    const isSaved = collections.calculations.some(c => c.id === calcId);
+
+    if (isSaved) {
+      await removeItemFromCollection('calculations', calcId);
+      showToast('Removed calculation from profile', 'info');
+    } else {
+      const namePrompt = prompt("Enter a label for this calculation:", `${toolName} Calculation`);
+      if (namePrompt === null) return;
+      const labelName = namePrompt.trim() || `${toolName} Calculation`;
+
+      await saveItemToCollection('calculations', {
+        id: calcId,
+        toolName: toolName,
+        name: labelName,
+        inputs: data.inputs,
+        outputs: data.outputs,
+        url: window.location.pathname.split('/').pop() || 'index.html'
+      });
+      showToast('Calculation saved to profile!', 'success');
+    }
+    updateBtnState(calcId);
+  });
+
+  return {
+    updateState: () => {
+      const data = getCalcDataFn();
+      if (data) {
+        updateBtnState(getCalcId(data));
+      }
+    }
+  };
+}
+
+// Automatically initialize the global page bookmark button on DOM load
+function initPageBookmarkButton() {
+  const rawPath = window.location.pathname.split('/').pop() || 'index.html';
+  const path = rawPath.toLowerCase();
+  
+  // Excluded pages
+  const excluded = ['index.html', 'profile.html', 'admin.html', 'link-stats.html', ''];
+  if (excluded.includes(path) || path.includes('blog/')) return;
+
+  // Get current page name from document title or H1
+  let pageName = document.title.split('–')[0].split('|')[0].trim();
+  if (!pageName) pageName = "Tool Page";
+
+  // Create button
+  const btn = document.createElement('button');
+  btn.id = 'global-save-page-btn';
+  btn.className = 'fixed bottom-6 right-6 z-40 p-3.5 rounded-full bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-lg text-slate-655 hover:text-rose-600 hover:scale-110 active:scale-90 transition-all duration-300 flex items-center justify-center group cursor-pointer';
+  btn.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)';
+  
+  btn.innerHTML = `
+    <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+    <span class="absolute right-full mr-3 px-2.5 py-1 text-[10px] font-bold text-white bg-slate-900 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-sm pointer-events-none uppercase tracking-wider">Bookmark Page</span>
+  `;
+
+  document.body.appendChild(btn);
+
+  // Update button state (active or inactive)
+  const updateBtnState = async () => {
+    const collections = await getSavedCollections();
+    const isSaved = collections.pages.some(p => p.id === path);
+    const svg = btn.querySelector('svg');
+    const span = btn.querySelector('span');
+
+    if (isSaved) {
+      btn.className = 'fixed bottom-6 right-6 z-40 p-3.5 rounded-full bg-rose-50 border border-rose-200/80 shadow-lg text-rose-600 hover:scale-110 active:scale-90 transition-all duration-300 flex items-center justify-center group cursor-pointer';
+      svg.setAttribute('fill', 'currentColor');
+      span.textContent = 'Remove Bookmark';
+    } else {
+      btn.className = 'fixed bottom-6 right-6 z-40 p-3.5 rounded-full bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-lg text-slate-655 hover:text-rose-600 hover:scale-110 active:scale-90 transition-all duration-300 flex items-center justify-center group cursor-pointer';
+      svg.setAttribute('fill', 'none');
+      span.textContent = 'Bookmark Page';
+    }
+  };
+
+  btn.addEventListener('click', async () => {
+    const collections = await getSavedCollections();
+    const isSaved = collections.pages.some(p => p.id === path);
+
+    if (isSaved) {
+      await removeItemFromCollection('pages', path);
+      showToast('Removed from bookmarks', 'info');
+    } else {
+      await saveItemToCollection('pages', { id: path, name: pageName, href: path });
+      showToast('Saved to your profile bookmarks!', 'success');
+    }
+    updateBtnState();
+  });
+
+  updateBtnState();
+}
+
 // Initialize global smooth scrolling with Lenis (darkroomengineering/lenis)
 if (typeof window !== 'undefined') {
   // Only initialize if the page is the top-level viewport (ignore inside iframes)
@@ -2096,6 +2354,9 @@ if (typeof window !== 'undefined') {
     document.querySelectorAll('.overflow-y-auto, [class*="overflow-y-auto"]').forEach(el => {
       el.setAttribute('data-lenis-prevent', 'true');
     });
+
+    // Initialize the page bookmark button
+    initPageBookmarkButton();
   });
 }
 

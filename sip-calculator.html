@@ -127,6 +127,17 @@
       <!-- Results Column -->
       <div class="lg:col-span-7 space-y-6">
         
+        <!-- Save Calculation Panel -->
+        <div class="flex items-center justify-between gap-4 flex-wrap bg-slate-105/50 p-3.5 rounded-2xl border border-slate-200/60">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-black text-slate-800">📊 Computation Summary</span>
+          </div>
+          <button id="btn-save-calculation" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-750 hover:text-slate-950 text-xs font-bold transition-all cursor-pointer shadow-3xs hover:shadow-2xs">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+            <span class="btn-text">Save Calculation</span>
+          </button>
+        </div>
+
         <!-- Summary Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div class="bg-slate-100 p-4 rounded-xl border border-slate-200">
@@ -260,6 +271,9 @@
   <script type="module">
     import { calculateSIP, drawSIPChart } from '/js/sip-calc.js';
     import { trackToolUsage } from '/js/analytics.js';
+    import { registerCalculationSaver } from '/js/auth.js';
+
+    let calcSaver = null;
 
     const form = document.getElementById('sip-form');
     const currencySelect = document.getElementById('sip-currency');
@@ -315,6 +329,8 @@
         `;
         tbody.appendChild(tr);
       });
+
+      if (calcSaver) calcSaver.updateState();
     }
 
     // Bi-directional slider syncing
@@ -347,6 +363,33 @@
     [currencySelect, amountInput, amountSlider, rateInput, rateSlider, yearsInput, yearsSlider].forEach(el => {
       el.addEventListener('input', runCalculation);
       el.addEventListener('change', runCalculation);
+    });
+
+    // Setup saved calculation hook
+    calcSaver = registerCalculationSaver('btn-save-calculation', 'SIP Calculator', () => {
+      const monthlyInvestment = parseFloat(amountInput.value) || 0;
+      const annualRate = parseFloat(rateInput.value) || 0;
+      const tenureYears = parseFloat(yearsInput.value) || 0;
+      const symbol = currencySelect.value === 'INR' ? '₹' : (currencySelect.value === 'EUR' ? '€' : (currencySelect.value === 'GBP' ? '£' : '$'));
+
+      const resInvested = document.getElementById('res-invested').textContent;
+      const resGains = document.getElementById('res-gains').textContent;
+      const resMaturity = document.getElementById('res-maturity').textContent;
+
+      if (!monthlyInvestment || !annualRate) return null;
+
+      return {
+        inputs: {
+          'Monthly Investment': `${symbol}${monthlyInvestment.toLocaleString()}`,
+          'Est. Return Rate': `${annualRate}%`,
+          'Tenure': `${tenureYears} Years`
+        },
+        outputs: {
+          'Total Invested': resInvested,
+          'Est. Wealth Gains': resGains,
+          'Maturity Value': resMaturity
+        }
+      };
     });
 
     window.addEventListener('load', runCalculation);

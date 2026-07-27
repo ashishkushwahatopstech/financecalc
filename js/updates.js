@@ -5,6 +5,7 @@
 
 import { fetchPublishedBlogPosts, escapeHTML } from './content-manager.js';
 import { trackDailyActivity } from './analytics.js';
+import { saveItemToCollection, removeItemFromCollection, getSavedCollections } from './auth.js';
 
 // Local Toast Utility
 function showToast(message, type = 'success') {
@@ -134,6 +135,44 @@ async function initUpdatesPage() {
     modalType.textContent = post.type || 'Blog Post';
     modalDate.textContent = `Published on ${formattedDate} by ${post.createdBy || 'Member'}`;
     modalBody.textContent = post.body;
+
+    // Handle blog bookmarking state inside modal
+    const btnSaveBlog = document.getElementById('btn-modal-save-blog');
+    if (btnSaveBlog) {
+      const updateSaveBlogBtn = async () => {
+        const collections = await getSavedCollections();
+        const isSaved = collections.blogs.some(b => b.id === post.id);
+        const svg = btnSaveBlog.querySelector('svg');
+        const textSpan = btnSaveBlog.querySelector('.btn-text');
+
+        if (isSaved) {
+          btnSaveBlog.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs font-bold transition-all cursor-pointer';
+          svg.setAttribute('fill', 'currentColor');
+          textSpan.textContent = 'Saved to Bookmarks';
+        } else {
+          btnSaveBlog.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-600 hover:text-slate-800 text-xs font-bold transition-all cursor-pointer';
+          svg.setAttribute('fill', 'none');
+          textSpan.textContent = 'Save Article';
+        }
+      };
+
+      btnSaveBlog.onclick = async () => {
+        const collections = await getSavedCollections();
+        const isSaved = collections.blogs.some(b => b.id === post.id);
+        const shareUrl = `${window.location.origin}/blog/${post.id}-${slugify(post.title)}`;
+
+        if (isSaved) {
+          await removeItemFromCollection('blogs', post.id);
+          showToast('Removed article from bookmarks', 'info');
+        } else {
+          await saveItemToCollection('blogs', { id: post.id, title: post.title, href: shareUrl });
+          showToast('Article saved to your profile!', 'success');
+        }
+        updateSaveBlogBtn();
+      };
+
+      updateSaveBlogBtn();
+    }
 
     // Handle modal reference / inspiration link display
     let existingRef = document.getElementById('modal-post-reference-container');
