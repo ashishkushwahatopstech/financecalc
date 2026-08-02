@@ -1,7 +1,4 @@
-# Task List - Resume Builder Layout Refinement
+# Task List - Resume Builder WYSIWYG Print Layout
 
-- [x] Remove Settings tab from Workspace Tabs Toggle Bar in `resume-builder.html`.
-- [x] Add collapsible Settings & Sequence card before Personal Details in `resume-builder.html` and default template select to Minimalist/Professional Sans Serif.
-- [x] Remove Right Settings Panel (`#right-settings-panel`) from HTML in `resume-builder.html`.
-- [x] Update the Javascript Tab controller inside `<script>` of `resume-builder.html` to remove the settings tab logic.
+- [x] Update `#resume-preview-wrapper` classes in `resume-builder.html` to resemble an A4 sheet.
 - [x] Verify build compile.
