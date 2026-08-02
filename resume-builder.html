@@ -44,14 +44,20 @@
         visibility: visible;
       }
       #resume-preview-wrapper {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        transform: none !important;
         border: none !important;
         box-shadow: none !important;
         margin: 0 !important;
         padding: 1.6cm !important; /* Adds professional print margins inside the A4 sheet page boundary */
+      }
+      #preview-panel {
+        height: auto !important;
+        overflow: visible !important;
       }
     }
   </style>
@@ -409,6 +415,7 @@
         previewPanel.classList.remove('hidden');
         previewPanel.className = 'lg:col-span-12 flex justify-center';
       }
+      setTimeout(adjustPreviewScale, 0);
     }
 
     // Add Work Experience Row
@@ -939,6 +946,30 @@
       }
 
       previewContainer.innerHTML = html;
+      adjustPreviewScale();
+    }
+
+    function adjustPreviewScale() {
+      const wrapper = document.getElementById('resume-preview-wrapper');
+      if (!wrapper) return;
+      const container = wrapper.parentElement;
+      if (!container) return;
+
+      const containerWidth = container.clientWidth;
+      const targetWidth = 794; // A4 standard width
+
+      if (containerWidth < targetWidth) {
+        const scale = containerWidth / targetWidth;
+        wrapper.style.transform = `scale(${scale})`;
+        wrapper.style.transformOrigin = 'top center';
+        container.style.height = `${1123 * scale}px`;
+        container.style.overflow = 'hidden';
+      } else {
+        wrapper.style.transform = '';
+        wrapper.style.transformOrigin = '';
+        container.style.height = '';
+        container.style.overflow = '';
+      }
     }
 
     // Input listeners to update preview instantly
@@ -953,6 +984,8 @@
     document.getElementById('btn-print').addEventListener('click', () => {
       window.print();
     });
+
+    window.addEventListener('resize', adjustPreviewScale);
 
     // Initialize layout
     renderExperienceInputs();
