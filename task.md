@@ -1,7 +1,7 @@
-# Task List - Dynamic Featured Tools & Categorized Directory
+# Task List - Resume Builder Layout Refinement
 
-- [x] Add the "Featured Core Tools Selector" UI panel in `admin.html`.
-- [x] Implement the checkbox rendering, Firestore load, and save listeners in `js/admin.js`.
-- [x] Update the slogan ("More Than a Simple Calculator. Professional Tools. Better Decisions.") and directory sections in `index.html`.
-- [x] Create the homepage controller `js/home-dynamic.js` to render the featured grid dynamically from Firestore.
-- [x] Compile and verify the production build using Vite.
+- [x] Remove Settings tab from Workspace Tabs Toggle Bar in `resume-builder.html`.
+- [x] Add collapsible Settings & Sequence card before Personal Details in `resume-builder.html` and default template select to Minimalist/Professional Sans Serif.
+- [x] Remove Right Settings Panel (`#right-settings-panel`) from HTML in `resume-builder.html`.
+- [x] Update the Javascript Tab controller inside `<script>` of `resume-builder.html` to remove the settings tab logic.
+- [ ] Verify build compile.
