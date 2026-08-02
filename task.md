@@ -1,5 +1,4 @@
-# Task List - Proportional Print Preview Scaling
+# Task List - Mobile Device Width Breakout
 
-- [x] Update `switchViewTab(tab)` class list in `resume-builder.html` to add relative overflow classes.
-- [x] Update `adjustPreviewScale()` in `resume-builder.html` to use absolute positioning and translate centering.
+- [x] Update `resume-builder.html` style tag with mobile breakout rules.
 - [x] Verify build compile.

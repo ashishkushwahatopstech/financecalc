@@ -24,6 +24,16 @@
       background: #94a3b8;
     }
 
+    /* Breakout preview panel to full device width on mobile screens */
+    @media (max-width: 1023px) {
+      #preview-panel {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        margin-left: calc(-50vw + 50%) !important;
+        margin-right: calc(-50vw + 50%) !important;
+      }
+    }
+
     /* Print Styles to extract PDF exactly */
     @media print {
       @page {
