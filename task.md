@@ -1,5 +1,5 @@
-# Task List - Resume Builder Mobile Preview Scaling
+# Task List - Proportional Print Preview Scaling
 
-- [x] Update `@media print` style sheet in `resume-builder.html` to add transform and height resets.
-- [x] Implement `adjustPreviewScale()` function and bind it to window `resize`, tab switches, and load events in `resume-builder.html`.
+- [x] Update `switchViewTab(tab)` class list in `resume-builder.html` to add relative overflow classes.
+- [x] Update `adjustPreviewScale()` in `resume-builder.html` to use absolute positioning and translate centering.
 - [x] Verify build compile.

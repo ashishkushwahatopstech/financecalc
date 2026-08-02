@@ -407,13 +407,13 @@
         editorPanel.className = 'lg:col-span-5 space-y-6 lg:max-h-[calc(100vh-14rem)] lg:overflow-y-auto scrollbar-thin pr-1 pb-8';
         
         previewPanel.classList.remove('hidden');
-        previewPanel.className = 'lg:col-span-7 flex justify-center';
+        previewPanel.className = 'lg:col-span-7 flex justify-center relative overflow-hidden w-full';
       } 
       else if (tab === 'preview') {
         editorPanel.classList.add('hidden');
         
         previewPanel.classList.remove('hidden');
-        previewPanel.className = 'lg:col-span-12 flex justify-center';
+        previewPanel.className = 'lg:col-span-12 flex justify-center relative overflow-hidden w-full';
       }
       setTimeout(adjustPreviewScale, 0);
     }
@@ -960,15 +960,17 @@
 
       if (containerWidth < targetWidth) {
         const scale = containerWidth / targetWidth;
-        wrapper.style.transform = `scale(${scale})`;
+        wrapper.style.position = 'absolute';
+        wrapper.style.left = '50%';
+        wrapper.style.transform = `translate(-50%, 0) scale(${scale})`;
         wrapper.style.transformOrigin = 'top center';
         container.style.height = `${1123 * scale}px`;
-        container.style.overflow = 'hidden';
       } else {
+        wrapper.style.position = '';
+        wrapper.style.left = '';
         wrapper.style.transform = '';
         wrapper.style.transformOrigin = '';
         container.style.height = '';
-        container.style.overflow = '';
       }
     }
 
