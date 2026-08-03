@@ -4,7 +4,6 @@
     "/*"
   ],
   "exclude": [
-    "/sitemap.xml",
     "/ads.txt",
     "/robots.txt",
     "/favicon.svg",

@@ -128,6 +128,19 @@ async function initUpdatesPage() {
 
   const openModal = async (post) => {
     if (!modal) return;
+
+    // Update browser URL to pretty blog path
+    const postSlug = slugify(post.title);
+    const prettyUrl = `/blog/${post.id}-${postSlug}`;
+    window.history.pushState({ postId: post.id }, post.title, prettyUrl);
+    
+    // Dynamically update document title and description meta tag
+    document.title = `${post.title} – FinCalc Blog`;
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', post.body.substring(0, 150).replace(/\s+/g, ' ').trim() + '...');
+    }
+
     const formattedDate = post.createdAt && post.createdAt.seconds 
       ? new Date(post.createdAt.seconds * 1000).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
       : (post.createdAt ? new Date(post.createdAt).toLocaleDateString() : 'Recently published');
@@ -395,6 +408,15 @@ async function initUpdatesPage() {
 
   const closeModal = () => {
     if (!modal) return;
+    
+    // Restore browser URL to updates.html
+    window.history.pushState(null, 'Blog & Site Updates – FinCalc Tools', '/updates.html');
+    document.title = 'Blog & Site Updates – FinCalc Tools';
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+      metaDesc.setAttribute('content', 'Official site news, feature announcements, financial tool updates, and blog posts from FinCalc Tools.');
+    }
+
     modal.classList.remove('opacity-100', 'gap-6');
     modalContent?.classList.remove('scale-100');
     modalContent?.classList.add('scale-95');
@@ -450,26 +472,37 @@ async function initUpdatesPage() {
     if (e.target === modal) closeModal();
   });
 
-  // Deep linking to open specific article from path "/blog/123456-slug" or query "?post=123456"
-  const path = window.location.pathname;
-  let postIdParam = null;
-  const blogMatch = path.match(/\/blog\/(\d{4,6})-.*/);
-  
-  if (blogMatch) {
-    postIdParam = blogMatch[1];
-  } else {
-    const urlParams = new URLSearchParams(window.location.search);
-    postIdParam = urlParams.get('post');
-  }
-
-  if (postIdParam) {
-    const post = posts.find(p => String(p.id) === String(postIdParam));
-    if (post) {
-      setTimeout(() => {
-        openModal(post);
-      }, 300);
+  const handleUrlChange = () => {
+    const currentPath = window.location.pathname;
+    let currentPostId = null;
+    const currentBlogMatch = currentPath.match(/\/blog\/(\d{4,6})-.*/);
+    
+    if (currentBlogMatch) {
+      currentPostId = currentBlogMatch[1];
+    } else {
+      const urlParams = new URLSearchParams(window.location.search);
+      currentPostId = urlParams.get('post');
     }
-  }
+
+    if (currentPostId) {
+      const post = posts.find(p => String(p.id) === String(currentPostId));
+      if (post) {
+        if (modal && modal.classList.contains('hidden')) {
+          openModal(post);
+        }
+      }
+    } else {
+      if (modal && !modal.classList.contains('hidden')) {
+        closeModal();
+      }
+    }
+  };
+
+  // Listen to browser back/forward buttons
+  window.addEventListener('popstate', handleUrlChange);
+
+  // Initial deep link trigger
+  setTimeout(handleUrlChange, 300);
 }
 
 window.addEventListener('DOMContentLoaded', initUpdatesPage);
