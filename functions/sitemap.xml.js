@@ -47,7 +47,7 @@ export async function onRequestGet(context) {
     { loc: 'https://tool.aktechstudio.com/markdown-editor.html', changefreq: 'monthly', priority: '0.7' },
     { loc: 'https://tool.aktechstudio.com/resume-builder.html', changefreq: 'monthly', priority: '0.7' },
     { loc: 'https://tool.aktechstudio.com/link-stats.html', changefreq: 'monthly', priority: '0.5' },
-    { loc: 'https://tool.aktechstudio.com/updates.html', changefreq: 'monthly', priority: '0.6' },
+    { loc: 'https://tool.aktechstudio.com/blog.html', changefreq: 'monthly', priority: '0.6' },
     { loc: 'https://tool.aktechstudio.com/about.html', changefreq: 'monthly', priority: '0.5' },
     { loc: 'https://tool.aktechstudio.com/contact.html', changefreq: 'monthly', priority: '0.5' },
     { loc: 'https://tool.aktechstudio.com/privacy-policy.html', changefreq: 'monthly', priority: '0.4' },

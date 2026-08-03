@@ -150,7 +150,7 @@ function renderAnnouncementBanner(banner) {
    ========================================================================== */
 
 /**
- * Fetches published blog posts for updates.html
+ * Fetches published blog posts for blog.html
  */
 export async function fetchPublishedBlogPosts() {
   let posts = [];

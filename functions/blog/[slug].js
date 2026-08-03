@@ -1,6 +1,6 @@
 /**
  * Cloudflare Pages Function: GET /blog/[slug]
- * Intercepts pretty blog URLs, fetches updates.html locally, gets the article details
+ * Intercepts pretty blog URLs, fetches blog.html locally, gets the article details
  * from Firestore REST API, and injects custom Open Graph metadata server-side
  * so sharing links on WhatsApp, Twitter, Facebook, etc. displays a rich preview card.
  */
@@ -62,8 +62,8 @@ export async function onRequestGet(context) {
   const blogMatch = path.match(/\/blog\/(\d{4,6})-.*/);
   const postId = blogMatch ? blogMatch[1] : null;
 
-  // Fetch updates.html template from the site root
-  const updatesUrl = new URL('/updates.html', urlObj.origin);
+  // Fetch blog.html template from the site root
+  const updatesUrl = new URL('/blog.html', urlObj.origin);
   let html = '';
   let updatesResp = null;
 
@@ -73,7 +73,7 @@ export async function onRequestGet(context) {
       html = await updatesResp.text();
     }
   } catch (err) {
-    console.error('Serverless pretty routing fetch updates.html error:', err);
+    console.error('Serverless pretty routing fetch blog.html error:', err);
   }
 
   // If we couldn't load the template, fallback to standard static assets fetch

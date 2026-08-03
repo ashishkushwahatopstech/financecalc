@@ -906,7 +906,7 @@ function updateNavbarUI(user) {
   const hasActiveDevTools = devToolsGroup.some(t => isPageActive(t.href));
   const hasActiveProductivity = productivityGroup.some(t => isPageActive(t.href));
   
-  const isBlogActive = isPageActive('updates.html');
+  const isBlogActive = isPageActive('blog.html');
   const blogClass = isBlogActive 
     ? 'bg-rose-100 text-rose-950 border-rose-300 font-extrabold shadow-sm hover:scale-105 active:scale-95 hover:ring-2 hover:ring-rose-250 transition-all duration-300' 
     : 'bg-rose-50/50 text-rose-700 border-rose-200/80 hover:bg-rose-100/80 hover:text-rose-900 hover:border-rose-300 hover:scale-105 active:scale-95 hover:ring-2 hover:ring-rose-150 transition-all duration-300';
@@ -1022,7 +1022,7 @@ function updateNavbarUI(user) {
       </div>
       
       <!-- Blog Link -->
-      <a href="updates.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border cursor-pointer font-bold select-none text-xs ${blogClass}">
+      <a href="blog.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border cursor-pointer font-bold select-none text-xs ${blogClass}">
         <span>📰 Blog</span>
       </a>
 
@@ -1060,7 +1060,7 @@ function updateNavbarUI(user) {
       <div class="space-y-1">
         <!-- Blog (Direct Link above all groups) -->
         <div class="pb-2 border-b border-slate-100 mb-2">
-          <a href="updates.html" class="flex items-center justify-between px-3 py-2.5 text-xs font-bold rounded-xl transition-all border ${
+          <a href="blog.html" class="flex items-center justify-between px-3 py-2.5 text-xs font-bold rounded-xl transition-all border ${
             isBlogActive 
               ? 'bg-rose-100 text-rose-950 font-black border-rose-300 shadow-sm' 
               : 'bg-rose-50/50 text-rose-700 border-rose-200/80 hover:bg-rose-100/80 hover:text-rose-900 hover:scale-105 active:scale-95 duration-300'
@@ -1678,7 +1678,7 @@ export function enforceGlobalSettings() {
 
   // 3. Enforce Guest Calculations Lock (only standard tools, not homepage, about, contact, updates, profile, admin, stats, links)
   const nonCalculatorPages = [
-    'index.html', 'about.html', 'contact.html', 'updates.html', 
+    'index.html', 'about.html', 'contact.html', 'blog.html', 
     'profile.html', 'admin.html', 'link-stats.html', 'disclaimer.html',
     'terms-of-service.html', 'privacy-policy.html'
   ];
@@ -1940,7 +1940,7 @@ function rebuildDesktopNavbar(user) {
   const hasActiveDevTools = devToolsGroup.some(t => isPageActive(t.href));
   const hasActiveProductivity = productivityGroup.some(t => isPageActive(t.href));
 
-  const isBlogActive = isPageActive('updates.html');
+  const isBlogActive = isPageActive('blog.html');
   const blogClass = isBlogActive 
     ? 'bg-rose-100 text-rose-950 border-rose-300 font-extrabold shadow-sm hover:scale-105 active:scale-95 hover:ring-2 hover:ring-rose-250 transition-all duration-300' 
     : 'bg-rose-50/50 text-rose-700 border-rose-200/80 hover:bg-rose-100/80 hover:text-rose-900 hover:border-rose-300 hover:scale-105 active:scale-95 hover:ring-2 hover:ring-rose-150 transition-all duration-300';
@@ -2051,7 +2051,7 @@ function rebuildDesktopNavbar(user) {
     </div>
     
     <!-- Blog Link -->
-    <a href="updates.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border cursor-pointer font-bold select-none text-xs ${blogClass}">
+    <a href="blog.html" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border cursor-pointer font-bold select-none text-xs ${blogClass}">
       <span>📰 Blog</span>
     </a>
 
@@ -2274,7 +2274,7 @@ function initPageBookmarkButton() {
     fullPath.includes('/admin') ||
     fullPath.includes('/link-stats') ||
     fullPath.includes('/blog/') ||
-    fullPath.includes('updates.html') ||
+    fullPath.includes('blog.html') ||
     rawPath === '';
 
   if (isExcluded) return;

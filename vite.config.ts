@@ -49,7 +49,7 @@ export default defineConfig(() => {
           contact: path.resolve(__dirname, 'contact.html'),
           about: path.resolve(__dirname, 'about.html'),
           disclaimer: path.resolve(__dirname, 'disclaimer.html'),
-          updates: path.resolve(__dirname, 'updates.html'),
+          blog: path.resolve(__dirname, 'blog.html'),
           json: path.resolve(__dirname, 'json-formatter.html'),
           base64: path.resolve(__dirname, 'base64-converter.html'),
           uuid: path.resolve(__dirname, 'uuid-hash-generator.html'),

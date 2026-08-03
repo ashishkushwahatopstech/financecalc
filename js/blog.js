@@ -1,6 +1,6 @@
 /**
  * FinCalc Tools - Public Blog Updates Controller
- * Fetches published blog posts and renders responsive cards on updates.html.
+ * Fetches published blog posts and renders responsive cards on blog.html.
  */
 
 import { fetchPublishedBlogPosts, escapeHTML } from './content-manager.js';
@@ -409,8 +409,8 @@ async function initUpdatesPage() {
   const closeModal = () => {
     if (!modal) return;
     
-    // Restore browser URL to updates.html
-    window.history.pushState(null, 'Blog & Site Updates – FinCalc Tools', '/updates.html');
+    // Restore browser URL to blog.html
+    window.history.pushState(null, 'Blog & Site Updates – FinCalc Tools', '/blog.html');
     document.title = 'Blog & Site Updates – FinCalc Tools';
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) {
