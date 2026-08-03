@@ -11,7 +11,7 @@ export async function onRequestGet(context) {
     'age-calculator', 'currency-converter', 'invoice-generator',
     'loan-calculator', 'password-generator', 'qr-generator',
     'roi-calculator', 'salary-calculator', 'tax-calculator',
-    'unit-converter', 'updates', 'word-counter',
+    'unit-converter', 'blog', 'blog.html', 'word-counter',
     'emi-calculator', 'sip-calculator', 'gst-calculator', 'ppf-fd-rd-calculator',
     'pdf-tools', 'image-compressor', 'resume-builder', 'json-formatter',
     'base64-converter', 'uuid-hash-generator', 'regex-tester', 'color-converter',
