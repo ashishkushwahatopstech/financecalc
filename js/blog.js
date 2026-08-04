@@ -32,6 +32,19 @@ function showToast(message, type = 'success') {
   }, 3000);
 }
 
+// Helper to parse HTML and auto-link plain text URLs
+function linkifyHtml(html) {
+  if (!html) return '';
+  const parts = html.split(/(<[^>]+>)/);
+  for (let i = 0; i < parts.length; i++) {
+    if (i % 2 === 0) {
+      const urlRegex = /(https?:\/\/[^\s<]+[^.,\s<])/g;
+      parts[i] = parts[i].replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:underline font-semibold">$1</a>');
+    }
+  }
+  return parts.join('');
+}
+
 // Helper to slugify titles for URLs
 function slugify(text) {
   if (!text) return '';
@@ -148,7 +161,7 @@ async function initUpdatesPage() {
     modalTitle.textContent = post.title;
     modalType.textContent = post.type || 'Blog Post';
     modalDate.textContent = `Published on ${formattedDate} by ${post.createdBy || 'Member'}`;
-    modalBody.textContent = post.body;
+    modalBody.innerHTML = linkifyHtml(post.body);
 
     // Clean up existing ads
     document.getElementById('modal-top-ad')?.remove();

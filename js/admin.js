@@ -1377,6 +1377,65 @@ function setupContentManagerUI() {
 
   if (!form) return;
 
+  // Handle selected text bubble for hyperlinks
+  const bubble = document.getElementById('hyperlink-bubble');
+  const bubbleUrl = document.getElementById('hyperlink-bubble-url');
+  const bubbleBtn = document.getElementById('hyperlink-bubble-btn');
+  const bubbleClose = document.getElementById('hyperlink-bubble-close');
+
+  if (bodyInput && bubble) {
+    const handleSelection = () => {
+      const start = bodyInput.selectionStart;
+      const end = bodyInput.selectionEnd;
+      if (start !== end && (end - start) > 0) {
+        bubble.classList.remove('hidden');
+      } else {
+        if (document.activeElement !== bubbleUrl && document.activeElement !== bubbleBtn) {
+          bubble.classList.add('hidden');
+        }
+      }
+    };
+
+    bodyInput.addEventListener('mouseup', handleSelection);
+    bodyInput.addEventListener('keyup', handleSelection);
+    bodyInput.addEventListener('select', handleSelection);
+
+    bubbleClose.addEventListener('click', () => {
+      bubble.classList.add('hidden');
+      bubbleUrl.value = '';
+    });
+
+    bubbleBtn.addEventListener('click', () => {
+      const start = bodyInput.selectionStart;
+      const end = bodyInput.selectionEnd;
+      const text = bodyInput.value;
+      const selectedText = text.substring(start, end);
+      const url = bubbleUrl.value.trim();
+
+      if (url) {
+        const linkHtml = `<a href="${url}" target="_blank" rel="noopener noreferrer">${selectedText}</a>`;
+        bodyInput.value = text.substring(0, start) + linkHtml + text.substring(end);
+        bubble.classList.add('hidden');
+        bubbleUrl.value = '';
+        bodyInput.dispatchEvent(new Event('input'));
+      }
+    });
+
+    bubbleUrl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        bubbleBtn.click();
+      }
+    });
+
+    document.addEventListener('mousedown', (e) => {
+      const parent = bodyInput.parentElement;
+      if (parent && !parent.contains(e.target)) {
+        bubble.classList.add('hidden');
+      }
+    });
+  }
+
   const loadContentList = async () => {
     const container = document.getElementById('admin-content-list-container');
     const badge = document.getElementById('admin-content-count-badge');
