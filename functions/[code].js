@@ -8,6 +8,7 @@ export async function onRequestGet(context) {
 
   const staticPages = [
     'url-shortener', 'link-stats', 'admin', 'profile', 'index',
+    'about', 'privacy-policy', 'terms-of-service', 'contact', 'disclaimer',
     'age-calculator', 'currency-converter', 'invoice-generator',
     'loan-calculator', 'password-generator', 'qr-generator',
     'roi-calculator', 'salary-calculator', 'tax-calculator',
