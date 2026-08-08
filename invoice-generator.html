@@ -334,13 +334,12 @@
             const opt = {
               margin: [8, 8, 8, 8],
               filename: `${invNum}.pdf`,
-              image: { type: 'jpeg', quality: 0.82 },
+              image: { type: 'jpeg', quality: 0.95 },
               html2canvas: { 
-                scale: 1.5, 
+                scale: 3, 
                 useCORS: true, 
                 logging: false,
                 letterRendering: true,
-                dpi: 150,
                 ignoreElements: (element) => element && element.classList && element.classList.contains('no-print')
               },
               jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
@@ -389,13 +388,12 @@
             // Generate PDF Blob URL using html2pdf and open/print in frame
             const opt = {
               margin: [8, 8, 8, 8],
-              image: { type: 'jpeg', quality: 0.82 },
+              image: { type: 'jpeg', quality: 0.95 },
               html2canvas: { 
-                scale: 1.5, 
+                scale: 3, 
                 useCORS: true, 
                 logging: false,
                 letterRendering: true,
-                dpi: 150,
                 ignoreElements: (element) => element && element.classList && element.classList.contains('no-print')
               },
               jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
