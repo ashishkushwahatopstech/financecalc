@@ -1,5 +1,6 @@
-# Task List - Optimize Invoice PDF Resolution
+# Task List - YouTube Thumbnail Downloader SEO Optimization
 
-- [x] Update download PDF options in `invoice-generator.html`.
-- [x] Update print PDF options in `invoice-generator.html`.
+- [x] Update title, metadata, and add JSON-LD schema in `youtube-thumbnail-downloader.html`.
+- [x] Add SEO content and collapsible FAQ markup in `youtube-thumbnail-downloader.html`.
+- [x] Add inline JavaScript toggle listeners for the FAQ items in `youtube-thumbnail-downloader.html`.
 - [x] Verify build compile.
