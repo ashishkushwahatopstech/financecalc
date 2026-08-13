@@ -101,6 +101,16 @@
             <button id="filter-active" class="flex-1 py-1 px-2.5 text-[10px] font-bold rounded-md bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 cursor-pointer">Active</button>
             <button id="filter-expired" class="flex-1 py-1 px-2.5 text-[10px] font-bold rounded-md bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 cursor-pointer">Expired</button>
           </div>
+
+          <div class="space-y-1">
+            <label class="block text-[9px] font-bold text-slate-450 uppercase tracking-widest">Filter by Link Type</label>
+            <select id="filter-type" class="w-full px-3 py-2 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:border-emerald-500 text-slate-700 font-medium cursor-pointer">
+              <option value="all">All Link Types</option>
+              <option value="shortener">Shortener URLs Only</option>
+              <option value="qr">QR Code Links Only</option>
+              <option value="upi">UPI / Payment Links Only</option>
+            </select>
+          </div>
         </div>
 
         <!-- Links Scroll Area -->
@@ -342,6 +352,11 @@
       }
 
       // Filter trigger listeners
+      const filterTypeSelect = document.getElementById('filter-type');
+      if (filterTypeSelect) {
+        filterTypeSelect.addEventListener('change', () => renderLinksList());
+      }
+
       filterAll.addEventListener('click', () => setFilter('all', filterAll));
       filterActive.addEventListener('click', () => setFilter('active', filterActive));
       filterExpired.addEventListener('click', () => setFilter('expired', filterExpired));
@@ -361,6 +376,7 @@
       // Render links list sidebar
       function renderLinksList() {
         const query = searchInput.value.toLowerCase().trim();
+        const typeFilter = filterTypeSelect ? filterTypeSelect.value : 'all';
         
         const filtered = allLinks.filter(link => {
           const matchesSearch = link.short_code.toLowerCase().includes(query) || 
@@ -369,11 +385,27 @@
           const isExpired = link.expires_at && link.expires_at < Date.now();
           
           if (activeFilter === 'active') {
-            return matchesSearch && !isExpired;
+            if (isExpired) return false;
           } else if (activeFilter === 'expired') {
-            return matchesSearch && isExpired;
+            if (!isExpired) return false;
           }
-          return matchesSearch;
+
+          if (!matchesSearch) return false;
+
+          // Classify link type
+          const orig = link.original_url.toLowerCase();
+          const isUpi = orig.includes('/pay.html') || orig.includes('/pay?');
+          const isQr = orig.includes('src=qr');
+
+          if (typeFilter === 'upi') {
+            return isUpi;
+          } else if (typeFilter === 'qr') {
+            return isQr && !isUpi;
+          } else if (typeFilter === 'shortener') {
+            return !isUpi && !isQr;
+          }
+
+          return true;
         });
 
         if (filtered.length === 0) {
@@ -388,17 +420,35 @@
         linksContainer.innerHTML = filtered.map(link => {
           const isExpired = link.expires_at && link.expires_at < Date.now();
           const activeClass = selectedCode === link.short_code ? 'bg-emerald-50/70 border-l-4 border-l-emerald-600' : 'hover:bg-slate-50';
-          const badgeHtml = isExpired 
+          
+          const statusBadgeHtml = isExpired 
             ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-100">Expired</span>`
             : `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">Active</span>`;
           
+          // Classify type badge
+          const orig = link.original_url.toLowerCase();
+          const isUpi = orig.includes('/pay.html') || orig.includes('/pay?');
+          const isQr = orig.includes('src=qr');
+          
+          let typeBadgeHtml = '';
+          if (isUpi) {
+            typeBadgeHtml = `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-100">UPI Link</span>`;
+          } else if (isQr) {
+            typeBadgeHtml = `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-sky-50 text-sky-700 border border-sky-100">QR Code</span>`;
+          } else {
+            typeBadgeHtml = `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-slate-100 text-slate-700 border border-slate-200">Short Link</span>`;
+          }
+
           const dateStr = new Date(link.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 
           return `
             <div class="p-3.5 cursor-pointer transition-all border-l-4 border-l-transparent ${activeClass}" data-code="${link.short_code}">
               <div class="flex items-center justify-between gap-2 mb-1.5">
                 <span class="font-bold text-xs text-slate-800">/${link.short_code}</span>
-                ${badgeHtml}
+                <div class="flex items-center gap-1">
+                  ${typeBadgeHtml}
+                  ${statusBadgeHtml}
+                </div>
               </div>
               <p class="text-[10px] text-slate-400 truncate mb-2">${link.original_url}</p>
               <div class="mt-2.5 pt-2 border-t border-slate-100/70 flex items-center justify-between gap-2 text-[9px] text-slate-500">

@@ -841,7 +841,9 @@
           }
 
           try {
-            new URL(formattedUrl);
+            const urlObj = new URL(formattedUrl);
+            urlObj.searchParams.set('src', 'qr');
+            formattedUrl = urlObj.toString();
           } catch (e) {
             alert('Please enter a valid website URL.');
             return;
