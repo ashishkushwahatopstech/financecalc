@@ -728,27 +728,48 @@
         });
       }
 
-      // Download PNG button
+      // Download PNG button with quiet-zone border padding
       btnDownload.addEventListener('click', () => {
         const img = qrcodeBox.querySelector('img');
         const canvas = qrcodeBox.querySelector('canvas');
 
-        let dataUrl = null;
-        if (canvas) {
-          dataUrl = canvas.toDataURL('image/png');
-        } else if (img && img.src) {
-          dataUrl = img.src;
+        if (!canvas && (!img || !img.src)) {
+          alert("Please type content to generate a valid QR code before downloading.");
+          return;
         }
 
-        if (dataUrl) {
+        const padding = 20; // 20px quiet zone padding margin
+        const bgVal = inputBg.value || '#ffffff';
+        const exportCanvas = document.createElement('canvas');
+        const ctx = exportCanvas.getContext('2d');
+
+        const triggerDownload = (url) => {
           const a = document.createElement('a');
-          a.href = dataUrl;
+          a.href = url;
           a.download = `fincalc_qrcode_${Date.now()}.png`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-        } else {
-          alert("Please type content to generate a valid QR code before downloading.");
+        };
+
+        if (canvas) {
+          exportCanvas.width = canvas.width + padding * 2;
+          exportCanvas.height = canvas.height + padding * 2;
+          ctx.fillStyle = bgVal;
+          ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+          ctx.drawImage(canvas, padding, padding);
+          triggerDownload(exportCanvas.toDataURL('image/png'));
+        } else if (img && img.src) {
+          const tempImg = new Image();
+          tempImg.onload = () => {
+            exportCanvas.width = tempImg.naturalWidth + padding * 2;
+            exportCanvas.height = tempImg.naturalHeight + padding * 2;
+            ctx.fillStyle = bgVal;
+            ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+            ctx.drawImage(tempImg, padding, padding);
+            triggerDownload(exportCanvas.toDataURL('image/png'));
+          };
+          tempImg.src = img.src;
         }
       });
 
