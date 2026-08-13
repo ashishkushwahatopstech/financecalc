@@ -39,15 +39,17 @@ export async function onRequestGet(context) {
   }
 
   try {
+    const lookupCode = (code || '').toLowerCase();
+
     // 1. Look up code in KV (fast path)
-    let originalUrl = await kv.get(code);
+    let originalUrl = await kv.get(lookupCode);
     let linkRecord = null;
 
     // Ensure active column exists in SQLite table schema
     await d1.prepare('ALTER TABLE links ADD COLUMN active INTEGER DEFAULT 1').run().catch(e => {});
 
     // 2. Query D1 to fetch expiry, ownership, monetization, and active details
-    linkRecord = await d1.prepare('SELECT original_url, expires_at, monetized, active FROM links WHERE short_code = ?').bind(code).first();
+    linkRecord = await d1.prepare('SELECT original_url, expires_at, monetized, active FROM links WHERE short_code = ?').bind(lookupCode).first();
 
     if (!linkRecord) {
       // If D1 doesn't have it, show Link Not Found page
@@ -71,7 +73,7 @@ export async function onRequestGet(context) {
     // 3. Check expiration
     if (linkRecord.expires_at && linkRecord.expires_at < Date.now()) {
       // Remove from KV if expired
-      await kv.delete(code);
+      await kv.delete(lookupCode);
       
       return new Response(expiredHtml(), {
         status: 410,
@@ -122,7 +124,7 @@ export async function onRequestGet(context) {
     try {
       await d1.prepare(
         'INSERT INTO clicks (short_code, clicked_at, country, city, referrer, source_type, device_type, user_agent) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-      ).bind(code, clickedAt, country, city, referrer || 'direct', sourceType, deviceType, ua).run();
+      ).bind(lookupCode, clickedAt, country, city, referrer || 'direct', sourceType, deviceType, ua).run();
     } catch (clickErr) {
       console.error('Error logging click analytics to D1:', clickErr);
     }
@@ -146,7 +148,7 @@ export async function onRequestGet(context) {
     // 6. Check if link is monetized (opt-in ads)
     const isMonetized = linkRecord.monetized === 1;
     if (isMonetized) {
-      return new Response(mediatorHtml(originalUrl, code), {
+      return new Response(mediatorHtml(originalUrl, lookupCode), {
         headers: { 'Content-Type': 'text/html; charset=utf-8' }
       });
     }

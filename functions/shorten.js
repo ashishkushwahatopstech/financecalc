@@ -49,7 +49,7 @@ export async function onRequestPost(context) {
     let isCustomCode = 0;
 
     if (customCode && customCode.trim() !== '') {
-      const cleanCustom = customCode.trim().replace(/[^a-zA-Z0-9_-]/g, '');
+      const cleanCustom = customCode.trim().replace(/[^a-zA-Z0-9_-]/g, '').toLowerCase();
       if (cleanCustom.length < 3 || cleanCustom.length > 30) {
         return new Response(JSON.stringify({ error: 'Custom code must be between 3 and 30 characters (letters, numbers, underscores, and hyphens).' }), {
           status: 400,
@@ -68,8 +68,8 @@ export async function onRequestPost(context) {
       shortCode = cleanCustom;
       isCustomCode = 1;
     } else {
-      // Generate a random 6-character alphanumeric code
-      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      // Generate a random 6-character lowercase alphanumeric code
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
       let attempts = 0;
       while (attempts < 10) {
         let code = '';
