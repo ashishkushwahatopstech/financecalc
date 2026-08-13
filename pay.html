@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UPI Secure Checkout | FinCalc Tools</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between antialiased selection:bg-indigo-500 selection:text-white relative overflow-hidden">
+
+  <!-- Background Glows -->
+  <div class="absolute top-0 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+  <!-- Header -->
+  <header class="py-6 px-4 max-w-md mx-auto w-full text-center relative z-10">
+    <div class="inline-flex items-center gap-2 font-black text-xl tracking-tight text-white select-none">
+      <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-indigo-800 flex items-center justify-center shadow-md shadow-indigo-500/20">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+      </span>
+      <span>Fin<span class="text-indigo-400">Calc</span> Checkout</span>
+    </div>
+  </header>
+
+  <!-- Main Checkout Card -->
+  <main class="flex-grow flex items-center justify-center px-4 relative z-10">
+    <div class="bg-slate-900/60 border border-slate-800 backdrop-blur-xl rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl shadow-indigo-950/20 space-y-6 text-center">
+      
+      <!-- Merchant Info / Loading -->
+      <div class="space-y-3">
+        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto shadow-inner animate-pulse" id="avatar-box">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        </div>
+        <div class="space-y-1">
+          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400" id="merchant-label">Paying Payee Merchant</h2>
+          <h1 class="text-lg font-bold text-white tracking-tight" id="payee-name">Loading...</h1>
+          <p class="text-xs font-mono font-medium text-slate-500" id="upi-vpa">--</p>
+        </div>
+      </div>
+
+      <!-- Transaction Amount Box -->
+      <div class="p-4 bg-slate-950/80 border border-slate-850 rounded-2xl space-y-1 text-center" id="amount-box">
+        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Transaction Amount</span>
+        <div class="text-3xl font-extrabold text-white tracking-tight" id="amount-display">₹--</div>
+        <p class="text-[11px] text-slate-450 italic" id="remarks-text">Remarks: --</p>
+      </div>
+
+      <!-- Redirection Status Message -->
+      <div class="space-y-2 text-xs font-medium text-slate-400 flex flex-col items-center justify-center" id="status-message">
+        <div class="flex items-center gap-2">
+          <div class="w-4 h-4 border-2 border-slate-800 border-t-indigo-400 rounded-full animate-spin"></div>
+          <span>Redirecting to payment app...</span>
+        </div>
+        <p class="text-[10px] text-slate-500 leading-normal max-w-xs mx-auto">Please confirm the pay prompt in Google Pay, PhonePe, Paytm, or BHIM.</p>
+      </div>
+
+      <!-- CTA Payment Button -->
+      <div class="pt-2">
+        <a id="btn-pay-now" href="#" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm rounded-2xl shadow-lg shadow-indigo-600/10 hover:shadow-indigo-600/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          <span>Pay Now via UPI App</span>
+        </a>
+      </div>
+
+      <!-- Security badge -->
+      <div class="pt-4 border-t border-slate-850/80 flex items-center justify-center gap-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+        <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+        <span>Secure UPI Transfer • NPCI Compliant</span>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-8 text-center text-[10px] font-bold text-slate-600 relative z-10">
+    © 2026 FinCalc Tools Checkout Gateway. All rights reserved.
+  </footer>
+
+  <!-- Script logic to read query parameters and redirect -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const pa = urlParams.get('pa') || '';
+      const pn = urlParams.get('pn') || '';
+      const am = urlParams.get('am') || '';
+      const tn = urlParams.get('tn') || '';
+
+      const payeeEl = document.getElementById('payee-name');
+      const vpaEl = document.getElementById('upi-vpa');
+      const amountEl = document.getElementById('amount-display');
+      const remarksEl = document.getElementById('remarks-text');
+      const payBtn = document.getElementById('btn-pay-now');
+
+      if (!pa) {
+        payeeEl.textContent = 'Invalid Merchant Details';
+        vpaEl.textContent = 'Missing UPI ID recipient';
+        document.getElementById('amount-box').classList.add('hidden');
+        document.getElementById('status-message').innerHTML = '<span class="text-rose-500 font-bold">Error: UPI payment transaction parameters are incomplete.</span>';
+        payBtn.classList.add('pointer-events-none', 'opacity-50');
+        return;
+      }
+
+      // Populate UI
+      payeeEl.textContent = pn || 'UPI Recipient';
+      vpaEl.textContent = pa;
+      amountEl.textContent = am ? `₹${parseFloat(am).toFixed(2)}` : 'Enter Amount in App';
+      remarksEl.innerHTML = tn ? `Remarks: <span class="text-slate-300">${tn}</span>` : 'Remarks: <span class="text-slate-500">None</span>';
+
+      // Build UPI deep-link URI
+      let upiLink = `upi://pay?pa=${encodeURIComponent(pa)}`;
+      if (pn) upiLink += `&pn=${encodeURIComponent(pn)}`;
+      if (am) upiLink += `&am=${encodeURIComponent(am)}`;
+      if (tn) upiLink += `&tn=${encodeURIComponent(tn)}`;
+      upiLink += `&cu=INR`;
+
+      // Set CTA link
+      payBtn.href = upiLink;
+
+      // Automatically attempt to invoke deep-link on load on mobile devices
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) {
+        setTimeout(() => {
+          window.location.href = upiLink;
+        }, 850);
+      } else {
+        // Hide redirection loader on desktop since it won't trigger deep-link redirect
+        const statusBox = document.getElementById('status-message');
+        statusBox.innerHTML = `
+          <p class="text-[10px] text-slate-500 leading-normal max-w-xs mx-auto">
+            Please open this page on your mobile device to pay, or scan the QR code using your preferred UPI app.
+          </p>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

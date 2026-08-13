@@ -154,7 +154,7 @@
           <!-- QR Type Quick-Select Tabs -->
           <div>
             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">1. Select QR Type</label>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
               <button type="button" data-type="text" class="qr-tab-btn px-3 py-2 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                 <span>Text</span>
               </button>
@@ -166,6 +166,9 @@
               </button>
               <button type="button" data-type="vcard" class="qr-tab-btn px-3 py-2 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
                 <span>vCard</span>
+              </button>
+              <button type="button" data-type="upi" class="qr-tab-btn px-3 py-2 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                <span>UPI Payment</span>
               </button>
             </div>
           </div>
@@ -259,6 +262,47 @@
               </div>
             </div>
 
+            <!-- UPI Form -->
+            <div id="form-upi" class="space-y-3 hidden">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Your Name (Payee):</label>
+                  <input type="text" id="input-upi-name" placeholder="e.g. Acme Fresh Produce" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Your UPI ID (VPA):</label>
+                  <input type="text" id="input-upi-id" placeholder="e.g. AcmeFresh@oksbi" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500" />
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Amount (INR) - Optional:</label>
+                  <input type="number" step="any" min="0" id="input-upi-amount" placeholder="e.g. 100" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 mb-1">Remarks / Note - Optional:</label>
+                  <input type="text" id="input-upi-remarks" placeholder="e.g. For Invoice #123" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:border-indigo-500" />
+                </div>
+              </div>
+              
+              <!-- UPI Scan Tracking Option -->
+              <div class="pt-2 flex items-start gap-2.5">
+                <input type="checkbox" id="input-upi-track" class="w-4 h-4 text-indigo-650 rounded border-slate-300 focus:ring-indigo-500 mt-0.5 cursor-pointer" />
+                <div class="flex flex-col">
+                  <label for="input-upi-track" class="text-xs font-bold text-slate-800 cursor-pointer select-none">Enable Payment Scan Analytics</label>
+                  <span class="text-[10px] text-slate-450 leading-normal">Generates a dynamic trackable redirect page. Track scan count, buyer location, time, and device details.</span>
+                </div>
+              </div>
+
+              <!-- Generate Tracked UPI QR button -->
+              <div id="upi-track-btn-container" class="hidden pt-1">
+                <button type="button" id="btn-generate-upi-tracked" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                  <span>Generate Tracked Payment QR</span>
+                </button>
+              </div>
+            </div>
+
           </div>
 
           <!-- Styling Options -->
@@ -333,7 +377,7 @@
       </div>
 
       <!-- SEO Article Content Section -->
-      <article class="mt-16 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+      <article id="seo-general-qr" class="mt-16 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
         
         <div class="prose prose-slate max-w-none space-y-4 text-xs sm:text-sm text-slate-600 leading-relaxed">
           <h2 class="text-xl font-bold text-slate-900">About Our Free QR Code Generator Tool</h2>
@@ -436,6 +480,86 @@
 
       </article>
 
+      <!-- UPI SEO Landing Page Section -->
+      <article id="seo-upi-qr" class="hidden mt-16 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-10 text-xs sm:text-sm text-slate-600 leading-relaxed">
+        
+        <!-- Header Info -->
+        <div class="text-center space-y-3">
+          <h2 class="text-2xl font-black text-slate-900">Free UPI QR Code Generator</h2>
+          <p class="text-slate-500 max-w-xl mx-auto leading-normal">Real-time QR codes for seamless bank-to-bank payments.</p>
+        </div>
+
+        <!-- 3-Step Guide -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 border-y border-slate-100 py-8">
+          <div class="text-center space-y-2">
+            <div class="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold flex items-center justify-center mx-auto text-xs">1</div>
+            <h4 class="font-bold text-slate-900 text-xs">Enter Your Details</h4>
+            <p class="text-[11px] text-slate-500">Fill in your payee merchant name and UPI ID in the form.</p>
+          </div>
+          <div class="text-center space-y-2">
+            <div class="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold flex items-center justify-center mx-auto text-xs">2</div>
+            <h4 class="font-bold text-slate-900 text-xs">Get Your QR Code</h4>
+            <p class="text-[11px] text-slate-500">Your custom payment QR code is generated instantly on the right.</p>
+          </div>
+          <div class="text-center space-y-2">
+            <div class="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-bold flex items-center justify-center mx-auto text-xs">3</div>
+            <h4 class="font-bold text-slate-900 text-xs">Download and Share</h4>
+            <p class="text-[11px] text-slate-500">Save the QR as a PNG to print for displays or share digitally.</p>
+          </div>
+        </div>
+
+        <!-- Why use our generator -->
+        <div class="space-y-6">
+          <h3 class="text-lg font-bold text-slate-900 text-center">Why use our UPI QR code generator for payments?</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1.5">
+              <strong class="block text-slate-950 font-bold text-xs uppercase tracking-wider">Generate unlimited QR codes</strong>
+              <p class="text-[11px] text-slate-500 leading-relaxed">Create as many QR codes as you need for collecting payments directly into your registered bank account without limits.</p>
+            </div>
+            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1.5">
+              <strong class="block text-slate-950 font-bold text-xs uppercase tracking-wider">Accept payments, your way</strong>
+              <p class="text-[11px] text-slate-500 leading-relaxed">Enable customer flexibility by letting them pay using 60+ popular UPI apps (Google Pay, PhonePe, Paytm, BHIM, etc.).</p>
+            </div>
+            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1.5">
+              <strong class="block text-slate-950 font-bold text-xs uppercase tracking-wider">No hardware, no hassle</strong>
+              <p class="text-[11px] text-slate-500 leading-relaxed">Accept cashless payments at zero operational costs. No POS machine subscriptions, cash-handling worries, or setups.</p>
+            </div>
+            <div class="p-5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1.5">
+              <strong class="block text-slate-950 font-bold text-xs uppercase tracking-wider">Real-time payment scan tracking</strong>
+              <p class="text-[11px] text-slate-500 leading-relaxed">Enable scan tracking to get geographical and user-agent analytics on your dashboard whenever customers scan your payment codes.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Use Cases -->
+        <div class="space-y-6 border-t border-slate-100 pt-8">
+          <h3 class="text-lg font-bold text-slate-900 text-center">Tap, scan, pay anywhere with UPI QR codes</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+              <strong class="block text-slate-950 font-bold text-xs">In-Store Payments</strong>
+              <p class="text-[11px] text-slate-500 leading-relaxed">Display printed QR codes at cash registers or desks for direct, touch-free mobile checkout.</p>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+              <strong class="block text-slate-950 font-bold text-xs">Seamless COD Payments</strong>
+              <p class="text-[11px] text-slate-500 leading-relaxed">Eliminate cash-handling risks by offering doorstep UPI scan collections for deliveries.</p>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+              <strong class="block text-slate-950 font-bold text-xs">Event & Service Payments</strong>
+              <p class="text-[11px] text-slate-500 leading-relaxed">Collect client payments on the spot for events, subscriptions, consulting, and home services.</p>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+              <strong class="block text-slate-950 font-bold text-xs">Multi-Location Outlets</strong>
+              <p class="text-[11px] text-slate-500 leading-relaxed">Assign unique trackable payment QR codes to franchises, agents, or distinct branches to monitor payments.</p>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-1 sm:col-span-2 md:col-span-1">
+              <strong class="block text-slate-950 font-bold text-xs">Social Selling & E-commerce</strong>
+              <p class="text-[11px] text-slate-500 leading-relaxed">Share dynamic checkout QR codes on WhatsApp, e-commerce stores, or social posts to drive orders instantly.</p>
+            </div>
+          </div>
+        </div>
+
+      </article>
+
     </section>
 
     <!-- Self-promotional blog links container - NOT Google AdSense units -->
@@ -515,6 +639,7 @@
       const formUrl = document.getElementById('form-url');
       const formWifi = document.getElementById('form-wifi');
       const formVcard = document.getElementById('form-vcard');
+      const formUpi = document.getElementById('form-upi');
 
       // Tracking selectors
       const trackCheckbox = document.getElementById('input-qr-track');
@@ -523,6 +648,19 @@
       const trackingInfo = document.getElementById('qr-tracking-info');
       const viewStatsLink = document.getElementById('qr-view-stats-link');
       const inputQrUrl = document.getElementById('input-qr-url');
+
+      // UPI element selectors
+      const upiTrackCheckbox = document.getElementById('input-upi-track');
+      const upiTrackBtnContainer = document.getElementById('upi-track-btn-container');
+      const btnGenerateUpiTracked = document.getElementById('btn-generate-upi-tracked');
+      const inputUpiName = document.getElementById('input-upi-name');
+      const inputUpiId = document.getElementById('input-upi-id');
+      const inputUpiAmount = document.getElementById('input-upi-amount');
+      const inputUpiRemarks = document.getElementById('input-upi-remarks');
+
+      // SEO content containers
+      const seoGeneral = document.getElementById('seo-general-qr');
+      const seoUpi = document.getElementById('seo-upi-qr');
 
       tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -539,11 +677,22 @@
           formUrl.classList.toggle('hidden', currentType !== 'url');
           formWifi.classList.toggle('hidden', currentType !== 'wifi');
           formVcard.classList.toggle('hidden', currentType !== 'vcard');
+          formUpi.classList.toggle('hidden', currentType !== 'upi');
+
+          // Toggle SEO content guides
+          if (seoGeneral && seoUpi) {
+            seoGeneral.classList.toggle('hidden', currentType === 'upi');
+            seoUpi.classList.toggle('hidden', currentType !== 'upi');
+          }
 
           // Reset tracking state on tab switch
           if (trackCheckbox) {
             trackCheckbox.checked = false;
             trackBtnContainer.classList.add('hidden');
+          }
+          if (upiTrackCheckbox) {
+            upiTrackCheckbox.checked = false;
+            upiTrackBtnContainer.classList.add('hidden');
           }
           trackedCode = null;
           trackedUrl = null;
@@ -566,6 +715,24 @@
             val = 'https://' + val;
           }
           return val || 'https://www.aktechstudio.com';
+        }
+        if (currentType === 'upi') {
+          if (upiTrackCheckbox && upiTrackCheckbox.checked && trackedUrl) {
+            return trackedUrl;
+          }
+          const pa = (inputUpiId.value || '').trim();
+          const pn = (inputUpiName.value || '').trim();
+          const am = (inputUpiAmount.value || '').trim();
+          const tn = (inputUpiRemarks.value || '').trim();
+
+          if (!pa) return 'upi://pay'; // empty placeholder
+          
+          let upiUri = `upi://pay?pa=${encodeURIComponent(pa)}`;
+          if (pn) upiUri += `&pn=${encodeURIComponent(pn)}`;
+          if (am) upiUri += `&am=${encodeURIComponent(am)}`;
+          if (tn) upiUri += `&tn=${encodeURIComponent(tn)}`;
+          upiUri += `&cu=INR`;
+          return upiUri;
         }
         if (currentType === 'wifi') {
           const ssid = document.getElementById('input-wifi-ssid').value || 'MyWiFi';
@@ -624,7 +791,7 @@
       // Input change listeners
       document.querySelectorAll('#tab-form-container input, #tab-form-container textarea, #tab-form-container select').forEach(el => {
         el.addEventListener('input', (e) => {
-          if (e.target.id === 'input-qr-url') {
+          if (e.target.id === 'input-qr-url' || e.target.id.startsWith('input-upi-')) {
             trackedCode = null;
             trackedUrl = null;
             trackingInfo.classList.add('hidden');
@@ -632,7 +799,7 @@
           generateQR();
         });
         el.addEventListener('change', (e) => {
-          if (e.target.id === 'input-qr-url') {
+          if (e.target.id === 'input-qr-url' || e.target.id.startsWith('input-upi-')) {
             trackedCode = null;
             trackedUrl = null;
             trackingInfo.classList.add('hidden');
@@ -724,6 +891,84 @@
           } finally {
             btnGenerateTracked.disabled = false;
             btnGenerateTracked.innerHTML = originalText;
+          }
+        });
+      }
+
+      // UPI Track checkbox listener
+      if (upiTrackCheckbox) {
+        upiTrackCheckbox.addEventListener('change', () => {
+          const isChecked = upiTrackCheckbox.checked;
+          upiTrackBtnContainer.classList.toggle('hidden', !isChecked);
+          
+          trackedCode = null;
+          trackedUrl = null;
+          trackingInfo.classList.add('hidden');
+          
+          generateQR();
+        });
+      }
+
+      // Generate Tracked UPI Payment QR handler
+      if (btnGenerateUpiTracked) {
+        btnGenerateUpiTracked.addEventListener('click', async () => {
+          const pa = (inputUpiId.value || '').trim();
+          const pn = (inputUpiName.value || '').trim();
+          const am = (inputUpiAmount.value || '').trim();
+          const tn = (inputUpiRemarks.value || '').trim();
+
+          if (!pa) {
+            alert('Please enter a valid UPI ID (VPA).');
+            return;
+          }
+
+          btnGenerateUpiTracked.disabled = true;
+          const originalText = btnGenerateUpiTracked.innerHTML;
+          btnGenerateUpiTracked.innerHTML = `
+            <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span>Generating Checkout Link...</span>
+          `;
+
+          try {
+            const origin = window.location.origin;
+            const checkoutUrl = `${origin}/pay.html?pa=${encodeURIComponent(pa)}&pn=${encodeURIComponent(pn)}${am ? '&am=' + encodeURIComponent(am) : ''}${tn ? '&tn=' + encodeURIComponent(tn) : ''}`;
+
+            const user = getCurrentUser ? getCurrentUser() : null;
+            const uid = user ? user.uid : null;
+
+            const res = await fetch('/shorten', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ originalUrl: checkoutUrl, uid })
+            });
+
+            if (!res.ok) {
+              const errData = await res.json();
+              throw new Error(errData.error || 'Failed to generate payment link');
+            }
+
+            const data = await res.json();
+            trackedCode = data.shortCode;
+            trackedUrl = data.shortUrl;
+
+            // Generate tracked QR code
+            generateQR();
+
+            // Show tracking alert
+            trackingInfo.classList.remove('hidden');
+            if (viewStatsLink) {
+              viewStatsLink.href = `link-stats.html?code=${encodeURIComponent(trackedCode)}`;
+            }
+
+            if (typeof showToast === 'function') {
+              showToast('Tracked UPI QR generated successfully!', 'success');
+            }
+          } catch (err) {
+            console.error('Error generating tracked UPI QR:', err);
+            alert(`Error: ${err.message || 'Could not generate tracked UPI QR code.'}`);
+          } finally {
+            btnGenerateUpiTracked.disabled = false;
+            btnGenerateUpiTracked.innerHTML = originalText;
           }
         });
       }

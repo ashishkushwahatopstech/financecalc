@@ -1,6 +1,9 @@
-# Task List - QR Code Generator SEO Optimization
+# Task List - UPI QR Code Generator & Scan Tracking
 
-- [x] Update title, metadata, and add JSON-LD schema in `qr-generator.html`.
-- [x] Add SEO content and collapsible FAQ markup in `qr-generator.html`.
-- [x] Add inline JavaScript toggle listeners for the FAQ items in `qr-generator.html`.
-- [x] Verify build compile.
+- [ ] Add the "UPI Payment" tab selection button in `qr-generator.html`.
+- [ ] Add the UPI input form (`#form-upi`) inside the input forms container in `qr-generator.html`.
+- [ ] Add the Razorpay-style landing page content (`#seo-upi-qr`) inside `qr-generator.html`.
+- [ ] Implement UPI QR string building, track click handlers, and page toggle script logic in `qr-generator.html`.
+- [ ] Create the checkout gateway redirect page `pay.html`.
+- [ ] Register `pay.html` in `vite.config.ts`.
+- [ ] Verify build compile.

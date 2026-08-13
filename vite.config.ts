@@ -44,6 +44,7 @@ export default defineConfig(() => {
           admin: path.resolve(__dirname, 'admin.html'),
           shortener: path.resolve(__dirname, 'url-shortener.html'),
           qr: path.resolve(__dirname, 'qr-generator.html'),
+          pay: path.resolve(__dirname, 'pay.html'),
           stats: path.resolve(__dirname, 'link-stats.html'),
           privacy: path.resolve(__dirname, 'privacy-policy.html'),
           terms: path.resolve(__dirname, 'terms-of-service.html'),
