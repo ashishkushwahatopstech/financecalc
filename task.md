@@ -1,4 +1,4 @@
 # Task List - Cloudflare Pages Domain SEO Setup
 
-- [ ] Append hostname-specific noindex header rules to `public/_headers`.
+- [ ] Create `functions/_middleware.js` to dynamically inject security headers and handle `pages.dev` noindex tagging.
 - [ ] Verify build compile.
