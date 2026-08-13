@@ -584,26 +584,65 @@
           const btnDownloadStatsQr = document.getElementById('btn-download-stats-qr');
           if (btnDownloadStatsQr) {
             btnDownloadStatsQr.onclick = () => {
-              const img = qrBox.querySelector('img');
-              const canvas = qrBox.querySelector('canvas');
-              let dataUrl = null;
-              if (canvas) {
-                dataUrl = canvas.toDataURL('image/png');
-              } else if (img && img.src) {
-                dataUrl = img.src;
-              }
+              // Create a temporary offscreen div container
+              const tempDiv = document.createElement('div');
+              tempDiv.style.display = 'none';
+              document.body.appendChild(tempDiv);
 
-              if (dataUrl) {
-                const a = document.createElement('a');
-                a.href = dataUrl;
-                a.download = `fincalc_qr_${link.short_code}.png`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                showToast('QR Code downloaded successfully!', 'success');
-              } else {
-                showToast('Failed to download QR code.', 'error');
-              }
+              // Generate a high-resolution 256x256 QR code inside the temp div
+              const tempQr = new QRCode(tempDiv, {
+                text: qrTargetUrl,
+                width: 256,
+                height: 256,
+                colorDark: '#0f172a',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+              });
+
+              // Wait for QRCode library rendering tick
+              setTimeout(() => {
+                const canvas = tempDiv.querySelector('canvas');
+                const img = tempDiv.querySelector('img');
+
+                const padding = 30; // 30px quiet-zone padding
+                const bgVal = '#ffffff';
+                const exportCanvas = document.createElement('canvas');
+                const ctx = exportCanvas.getContext('2d');
+
+                const triggerDownload = (url) => {
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `fincalc_qr_${link.short_code}.png`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  document.body.removeChild(tempDiv);
+                  showToast('QR Code downloaded successfully!', 'success');
+                };
+
+                if (canvas) {
+                  exportCanvas.width = canvas.width + padding * 2;
+                  exportCanvas.height = canvas.height + padding * 2;
+                  ctx.fillStyle = bgVal;
+                  ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+                  ctx.drawImage(canvas, padding, padding);
+                  triggerDownload(exportCanvas.toDataURL('image/png'));
+                } else if (img && img.src) {
+                  const tempImg = new Image();
+                  tempImg.onload = () => {
+                    exportCanvas.width = tempImg.naturalWidth + padding * 2;
+                    exportCanvas.height = tempImg.naturalHeight + padding * 2;
+                    ctx.fillStyle = bgVal;
+                    ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+                    ctx.drawImage(tempImg, padding, padding);
+                    triggerDownload(exportCanvas.toDataURL('image/png'));
+                  };
+                  tempImg.src = img.src;
+                } else {
+                  document.body.removeChild(tempDiv);
+                  showToast('Failed to download QR code.', 'error');
+                }
+              }, 120);
             };
           }
         }
