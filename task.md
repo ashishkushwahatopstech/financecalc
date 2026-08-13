@@ -1,4 +1,4 @@
-# Task List - Cloudflare Pages Domain SEO Setup
+# Task List - Navbar Cache-Busting Integration
 
-- [ ] Create `functions/_middleware.js` to dynamically inject security headers and handle `pages.dev` noindex tagging.
+- [ ] Write and run cache-busting script to update all HTML files with `/js/auth.js?v=1.0.2`.
 - [ ] Verify build compile.
